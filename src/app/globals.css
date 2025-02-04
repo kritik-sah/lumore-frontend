@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ui-light text-ui-shade dark:bg-ui-dark-background dark:bg-ui-dark-foreground !font-workSans;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-dmSans;
+  }
+}
