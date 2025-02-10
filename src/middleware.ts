@@ -1,0 +1,23 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("token")?.value; // Get token from cookies
+  const { pathname } = req.nextUrl;
+
+  // Allow access to login page without authentication
+  if (pathname.startsWith("/app/login") || pathname.startsWith("/app/signup")) {
+    return NextResponse.next();
+  }
+
+  // If no token and not on a public page, redirect to login
+  if (!token) {
+    return NextResponse.redirect(new URL("/app/login", req.url));
+  }
+
+  return NextResponse.next(); // Allow request to proceed
+}
+
+// Apply middleware only to protected routes, excluding `/app/login`
+export const config = {
+  matcher: ["/app/:path*"],
+};

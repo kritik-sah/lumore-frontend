@@ -15,7 +15,7 @@ export default function CTA() {
         </p>
         <PopupButton id="ITzseckk" className="mt-4">
           <div className="relative md:ext-md lg:text-lg rounded-lg border border-ui-shade px-5 py-3 bg-ui-primary text-ui-shade">
-            Help us to understand you !!
+            Help us understand you !!
             <span className="absolute -top-1 -right-1 flex size-4">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ui-accent opacity-75"></span>
               <span className="relative inline-flex size-4 rounded-full bg-ui-accent"></span>
