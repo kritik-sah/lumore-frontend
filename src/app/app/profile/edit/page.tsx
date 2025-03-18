@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import React from "react";
-import MyProfile from "../components/MyProfile";
+import EditMyProfile from "../../components/EditMyProfile";
 
-const Profile = async () => {
+const EditProfile = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const user = cookieStore.get("user")?.value
@@ -19,7 +19,7 @@ const Profile = async () => {
   );
   const userProfile = await data.json();
 
-  return <MyProfile user={userProfile} />;
+  return <EditMyProfile user={userProfile} />;
 };
 
-export default Profile;
+export default EditProfile;

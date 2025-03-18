@@ -34,3 +34,15 @@ export const checkUsernameAvailability = async (username: string) => {
   );
   return response.data.isUnique; // Returns true or false
 };
+
+export const updateUserData = async (data: any) => {
+  const token = Cookies.get("token");
+  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
+
+  const response = await axios.patch(`${API_URL}/profile/${userId}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Pass token in Authorization header
+    },
+  });
+  return response.data;
+};
