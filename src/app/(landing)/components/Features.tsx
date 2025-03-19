@@ -22,7 +22,7 @@ const features = [
   },
   {
     title: "Secure & Private",
-    description: "All chats will be deleted in 24h, and end-to-end encripted",
+    description: "All chats will be deleted in 24h, and end-to-end encrypted",
     status: "live",
   },
   {
@@ -38,13 +38,13 @@ const features = [
   {
     title: "Create, Find & Join Events in your city",
     description:
-      "House parties, Diwali, Holy parties, Tech Events, find partners to go to anywhere",
+      "House parties, Diwali, Holi parties, Tech Events, find partners to go to anywhere",
     status: "pending",
   },
   {
-    title: "AI Companian",
+    title: "AI Companion",
     description:
-      "From dating advice to try your rizz our AI Companian is here to listen you ;p",
+      "From dating advice to try your rizz our AI Companion is here to listen to you ;p",
     status: "pending",
   },
 ];

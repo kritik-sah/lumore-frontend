@@ -70,13 +70,6 @@ export default function Navbar() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-6 w-full">
-                <PopupButton id="ITzseckk" className="w-full">
-                  <Button variant="outline" size="lg" className="w-full">
-                    Join waitlist <span className="text-ui-highlight">!!</span>
-                  </Button>
-                </PopupButton>
-              </div>
             </div>
           </SheetContent>
         </Sheet>
