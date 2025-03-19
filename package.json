@@ -23,16 +23,19 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
+    "next-pwa": "^5.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/js-cookie": "^3.0.6",
     "@types/next-auth": "^3.13.0",
+    "@types/next-pwa": "^5.6.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
