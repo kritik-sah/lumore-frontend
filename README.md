@@ -1,18 +1,17 @@
 # User Personas Overview
 
-| **Attributes** | **Persona 1: Kritik**                                                                                                                                                                                         | **Persona 2: Sakshi**                                                                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Age            | 24                                                                                                                                                                                                            | 24                                                                                                                                                                  |
-| Occupation     | Software Developer                                                                                                                                                                                            | Marketing Manager                                                                                                                                                   |
-| Location       | Delhi, India (New in City)                                                                                                                                                                                    | Delhi, India (New in City)                                                                                                                                          |
-| Background     | Kritik is a busy professional who works long hours at a tech startup. He's passionate about his career but finds it challenging to meet potential partners through traditional means or existing dating apps. | Sakshi is an outgoing professional who recently moved to a new city for work. She's looking to expand her social circle and potentially find a romantic connection. |
+| **Attributes** | **Persona 1: Kritik** | **Persona 2: Sakshi** |
+| --- | --- | --- |
+| Age | 24 | 24 |
+| Occupation | Software Developer | Marketing Manager |
+| Location | Delhi, India (New in City) | Delhi, India (New in City) |
+| Background | Kritik is a busy professional who works long hours at a tech startup. He's passionate about his career but finds it challenging to meet potential partners through traditional means or existing dating apps.  | Sakshi is an outgoing professional who recently moved to a new city for work. She's looking to expand her social circle and potentially find a romantic connection. |
 
 ## Goals & Pain Points
 
-| **Category**  | **Kritik**                                              | **Sakshi** |
-| ------------- | ------------------------------------------------------- | ---------- |
-| Primary Goals | • Make new friends and meet someone whom he can talk to |
-
+| **Category** | **Kritik** | **Sakshi** |
+| --- | --- | --- |
+| Primary Goals | • Make new friends and meet someone whom he can talk to
 • Find a meaningful, long-term relationship
 • Meet someone who shares his interests in technology and innovation
 • find someone whom he can travel or explore the city | • Meet new people in her area
@@ -33,10 +32,9 @@
 
 ## App Usage Patterns
 
-| **User** | **Usage Pattern**                               |
-| -------- | ----------------------------------------------- |
-| Kritik   | • Checks app during lunch breaks and after work |
-
+| **User** | **Usage Pattern** |
+| --- | --- |
+| Kritik | • Checks app during lunch breaks and after work
 • Prefers detailed profiles and meaningful conversations
 • Values efficiency and clear communication |
 | Sakshi | • Active on app during evenings and weekends
@@ -55,9 +53,9 @@ Kritik and Sakshi both installed the app, signup using google, email or phone no
 4. DOB
 5. Gender
 6. Bio
-7. Interests
-   1. Professional**: […]**
-   2. hobbies: […]
+7. Interests 
+    1. Professional**:  […]**
+    2. hobbies: […]
 8. Sexual orientation
 9. Height
 10. Current Location
@@ -66,7 +64,7 @@ Kritik and Sakshi both installed the app, signup using google, email or phone no
 13. Alcohol
 14. Smoking
 15. Pets
-16. Work
+16. Work 
 17. College/ University
 18. Marital Status
 19. Religion
@@ -83,12 +81,12 @@ Kritik and Sakshi both installed the app, signup using google, email or phone no
 2. Max distance
 3. Age range
 4. Looking for - new friend, serious relationship , short-term fun
-5. Interests - by hobbies or professional interest
+5. Interests - by hobbies or professional interest 
 6. Relationship type - Monogamy, ethical non-monogamy, polyamory, open to exploring
 7. language
 8. zodiac
 9. College/ University - IIT, AIMS…
-10. Personality type
+10. Personality type 
 11. Diet
 12. home town
 
@@ -98,7 +96,7 @@ All the active users are in the pool of “Active Users”, they can start match
 
 ### What they will see and what they won’t?
 
-You find a match, nice. you can start the conversation, send your “Hi 👋”, but wait are you concern about your profile data, you don’t want to show your profile or photos to a random stranger. we got your point. You can choose what to show and what not to on your profile, you can provide the data for better match making. and once you feel comfortable to show your profile you can just **“UNLOCK YOUR PROFILE”**. By unlocking your profile, your partner can also see your profile.
+You find a match, nice. you can start the conversation, send your “Hi 👋”, but wait are you concern about your profile data, you don’t want to show your profile or photos to a random stranger. we got your point. You can choose what to show and what not to on your profile, you can provide the data for better match making. and once you feel comfortable to show your profile you can just **“UNLOCK YOUR PROFILE”**.  By unlocking your profile, your partner can also see your profile.
 
 ### Thinking That you found the guy / lady?
 
