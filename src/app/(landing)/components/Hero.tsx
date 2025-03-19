@@ -4,6 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { PopupButton } from "@typeform/embed-react";
 import Image from "next/image";
+import ProductHuntBadge from "./ProductHuntBadge";
 
 export default function Hero() {
   return (
@@ -20,11 +21,14 @@ export default function Hero() {
           to make dating effortless, secure, and meaningful by matching users
           based on interests, location, and preferences.
         </p>
-        <PopupButton id="ITzseckk">
-          <Button size="lg" className="text-base md:text-lg py-4 md:py-6">
-            Join Lumore Waitlist !!
-          </Button>
-        </PopupButton>
+        <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
+          <PopupButton id="ITzseckk">
+            <Button size="lg" className="text-base md:text-lg py-4 md:py-6">
+              Join Lumore Waitlist !!
+            </Button>
+          </PopupButton>
+          <ProductHuntBadge />
+        </div>
       </div>
 
       {/* Right Image */}
