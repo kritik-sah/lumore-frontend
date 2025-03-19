@@ -8,38 +8,12 @@
 | Background | Kritik is a busy professional who works long hours at a tech startup. He's passionate about his career but finds it challenging to meet potential partners through traditional means or existing dating apps.  | Sakshi is an outgoing professional who recently moved to a new city for work. She's looking to expand her social circle and potentially find a romantic connection. |
 
 ## Goals & Pain Points
+<img width="633" alt="Screenshot 2025-03-20 at 12 54 24 AM" src="https://github.com/user-attachments/assets/573d8469-dea2-4713-9076-655489d37637" />
 
-| **Category** | **Kritik** | **Sakshi** |
-| --- | --- | --- |
-| Primary Goals | • Make new friends and meet someone whom he can talk to
-• Find a meaningful, long-term relationship
-• Meet someone who shares his interests in technology and innovation
-• find someone whom he can travel or explore the city | • Meet new people in her area
-• Find someone who shares her love for outdoor activities and travel
-• Build genuine connections in a new city |
-| Pain Points | • Limited time & fear of approach someone in traditional dating
-• Swiping left and right getting no results
-• Scam and fake profiles. lack of genuine profile
-• No replies even after getting matches.
-• Difficulty meeting people outside his professional circle
-• Finding someone in a new city and no friend to help | • Safety concerns with online dating
-• Filtering out people who aren't looking for serious relationships
-• Managing expectations and communication with matches
-• Overwhelming Choices & Decision Fatigue
-• Too many options lead to indecision (Who to talk to? Who to meet?)
-• Communication & Expectation Management
-• Limited control over who sees her profile |
 
 ## App Usage Patterns
+<img width="629" alt="Screenshot 2025-03-20 at 12 54 40 AM" src="https://github.com/user-attachments/assets/86788ca4-d10b-4552-9577-54092096a992" />
 
-| **User** | **Usage Pattern** |
-| --- | --- |
-| Kritik | • Checks app during lunch breaks and after work
-• Prefers detailed profiles and meaningful conversations
-• Values efficiency and clear communication |
-| Sakshi | • Active on app during evenings and weekends
-• Engages with matches through in-app features
-• Appreciates safety features and verification processes |
 
 ## User Flow
 
@@ -103,19 +77,3 @@ You find a match, nice. you can start the conversation, send your “Hi 👋”,
 Don’t risk it, Save your chat into a slot. slots are limited and can be bought, now you can chat with that person anytime you want. if they are offline you can still use the random chat. and if you feel the conversation is not going well, you can end the conversation with a constructive criticism (anything they did wrong or they can improve) or by reporting them (We take reporting really seriously).
 
 If everything went well, Congratulation go for a date. If something went wrong like scam or something, you can check out your recent matches list in your profile page, and make sure you report them, we will make sure they can never use the app again. even if they payed for premium
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
