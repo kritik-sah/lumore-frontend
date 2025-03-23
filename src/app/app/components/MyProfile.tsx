@@ -4,12 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import getLastActive from "@/utils/getLastActive";
+import { calculateAge, convertHeight } from "@/utils/helpers";
 import Link from "next/link";
 import React from "react";
 import { useLogout } from "../hooks/useAuth";
 
 const MyProfile = ({ user }: { user: any }) => {
   const { logout } = useLogout();
+
   console.log("user", user);
   return (
     <div className="bg-ui-background/10 p-4">
@@ -18,7 +20,12 @@ const MyProfile = ({ user }: { user: any }) => {
           <div className="flex items-start justify-between gap-4">
             <div className="">
               <h3 className="text-lg flex items-center justify-start gap-1">
-                Rebel <Icon name="MdVerified" className="text-ui-accent" />{" "}
+                {user?.visibleName ? user?.visibleName : user?.username}{" "}
+                {user?.isVerified ? (
+                  <Icon name="MdVerified" className="text-ui-accent" />
+                ) : (
+                  <Icon name="MdOutlineVerified" className="text-ui-shade/10" />
+                )}
                 <Badge
                   variant={"outline"}
                   className={`${
@@ -40,20 +47,25 @@ const MyProfile = ({ user }: { user: any }) => {
                 </Badge>
               </h3>
               <div className="flex items-center justify-start gap-2 mt-2">
-                <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                  <Icon
-                    name="HiOutlineCake"
-                    className="text-xl flex-shrink-0"
-                  />{" "}
-                  <p>24</p>
-                </div>
-                <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                  <Icon
-                    name="HiOutlineUser"
-                    className="text-xl flex-shrink-0"
-                  />{" "}
-                  <p>Man</p>
-                </div>
+                {user?.dob ? (
+                  <div className="flex items-center justify-center gap-1 flex-shrink-0">
+                    <Icon
+                      name="HiOutlineCake"
+                      className="text-xl flex-shrink-0"
+                    />{" "}
+                    <p>{calculateAge(user?.dob)}</p>
+                  </div>
+                ) : null}
+
+                {user?.gender ? (
+                  <div className="flex items-center justify-center gap-1 flex-shrink-0">
+                    <Icon
+                      name="HiOutlineUser"
+                      className="text-xl flex-shrink-0"
+                    />{" "}
+                    <p>{user?.gender}</p>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-center gap-1 flex-shrink-0">
                   <Icon
                     name="RiPinDistanceLine"
@@ -74,102 +86,181 @@ const MyProfile = ({ user }: { user: any }) => {
 
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl p-4 pb-0 mt-16 shadow-sm">
           <h3 className="text-lg flex items-center justify-start gap-1">
-            Kritik Sah <Icon name="MdVerified" className="text-ui-accent" />
+            {user?.hiddenName ? user?.hiddenName : user?.username}{" "}
+            {user?.isVerified ? (
+              <Icon name="MdVerified" className="text-ui-accent" />
+            ) : (
+              <Icon name="MdOutlineVerified" className="text-ui-shade/10" />
+            )}
           </h3>
           <div className="w-full py-2 border-t border-b border-ui-shade/10 overflow-x-scroll mt-2">
             <div className="flex items-center justify-start gap-1">
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="HiOutlineCake" className="text-xl flex-shrink-0" />{" "}
-                <p>24</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="HiOutlineUser" className="text-xl flex-shrink-0" />{" "}
-                <p>Man</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="IoMagnet" className="text-xl flex-shrink-0" />{" "}
-                <p>Straight</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="FaRuler" className="text-xl flex-shrink-0" />{" "}
-                <p>5&apos;9</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon
-                  name="MdOutlineLocationOn"
-                  className="text-xl flex-shrink-0"
-                />{" "}
-                <p className="w-full flex-shrink-0">Janakpuri East</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon
-                  name="MdOutlineFastfood"
-                  className="text-xl flex-shrink-0"
-                />{" "}
-                <p className="w-full flex-shrink-0">Non Veg.</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="TbZodiacVirgo" className="text-xl flex-shrink-0" />{" "}
-                <p className="w-full flex-shrink-0">Virgo</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon
-                  name="FaGlassMartiniAlt"
-                  className="text-xl flex-shrink-0"
-                />{" "}
-                <p className="w-full flex-shrink-0">Sometimes</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="FaSmoking" className="text-xl flex-shrink-0" />{" "}
-                <p className="w-full flex-shrink-0">No</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="FaJoint" className="text-xl flex-shrink-0" />{" "}
-                <p className="w-full flex-shrink-0">No</p>
-              </div>
-              <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="FaPaw" className="text-xl flex-shrink-0" />{" "}
-                <p className="w-full flex-shrink-0">Dog</p>
-              </div>
+              {user?.dob ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="HiOutlineCake"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p>{calculateAge(user?.dob)}</p>
+                </div>
+              ) : null}
+              {user?.gender ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="HiOutlineUser"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p>{user?.gender}</p>
+                </div>
+              ) : null}
+              {user?.orientation ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon name="IoMagnet" className="text-xl flex-shrink-0" />{" "}
+                  <p>{user?.orientation}</p>
+                </div>
+              ) : null}
+              {user?.height ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon name="FaRuler" className="text-xl flex-shrink-0" />{" "}
+                  <p>{convertHeight(user?.height)}</p>
+                </div>
+              ) : null}
+              {user?.currentLocation ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="MdOutlineLocationOn"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p className="w-full flex-shrink-0">
+                    {user?.currentLocation}
+                  </p>
+                </div>
+              ) : null}
+              {user?.diet ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="MdOutlineFastfood"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p className="w-full flex-shrink-0">{user?.diet}</p>
+                </div>
+              ) : null}
+              {user?.zodiac ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="TbZodiacVirgo"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p className="w-full flex-shrink-0">{user?.zodiac}</p>
+                </div>
+              ) : null}
+              {user?.lifestyle?.drinking ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="FaGlassMartiniAlt"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p className="w-full flex-shrink-0">
+                    {user?.lifestyle?.drinking}
+                  </p>
+                </div>
+              ) : null}
+              {user?.lifestyle?.smoking ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon name="FaSmoking" className="text-xl flex-shrink-0" />{" "}
+                  <p className="w-full flex-shrink-0">
+                    {user?.lifestyle?.smoking}
+                  </p>
+                </div>
+              ) : null}
+
+              {user?.lifestyle?.pet ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon name="FaPaw" className="text-xl flex-shrink-0" />{" "}
+                  <p className="w-full flex-shrink-0">{user?.lifestyle?.pet}</p>
+                </div>
+              ) : null}
             </div>
           </div>
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon
-              name="MdOutlineWorkOutline"
-              className="text-xl flex-shrink-0"
-            />
-            Web3 Startup
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="LuGraduationCap" className="text-xl flex-shrink-0" />
-            University of Mumbai
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="HiOutlineBookOpen" className="text-xl flex-shrink-0" />
-            Hindu
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="HiOutlineHome" className="text-xl flex-shrink-0" />
-            Mumbai
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="GiRingBox" className="text-xl flex-shrink-0" />
-            Single
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="HiOutlineLanguage" className="text-xl flex-shrink-0" />
-            English, Hindi, Marathi, Punjabi, Japanese
-          </div>
-          <Separator />
-          <div className="flex items-center justify-start gap-2 py-2">
-            <Icon name="LuVenetianMask" className="text-xl flex-shrink-0" />
-            INTJ
-          </div>
+          {user?.work ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon
+                  name="MdOutlineWorkOutline"
+                  className="text-xl flex-shrink-0"
+                />
+                {user?.work?.title} at {user?.work?.company}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+          {user?.education ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon
+                  name="LuGraduationCap"
+                  className="text-xl flex-shrink-0"
+                />
+                {user?.education?.degree}{" "}
+                {user?.education?.field ? `(${user?.education?.field})` : null}{" "}
+                from {user?.education?.institution}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+          {user?.religion ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon
+                  name="HiOutlineBookOpen"
+                  className="text-xl flex-shrink-0"
+                />
+                {user?.religion}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+
+          {user?.homeTown ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon name="HiOutlineHome" className="text-xl flex-shrink-0" />
+                {user?.homeTown}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+
+          {user?.maritalStatus ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon name="GiRingBox" className="text-xl flex-shrink-0" />
+                {user?.maritalStatus}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+
+          {user?.languages ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon
+                  name="HiOutlineLanguage"
+                  className="text-xl flex-shrink-0"
+                />
+                {user?.languages?.join(", ")}
+              </div>
+              <Separator />
+            </>
+          ) : null}
+          {user?.personalityType ? (
+            <>
+              <div className="flex items-center justify-start gap-2 py-2">
+                <Icon name="LuVenetianMask" className="text-xl flex-shrink-0" />
+                {user?.personalityType}
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
     </div>

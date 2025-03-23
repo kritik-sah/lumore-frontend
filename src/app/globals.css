@@ -31,3 +31,45 @@ body {
     @apply font-dmSans;
   }
 }
+
+.rdp-caption_dropdowns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.rdp-vhidden {
+  display: none;
+}
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  @keyframes progress {
+    0% {
+      width: 0%;
+    }
+    50% {
+      width: 100%;
+    }
+    100% {
+      width: 0%;
+    }
+  }
+
+  .animate-progress {
+    animation: progress 2s ease-in-out infinite;
+  }
+}

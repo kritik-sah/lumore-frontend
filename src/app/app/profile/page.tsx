@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import React from "react";
-import MyProfile from "../components/MyProfile";
+import ProfileWrapper from "../components/ProfileWrapper";
 
 const Profile = async () => {
   const cookieStore = await cookies();
@@ -9,17 +10,11 @@ const Profile = async () => {
     ? JSON.parse(cookieStore.get("user")!.value)
     : null;
 
-  const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/profile/${user._id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`, // Pass token in Authorization header
-      },
-    }
-  );
-  const userProfile = await data.json();
+  if (!token || !user) {
+    redirect("/login");
+  }
 
-  return <MyProfile user={userProfile} />;
+  return <ProfileWrapper userId={user._id} />;
 };
 
 export default Profile;
