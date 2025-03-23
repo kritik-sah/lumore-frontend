@@ -1,6 +1,5 @@
 // components/Hero.tsx
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { PopupButton } from "@typeform/embed-react";
 import Image from "next/image";

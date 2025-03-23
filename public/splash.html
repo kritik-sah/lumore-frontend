@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumore</title>
+    <style>
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f1e9da;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      .logo-container {
+        position: relative;
+        width: 128px;
+        height: 128px;
+        margin: 0 auto 24px;
+      }
+
+      .logo-background {
+        position: absolute;
+        inset: 0;
+        background-color: #ffd400;
+        border-radius: 28px;
+        animation: pulse 2s infinite;
+      }
+
+      .logo-border {
+        position: absolute;
+        inset: 8px;
+        border: 4px solid white;
+        border-radius: 24px;
+        animation: rotate 2s linear infinite;
+      }
+
+      .logo-text {
+        position: absolute;
+        inset: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 48px;
+        font-weight: bold;
+        color: #ffd400;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 32px;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards 0.2s;
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 16px;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards 0.4s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .loading-bar {
+        width: 200px;
+        height: 4px;
+        background-color: #eee;
+        border-radius: 2px;
+        margin: 24px auto 0;
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards 0.6s;
+      }
+
+      .loading-progress {
+        width: 0%;
+        height: 100%;
+        background-color: #ffd400;
+        border-radius: 2px;
+        animation: progress 2s ease-in-out infinite;
+      }
+
+      @keyframes progress {
+        0% {
+          width: 0%;
+        }
+        50% {
+          width: 100%;
+        }
+        100% {
+          width: 0%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo-container">
+        <div class="logo-background"></div>
+        <div class="logo-border"></div>
+        <div class="logo-text">L</div>
+      </div>
+      <h1>Lumore</h1>
+      <p>Connecting you with like-minded people</p>
+      <div class="loading-bar">
+        <div class="loading-progress"></div>
+      </div>
+    </div>
+  </body>
+</html>

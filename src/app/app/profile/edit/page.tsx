@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import React from "react";
 import EditMyProfile from "../../components/EditMyProfile";
 
@@ -9,17 +10,30 @@ const EditProfile = async () => {
     ? JSON.parse(cookieStore.get("user")!.value)
     : null;
 
-  const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/profile/${user._id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`, // Pass token in Authorization header
-      },
-    }
-  );
-  const userProfile = await data.json();
+  if (!token || !user) {
+    redirect("/login");
+  }
 
-  return <EditMyProfile user={userProfile} />;
+  try {
+    const data = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/profile/${user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!data.ok) {
+      throw new Error("Failed to fetch profile");
+    }
+
+    const userProfile = await data.json();
+    return <EditMyProfile user={userProfile} />;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return <div>Error loading profile</div>;
+  }
 };
 
 export default EditProfile;
