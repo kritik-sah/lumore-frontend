@@ -46,3 +46,21 @@ export const updateUserData = async (data: any) => {
   });
   return response.data;
 };
+
+export const updateFieldVisibility = async (
+  userId: string,
+  field: string,
+  visibility: string
+) => {
+  const token = Cookies.get("token");
+  const response = await axios.patch(
+    `${API_URL}/profile/${userId}/visibility`,
+    { fields: { [field]: visibility } },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};

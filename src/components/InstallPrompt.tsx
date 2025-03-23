@@ -30,9 +30,13 @@ export const InstallPrompt = ({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-[#FFD400] rounded-xl flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">L</span>
+                <img
+                  src="/icons/icon-192x192.png"
+                  alt="Lumore"
+                  className="w-12 h-12"
+                />
               </div>
-              <div>
+              <div className="text-left">
                 <h3 className="text-lg font-semibold text-gray-900">
                   Install Lumore
                 </h3>
@@ -59,7 +63,7 @@ export const InstallPrompt = ({
             </button>
           </div>
 
-          <div className="flex space-x-4 mb-6 overflow-x-auto pb-2">
+          <div className="flex items-center justify-center space-x-4 mb-6 overflow-x-auto pb-2">
             <div className="flex-shrink-0 w-48">
               <img
                 src="/screenshots/home.png"
@@ -91,7 +95,7 @@ export const InstallPrompt = ({
           <div className="flex space-x-4">
             <button
               onClick={onInstall}
-              className="flex-1 bg-[#FFD400] text-white py-3 px-6 rounded-xl font-semibold hover:bg-[#FFD400]/90 transition-colors"
+              className="flex-1 bg-ui-primary text-ui-shade py-3 px-6 rounded-xl font-semibold hover:bg-ui-primary/90 transition-colors"
             >
               Install Now
             </button>

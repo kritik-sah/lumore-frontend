@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
-import EditMyProfile from "../../components/EditMyProfile";
+import ProfileEditWrapper from "../../components/ProfileEditWrapper";
 
 const EditProfile = async () => {
   const cookieStore = await cookies();
@@ -14,26 +14,7 @@ const EditProfile = async () => {
     redirect("/login");
   }
 
-  try {
-    const data = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/profile/${user._id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!data.ok) {
-      throw new Error("Failed to fetch profile");
-    }
-
-    const userProfile = await data.json();
-    return <EditMyProfile user={userProfile} />;
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    return <div>Error loading profile</div>;
-  }
+  return <ProfileEditWrapper userId={user._id} />;
 };
 
 export default EditProfile;

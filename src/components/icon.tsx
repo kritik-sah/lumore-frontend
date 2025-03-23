@@ -72,6 +72,7 @@ import {
   MdOutlineFastfood,
   MdOutlineLocationOn,
   MdOutlinePeople,
+  MdOutlineVerified,
   MdOutlineWorkOutline,
   MdVerified,
 } from "react-icons/md";
@@ -182,6 +183,7 @@ const iconComponents: Record<string, IconType> = {
   TbZodiacVirgo,
   LuVenetianMask,
   RiPinDistanceLine,
+  MdOutlineVerified,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

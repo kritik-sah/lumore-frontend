@@ -1,7 +1,8 @@
 import Provider from "@/app/app/context/index";
 import type { Metadata } from "next";
-import MobileNav from "./components/MobileNav";
 import GeneralHeader from "./components/headers/General";
+import LumoreSplash from "./components/LumoreSplash";
+import MobileNav from "./components/MobileNav";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
@@ -15,16 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Provider>
-          <div className="flex flex-col h-screen">
-            <GeneralHeader />
-            <main className="flex-1 overflow-y-auto">{children}</main>
-            <MobileNav />
-          </div>
-        </Provider>
-      </body>
-    </html>
+    <Provider>
+      <LumoreSplash />
+      <div className="flex flex-col h-screen">
+        <GeneralHeader />
+        <main className="flex-1 overflow-y-auto">{children}</main>
+        <MobileNav />
+      </div>
+    </Provider>
   );
 }
