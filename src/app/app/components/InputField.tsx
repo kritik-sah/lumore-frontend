@@ -18,6 +18,9 @@ interface TextFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string;
+  type?: string;
+  min?: number;
+  max?: number;
 }
 
 interface TextAreaFieldProps {
@@ -48,6 +51,9 @@ export const TextField: React.FC<TextFieldProps> = ({
   onChange,
   placeholder = "",
   error,
+  type,
+  min,
+  max,
 }) => {
   return (
     <div className="border border-ui-shade/10 rounded-xl p-2 mt-3">
@@ -58,6 +64,9 @@ export const TextField: React.FC<TextFieldProps> = ({
         name={name}
         placeholder={placeholder}
         className={`p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none`}
+        type={type}
+        min={min}
+        max={max}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

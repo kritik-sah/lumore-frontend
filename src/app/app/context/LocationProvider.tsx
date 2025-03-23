@@ -27,8 +27,13 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: (locationData: { location: [number, number] }) =>
-      updateUserData(locationData),
+    mutationFn: (locationData: { latitude: number; longitude: number }) =>
+      updateUserData({
+        location: {
+          type: "Point",
+          coordinates: [locationData.longitude, locationData.latitude],
+        },
+      }),
   });
 
   useEffect(() => {
@@ -59,7 +64,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   // Automatically update user data when location changes
   useEffect(() => {
     if (latitude !== null && longitude !== null) {
-      mutation.mutate({ location: [latitude, longitude] });
+      mutation.mutate({ latitude, longitude });
     }
   }, [latitude, longitude]);
 
