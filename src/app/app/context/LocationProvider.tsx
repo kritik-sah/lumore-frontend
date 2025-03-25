@@ -2,12 +2,12 @@
 
 import { updateUserData } from "@/lib/apis";
 import { useMutation } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import {
   createContext,
   ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -25,6 +25,10 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lastSentLocation = useRef<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const mutation = useMutation({
     mutationFn: (locationData: { latitude: number; longitude: number }) =>
@@ -53,7 +57,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
     const watchId = navigator.geolocation.watchPosition(
       handleSuccess,
-      handleError
+      handleError,
+      { enableHighAccuracy: true, maximumAge: 1000000 } // Reduce frequency
     );
 
     return () => {
@@ -61,10 +66,18 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Automatically update user data when location changes
   useEffect(() => {
     if (latitude !== null && longitude !== null) {
-      mutation.mutate({ latitude, longitude });
+      // Avoid unnecessary API calls if location hasn't changed significantly
+      const hasSignificantChange =
+        !lastSentLocation.current ||
+        Math.abs(lastSentLocation.current.latitude - latitude) > 0.0001 ||
+        Math.abs(lastSentLocation.current.longitude - longitude) > 0.0001;
+
+      if (hasSignificantChange) {
+        lastSentLocation.current = { latitude, longitude };
+        mutation.mutate({ latitude, longitude });
+      }
     }
   }, [latitude, longitude]);
 
@@ -77,7 +90,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
 export const useLocation = () => {
   const context = useContext(LocationContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useLocation must be used within a LocationProvider");
   }
   return context;

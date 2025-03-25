@@ -28,7 +28,7 @@ const profileSchema = z.object({
   visibleName: z.string().min(2, "Name must be at least 2 characters"),
   hiddenName: z.string().min(2, "Hidden name must be at least 2 characters"),
   bio: z.string().max(500, "Bio must not exceed 500 characters"),
-  gender: z.enum(["Male", "Female", "Non-Binary", "Prefer Not to Say"]),
+  gender: z.enum(["Man", "Woman", "Non-Binary", "Prefer Not to Say"]),
   dob: z.string(),
   sexualOrientation: z.enum([
     "Straight",
@@ -68,7 +68,7 @@ const profileSchema = z.object({
     "Pisces",
   ]),
   lifestyle: z.object({
-    alcohol: z.enum([
+    drinking: z.enum([
       "Never",
       "Rarely",
       "Socially",
@@ -141,6 +141,19 @@ const profileSchema = z.object({
     "ESTP",
     "ESFP",
     "Not Sure",
+  ]),
+  religion: z.enum([
+    "Christianity",
+    "Islam",
+    "Hinduism",
+    "Buddhism",
+    "Judaism",
+    "Sikhism",
+    "Atheism",
+    "Agnostic",
+    "Spiritual",
+    "Other",
+    "Prefer Not to Say",
   ]),
 });
 
@@ -242,11 +255,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <h3 className="text-sm text-ui-shade/60">Username</h3>
               {user.username}
             </div>
-            <VisibilityToggle
-              field="username"
-              currentVisibility={user.fieldVisibility?.username || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -255,14 +263,9 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         >
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm text-ui-shade/60">Visible Name</h3>
+              <h3 className="text-sm text-ui-shade/60">Nickname</h3>
               {user.visibleName}
             </div>
-            <VisibilityToggle
-              field="visibleName"
-              currentVisibility={user.fieldVisibility?.visibleName || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -274,11 +277,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <h3 className="text-sm text-ui-shade/60">Real Name</h3>
               {user.hiddenName}
             </div>
-            <VisibilityToggle
-              field="hiddenName"
-              currentVisibility={user.fieldVisibility?.hiddenName || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -290,11 +288,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <h3 className="text-sm text-ui-shade/60">Bio</h3>
               {user.bio}
             </div>
-            <VisibilityToggle
-              field="bio"
-              currentVisibility={user.fieldVisibility?.bio || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -306,11 +299,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <h3 className="text-sm text-ui-shade/60">Gender</h3>
               {user.gender}
             </div>
-            <VisibilityToggle
-              field="gender"
-              currentVisibility={user.fieldVisibility?.gender || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -322,11 +310,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <h3 className="text-sm text-ui-shade/60">DOB</h3>
               {user.dob ? new Date(user.dob).toLocaleDateString() : "Not set"}
             </div>
-            <VisibilityToggle
-              field="age"
-              currentVisibility={user.fieldVisibility?.age || "public"}
-              onVisibilityChange={handleVisibilityChange}
-            />
           </div>
         </div>
         <div
@@ -425,9 +408,17 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                   <p className="flex items-center gap-2">
                     <Icon name="FaGlassMartiniAlt" /> {user.lifestyle.drinking}
                   </p>
+                </>
+              ) : null}
+              {user.lifestyle?.smoking ? (
+                <>
                   <p className="flex items-center gap-2">
                     <Icon name="FaSmoking" /> {user.lifestyle.smoking}
                   </p>
+                </>
+              ) : null}
+              {user.lifestyle?.pets ? (
+                <>
                   <p className="flex items-center gap-2">
                     <Icon name="FaPaw" /> {user.lifestyle.pets}
                   </p>
@@ -435,50 +426,13 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               ) : null}
             </div>
             <VisibilityToggle
-              field="lifestyle.drinking"
-              currentVisibility={
-                user.fieldVisibility?.lifestyle?.drinking || "public"
-              }
+              field="lifestyle"
+              currentVisibility={user.fieldVisibility?.lifestyle || "public"}
               onVisibilityChange={handleVisibilityChange}
             />
           </div>
         </div>
-        <div
-          onClick={() => handleEditField("lifestyle.smoking")}
-          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-sm text-ui-shade/60">Smoking</h3>
-              {user.lifestyle?.smoking}
-            </div>
-            <VisibilityToggle
-              field="lifestyle.smoking"
-              currentVisibility={
-                user.fieldVisibility?.lifestyle?.smoking || "public"
-              }
-              onVisibilityChange={handleVisibilityChange}
-            />
-          </div>
-        </div>
-        <div
-          onClick={() => handleEditField("lifestyle.pets")}
-          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-sm text-ui-shade/60">Pets</h3>
-              {user.lifestyle?.pets}
-            </div>
-            <VisibilityToggle
-              field="lifestyle.pets"
-              currentVisibility={
-                user.fieldVisibility?.lifestyle?.pets || "public"
-              }
-              onVisibilityChange={handleVisibilityChange}
-            />
-          </div>
-        </div>
+
         <div
           onClick={() => handleEditField("work")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
@@ -596,18 +550,6 @@ const genders = [
   { label: "Man", value: "Man" },
   { label: "Woman", value: "Woman" },
   { label: "Non-Binary", value: "Non-Binary" },
-  { label: "Trans Man", value: "Trans Man" },
-  { label: "Trans Woman", value: "Trans Woman" },
-  { label: "Genderqueer", value: "Genderqueer" },
-  { label: "Genderfluid", value: "Genderfluid" },
-  { label: "Agender", value: "Agender" },
-  { label: "Bigender", value: "Bigender" },
-  { label: "Demiboy", value: "Demiboy" },
-  { label: "Demigirl", value: "Demigirl" },
-  { label: "Two-Spirit", value: "Two-Spirit" },
-  { label: "Androgynous", value: "Androgynous" },
-  { label: "Intersex", value: "Intersex" },
-  { label: "Third Gender", value: "Third Gender" },
   { label: "Prefer Not to Say", value: "Prefer Not to Say" },
 ];
 
@@ -641,20 +583,34 @@ const FieldEditor = ({
 
   const handleSubmit = async () => {
     try {
+      console.log("handleSubmit triggered");
+
+      // Log fieldType and value
+      console.log("Field Type:", fieldType);
+      console.log("Value:", value);
+
       // Validate the field using Zod
       const fieldSchema = getFieldSchema(profileSchema, fieldType);
+      console.log("Retrieved field schema:", fieldSchema);
 
       if (!fieldSchema) {
         throw new Error(`No schema found for field: ${fieldType}`);
       }
 
       // Trigger form validation for the specific field
-      await form.trigger(fieldType); // Fix: Use fieldType, not fieldSchema
+      console.log("Triggering form validation for:", fieldType);
+      await form.trigger(fieldType);
 
       // Validate using Zod
+      console.log("Validating value with Zod...");
       fieldSchema.parse(value);
+      console.log("Validation successful!");
 
+      // Call the onUpdate function
+      console.log("Calling onUpdate with:", fieldType, value);
       await onUpdate(fieldType, value);
+
+      console.log("handleSubmit completed successfully.");
     } catch (error) {
       console.error("Validation error:", error);
     }
@@ -846,7 +802,7 @@ const FieldEditor = ({
                   value={value?.pets}
                   name={"lifestyle.pets"}
                   onChange={(e) => setValue({ ...value, pets: e })}
-                  placeholder="Do you have pets?"
+                  placeholder="Do you have a pet?"
                 />
               </>
             ) : null}
