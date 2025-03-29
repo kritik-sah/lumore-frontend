@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 import ProfileWrapper from "../components/ProfileWrapper";
+import GeneralLayout from "../components/layout/general";
 
 const Profile = async () => {
   const cookieStore = await cookies();
@@ -14,7 +15,11 @@ const Profile = async () => {
     redirect("/login");
   }
 
-  return <ProfileWrapper userId={user._id} />;
+  return (
+    <GeneralLayout>
+      <ProfileWrapper userId={user._id} />
+    </GeneralLayout>
+  );
 };
 
 export default Profile;

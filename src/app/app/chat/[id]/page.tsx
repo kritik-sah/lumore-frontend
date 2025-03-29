@@ -1,12 +1,13 @@
 import React from "react";
 import ChatScreen from "../../components/ChatScreen";
+import NavLayout from "../../components/layout/NavLayout";
 
 const Chats = () => {
   // console.log("params", params);
   return (
-    <div>
+    <NavLayout>
       <ChatScreen />
-    </div>
+    </NavLayout>
   );
 };
 

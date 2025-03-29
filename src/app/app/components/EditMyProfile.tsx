@@ -25,8 +25,31 @@ import VisibilityToggle from "./VisibilityToggle";
 // Form validation schema
 const profileSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
-  visibleName: z.string().min(2, "Name must be at least 2 characters"),
-  hiddenName: z.string().min(2, "Hidden name must be at least 2 characters"),
+  nickname: z.string().min(2, "Nickname must be at least 2 characters"),
+  realName: z.string().min(2, "Real name must be at least 2 characters"),
+  phoneNumber: z
+    .string()
+    .transform((val) => val.replace(/\s+/g, ""))
+    .refine((val) => !val || /^\+?[1-9]\d{1,14}$/.test(val), {
+      message:
+        "Invalid phone number format. Please enter a valid international phone number.",
+    })
+    .optional(),
+  bloodGroup: z.enum([
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "AB+",
+    "AB-",
+    "O+",
+    "O-",
+    "Prefer Not to Say",
+  ]),
+  interests: z.object({
+    professional: z.array(z.string()),
+    hobbies: z.array(z.string()),
+  }),
   bio: z.string().max(500, "Bio must not exceed 500 characters"),
   gender: z.enum(["Man", "Woman", "Non-Binary", "Prefer Not to Say"]),
   dob: z.string(),
@@ -171,8 +194,11 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: user?.username || "",
-      visibleName: user?.visibleName || "",
-      hiddenName: user?.hiddenName || "",
+      nickname: user?.nickname || "",
+      realName: user?.realName || "",
+      phoneNumber: user?.phoneNumber || "",
+      bloodGroup: user?.bloodGroup || "Prefer Not to Say",
+      interests: user?.interests || { professional: [], hobbies: [] },
       bio: user?.bio || "",
       gender: user?.gender || "Prefer Not to Say",
       dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
@@ -258,27 +284,39 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           </div>
         </div>
         <div
-          onClick={() => handleEditField("visibleName")}
+          onClick={() => handleEditField("nickname")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
         >
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-sm text-ui-shade/60">Nickname</h3>
-              {user.visibleName}
+              {user.nickname || "Not set"}
             </div>
           </div>
         </div>
         <div
-          onClick={() => handleEditField("hiddenName")}
+          onClick={() => handleEditField("realName")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
         >
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-sm text-ui-shade/60">Real Name</h3>
-              {user.hiddenName}
+              {user.realName || "Not set"}
             </div>
           </div>
         </div>
+        <div
+          onClick={() => handleEditField("phoneNumber")}
+          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-sm text-ui-shade/60">Phone Number</h3>
+              {user.phoneNumber || "Not set"}
+            </div>
+          </div>
+        </div>
+
         <div
           onClick={() => handleEditField("bio")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
@@ -326,6 +364,51 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               currentVisibility={
                 user.fieldVisibility?.sexualOrientation || "public"
               }
+              onVisibilityChange={handleVisibilityChange}
+            />
+          </div>
+        </div>
+        <div
+          onClick={() => handleEditField("interests")}
+          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-sm text-ui-shade/60">Interests</h3>
+              <div className="mt-1">
+                {user.interests?.professional?.length > 0 && (
+                  <div>
+                    <span className="text-sm font-medium">Professional:</span>{" "}
+                    {user.interests.professional.join(", ")}
+                  </div>
+                )}
+                {user.interests?.hobbies?.length > 0 && (
+                  <div>
+                    <span className="text-sm font-medium">Hobbies:</span>{" "}
+                    {user.interests.hobbies.join(", ")}
+                  </div>
+                )}
+              </div>
+            </div>
+            <VisibilityToggle
+              field="interests"
+              currentVisibility={user.fieldVisibility?.interests || "public"}
+              onVisibilityChange={handleVisibilityChange}
+            />
+          </div>
+        </div>
+        <div
+          onClick={() => handleEditField("bloodGroup")}
+          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-sm text-ui-shade/60">Blood Group</h3>
+              {user.bloodGroup || "Not set"}
+            </div>
+            <VisibilityToggle
+              field="bloodGroup"
+              currentVisibility={user.fieldVisibility?.bloodGroup || "public"}
               onVisibilityChange={handleVisibilityChange}
             />
           </div>
@@ -576,6 +659,11 @@ const FieldEditor = ({
     value: name,
   }));
 
+  // Update value when currentValue changes
+  React.useEffect(() => {
+    setValue(currentValue);
+  }, [currentValue]);
+
   // Helper function to get the schema for a nested field
   const getFieldSchema = (schema: any, fieldPath: string) => {
     return fieldPath.split(".").reduce((acc, key) => acc?.shape?.[key], schema);
@@ -610,10 +698,22 @@ const FieldEditor = ({
       console.log("Calling onUpdate with:", fieldType, value);
       await onUpdate(fieldType, value);
 
+      // Clear the input value after successful submission
+      setValue(
+        fieldType === "interests" ? { professional: [], hobbies: [] } : ""
+      );
+
       console.log("handleSubmit completed successfully.");
+      setIsOpen(false);
     } catch (error) {
       console.error("Validation error:", error);
     }
+  };
+
+  const handleCancel = () => {
+    // Reset value to currentValue when canceling
+    setValue(currentValue);
+    setIsOpen(false);
   };
 
   return (
@@ -627,37 +727,116 @@ const FieldEditor = ({
             {fieldType === "username" ? (
               <TextField
                 label="Username"
-                value={value}
+                value={value || ""}
                 name={fieldType}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Enter unique username"
               />
             ) : null}
-            {fieldType === "visibleName" ? (
+            {fieldType === "nickname" ? (
               <TextField
-                label="Visible Name"
-                value={value}
+                label="Nickname"
+                value={value || ""}
                 name={fieldType}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Enter a Visible Name"
+                placeholder="Enter your nickname"
               />
             ) : null}
-            {fieldType === "hiddenName" ? (
+            {fieldType === "realName" ? (
               <TextField
                 label="Real Name"
-                value={value}
+                value={value || ""}
                 name={fieldType}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Enter your real name"
               />
+            ) : null}
+            {fieldType === "phoneNumber" ? (
+              <TextField
+                label="Phone Number"
+                value={value || ""}
+                name={fieldType}
+                onChange={(e) => {
+                  // Remove any spaces from the input
+                  const formattedValue = e.target.value.replace(/\s+/g, "");
+                  setValue(formattedValue);
+                }}
+                placeholder="Enter your phone number (e.g., +917021245436)"
+              />
+            ) : null}
+            {fieldType === "bloodGroup" ? (
+              <SelectField
+                label="Blood Group"
+                options={[
+                  { label: "A+", value: "A+" },
+                  { label: "A-", value: "A-" },
+                  { label: "B+", value: "B+" },
+                  { label: "B-", value: "B-" },
+                  { label: "AB+", value: "AB+" },
+                  { label: "AB-", value: "AB-" },
+                  { label: "O+", value: "O+" },
+                  { label: "O-", value: "O-" },
+                  { label: "Prefer Not to Say", value: "Prefer Not to Say" },
+                ]}
+                value={value || "Prefer Not to Say"}
+                name={fieldType}
+                onChange={(e) => setValue(e)}
+                placeholder="Select your blood group"
+              />
+            ) : null}
+            {fieldType === "interests" ? (
+              <>
+                <MultiSelectField
+                  label="Professional Interests"
+                  options={[
+                    { label: "Technology", value: "Technology" },
+                    { label: "Healthcare", value: "Healthcare" },
+                    { label: "Finance", value: "Finance" },
+                    { label: "Education", value: "Education" },
+                    { label: "Arts", value: "Arts" },
+                    { label: "Science", value: "Science" },
+                    { label: "Engineering", value: "Engineering" },
+                    { label: "Business", value: "Business" },
+                    { label: "Law", value: "Law" },
+                    { label: "Other", value: "Other" },
+                  ]}
+                  value={value?.professional || []}
+                  name="interests.professional"
+                  onChange={(selectedValues) =>
+                    setValue({ ...value, professional: selectedValues })
+                  }
+                  placeholder="Select your professional interests"
+                />
+                <MultiSelectField
+                  label="Hobbies"
+                  options={[
+                    { label: "Reading", value: "Reading" },
+                    { label: "Travel", value: "Travel" },
+                    { label: "Music", value: "Music" },
+                    { label: "Sports", value: "Sports" },
+                    { label: "Cooking", value: "Cooking" },
+                    { label: "Photography", value: "Photography" },
+                    { label: "Art", value: "Art" },
+                    { label: "Gaming", value: "Gaming" },
+                    { label: "Fitness", value: "Fitness" },
+                    { label: "Other", value: "Other" },
+                  ]}
+                  value={value?.hobbies || []}
+                  name="interests.hobbies"
+                  onChange={(selectedValues) =>
+                    setValue({ ...value, hobbies: selectedValues })
+                  }
+                  placeholder="Select your hobbies"
+                />
+              </>
             ) : null}
             {fieldType === "bio" ? (
               <TextAreaField
                 label="Bio"
-                value={value}
+                value={value || ""}
                 name={fieldType}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Enter your real name"
+                placeholder="Enter your bio"
               />
             ) : null}
             {fieldType === "gender" ? (
@@ -955,7 +1134,7 @@ const FieldEditor = ({
             <Button
               variant="outline"
               className="hover:bg-ui-shade hover:text-ui-light"
-              onClick={() => setIsOpen(false)}
+              onClick={handleCancel}
             >
               Cancel
             </Button>

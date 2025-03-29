@@ -64,3 +64,19 @@ export const updateFieldVisibility = async (
   );
   return response.data;
 };
+
+export const updateUserPreferences = async (data: any) => {
+  const token = Cookies.get("token");
+  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
+
+  const response = await axios.patch(
+    `${API_URL}/profile/${userId}/preferences`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};

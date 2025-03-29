@@ -27,7 +27,9 @@ const General = () => {
             </span>
           </div>
           <div className="">
-            <HiAdjustments />
+            <Link href="/app/edit-preferences">
+              <HiAdjustments />
+            </Link>
           </div>
         </div>
       </div>

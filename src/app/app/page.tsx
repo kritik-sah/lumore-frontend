@@ -1,11 +1,16 @@
+"use client";
 import React from "react";
-import ChatScreen from "./components/ChatScreen";
+import NavLayout from "./components/layout/NavLayout";
+import MatchmakingScreen from "./components/MatchmakingScreen";
+import { ExploreChatProvider } from "./context/ExploreChatContext";
 
 const AppScreen = () => {
   return (
-    <>
-      <ChatScreen />
-    </>
+    <ExploreChatProvider>
+      <NavLayout>
+        <MatchmakingScreen />
+      </NavLayout>
+    </ExploreChatProvider>
   );
 };
 
