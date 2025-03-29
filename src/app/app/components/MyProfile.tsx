@@ -12,7 +12,6 @@ import { useLogout } from "../hooks/useAuth";
 const MyProfile = ({ user }: { user: any }) => {
   const { logout } = useLogout();
 
-  console.log("user", user);
   return (
     <div className="bg-ui-background/10 p-4">
       <div className="w-full max-w-3xl mx-auto">
@@ -20,7 +19,7 @@ const MyProfile = ({ user }: { user: any }) => {
           <div className="flex items-start justify-between gap-4">
             <div className="">
               <h3 className="text-lg flex items-center justify-start gap-1">
-                {user?.visibleName ? user?.visibleName : user?.username}{" "}
+                {user?.nickname ? user?.nickname : user?.username}{" "}
                 {user?.isVerified ? (
                   <Icon name="MdVerified" className="text-ui-accent" />
                 ) : (
@@ -86,7 +85,11 @@ const MyProfile = ({ user }: { user: any }) => {
 
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl p-4 pb-0 mt-16 shadow-sm">
           <h3 className="text-lg flex items-center justify-start gap-1">
-            {user?.hiddenName ? user?.hiddenName : user?.username}{" "}
+            {user?.realName
+              ? user?.realName
+              : user?.nickname
+              ? user?.nickname
+              : user?.username}{" "}
             {user?.isVerified ? (
               <Icon name="MdVerified" className="text-ui-accent" />
             ) : (
@@ -180,6 +183,15 @@ const MyProfile = ({ user }: { user: any }) => {
                   <p className="w-full flex-shrink-0">{user?.lifestyle?.pet}</p>
                 </div>
               ) : null}
+              {user?.bloodGroup ? (
+                <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
+                  <Icon
+                    name="MdOutlineBloodtype"
+                    className="text-xl flex-shrink-0"
+                  />{" "}
+                  <p className="w-full flex-shrink-0">{user?.bloodGroup}</p>
+                </div>
+              ) : null}
             </div>
           </div>
           {user?.work ? (
@@ -241,7 +253,7 @@ const MyProfile = ({ user }: { user: any }) => {
             </>
           ) : null}
 
-          {user?.languages ? (
+          {user?.languages?.length > 0 ? (
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <Icon

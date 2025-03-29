@@ -68,6 +68,7 @@ import { ImSpinner6 } from "react-icons/im";
 import { IoMagnet } from "react-icons/io5";
 import { LuDot, LuGraduationCap, LuVenetianMask } from "react-icons/lu";
 import {
+  MdOutlineBloodtype,
   MdOutlineDashboard,
   MdOutlineFastfood,
   MdOutlineLocationOn,
@@ -184,6 +185,7 @@ const iconComponents: Record<string, IconType> = {
   LuVenetianMask,
   RiPinDistanceLine,
   MdOutlineVerified,
+  MdOutlineBloodtype,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

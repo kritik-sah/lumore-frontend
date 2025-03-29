@@ -63,28 +63,26 @@ export const InstallPrompt = ({
             </button>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 mb-6 overflow-x-auto pb-2">
+          <div className="flex items-center justify-start space-x-4 mb-6 overflow-x-auto pb-2">
             <div className="flex-shrink-0 w-48">
               <img
-                src="/screenshots/home.png"
+                src="/assets/1.png"
                 alt="Home Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />
-              <p className="text-sm text-gray-600 mt-2">
-                Beautiful Home Screen
-              </p>
+              <p className="text-sm text-gray-600 mt-2">Explore new people</p>
             </div>
             <div className="flex-shrink-0 w-48">
               <img
-                src="/screenshots/chat.png"
+                src="/assets/2.png"
                 alt="Chat Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />
-              <p className="text-sm text-gray-600 mt-2">Real-time Chat</p>
+              <p className="text-sm text-gray-600 mt-2">Saved Chats</p>
             </div>
             <div className="flex-shrink-0 w-48">
               <img
-                src="/screenshots/profile.png"
+                src="/assets/3.png"
                 alt="Profile Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />

@@ -1,4 +1,5 @@
 "use client";
+import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useAuth } from "./AuthContext";
@@ -52,6 +53,25 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    // Get the token from cookies
+    const token = Cookies.get("token");
+    console.log("SocketContext: Token:", token);
+
+    if (!token) {
+      console.log(
+        "SocketContext: No token found, skipping socket initialization"
+      );
+      return;
+    }
+
+    // If we already have a socket, don't create a new one
+    if (socket?.connected) {
+      console.log(
+        "SocketContext: Socket already connected, skipping initialization"
+      );
+      return;
+    }
+
     console.log(
       "SocketContext: Initializing socket connection for user:",
       user._id
@@ -59,7 +79,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const newSocket = io(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/chat`,
       {
-        auth: { userId: user._id },
+        auth: { token },
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
@@ -71,11 +91,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     newSocket.on("connect", () => {
       console.log(
-        "SocketContext: Socket connected, authenticating user:",
+        "SocketContext: Socket connected and authenticated for user:",
         user._id
       );
       setIsConnected(true);
-      newSocket.emit("authenticate", user._id);
+      setIsActive(true);
     });
 
     newSocket.on("connect_error", (error: Error) => {
@@ -90,7 +110,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         user._id
       );
       setIsConnected(true);
-      newSocket.emit("authenticate", user._id);
+      setIsActive(true);
     });
 
     newSocket.on("reconnect_attempt", (attemptNumber: number) => {
@@ -108,12 +128,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("SocketContext: Failed to reconnect after all attempts");
       setIsConnected(false);
       setIsActive(false);
-    });
-
-    newSocket.on("authenticated", (data: { userId: string }) => {
-      console.log("SocketContext: User authenticated:", data);
-      setIsActive(true);
-      newSocket.emit("ping");
     });
 
     newSocket.on("disconnect", (reason: string) => {

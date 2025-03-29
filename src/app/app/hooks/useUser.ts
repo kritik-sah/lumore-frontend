@@ -34,6 +34,33 @@ interface User {
   languages: string[];
   personalityType: string;
   fieldVisibility: Record<string, string>;
+  preferences?: {
+    interestedIn: string;
+    ageRange: { min: number; max: number };
+    distance: number;
+    goal: {
+      primary: string;
+      secondary: string;
+      tertiary: string;
+    };
+    interests: {
+      professional: string[];
+      hobbies: string[];
+    };
+    relationshipType: string;
+    preferredLanguages: string[];
+    zodiacPreference: string[];
+    education: {
+      institutions: string[];
+      minimumDegreeLevel: string;
+    };
+    personalityTypePreference: string[];
+    dietPreference: string[];
+    locationPreferences: {
+      homeTown: string[];
+      currentLocation: string[];
+    };
+  };
 }
 
 const fetchUser = async (userId: string) => {
