@@ -1,22 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useSocket } from "../context/SocketContext";
 import { useUser } from "../hooks/useUser";
+import { ChatHeader } from "./chat/ChatHeader";
+import { ChatInput } from "./chat/ChatInput";
+import { ChatMessages } from "./chat/ChatMessages";
 
 interface Message {
   sender: string;
   message: string;
   timestamp: number;
-}
-
-interface ChatScreenProps {
-  matchId: string;
-  matchedUser: any;
 }
 
 interface KeyExchangeRequest {
@@ -35,9 +31,6 @@ const ChatScreen: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const hasJoinedRoomRef = useRef(false);
-  const hasInitiatedKeyExchangeRef = useRef(false);
 
   // Safely parse user from cookie with error handling
   let userId = "";
@@ -66,11 +59,7 @@ const ChatScreen: React.FC = () => {
     }
 
     // Join the chat room
-    if (!hasJoinedRoomRef.current) {
-      console.log("[ChatScreen] Joining chat room:", matchId);
-      socket.emit("joinChat", { matchId });
-      hasJoinedRoomRef.current = true;
-    }
+    socket.emit("joinChat", { matchId });
 
     // Handle key exchange requests
     socket.on("key_exchange_request", async (data: KeyExchangeRequest) => {
@@ -148,12 +137,8 @@ const ChatScreen: React.FC = () => {
       }
     );
 
-    // Initiate key exchange if needed
-    if (!hasInitiatedKeyExchangeRef.current) {
-      console.log("[ChatScreen] Initiating key exchange");
-      socket.emit("init_key_exchange", { matchId });
-      hasInitiatedKeyExchangeRef.current = true;
-    }
+    // Initiate key exchange
+    socket.emit("init_key_exchange", { matchId });
 
     // Cleanup on unmount
     return () => {
@@ -163,10 +148,6 @@ const ChatScreen: React.FC = () => {
       socket.off("chatCancelled");
     };
   }, [socket, matchId, userId, matchedUser?._id]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const sendMessage = () => {
     if (!socket || !newMessage.trim() || !matchId || !matchedUser) return;
@@ -216,64 +197,19 @@ const ChatScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[95vh] bg-ui-background/10">
-      <div className="flex items-center justify-between p-4 border-b border-ui-shade/10">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-ui-highlight"></div>
-          <div>
-            <h2 className="font-medium">{matchedUser.username}</h2>
-            <p className="text-sm text-ui-shade/60">
-              {isConnected ? "Secure Connection" : "Connecting..."}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => cancelChat(matchId || "")}
-        >
-          End Chat
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              message.sender === userId ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                message.sender === userId
-                  ? "bg-ui-highlight text-white"
-                  : "bg-ui-shade/10"
-              }`}
-            >
-              <p>{message.message}</p>
-              <p className="text-xs mt-1 opacity-70">
-                {new Date(message.timestamp).toLocaleTimeString()}
-              </p>
-            </div>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="p-4 border-t border-ui-shade/10">
-        <div className="flex gap-2">
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
-            disabled={!isConnected}
-          />
-          <Button onClick={sendMessage} disabled={!isConnected}>
-            Send
-          </Button>
-        </div>
-      </div>
+      <ChatHeader
+        username={matchedUser.username}
+        isConnected={isConnected}
+        onEndChat={() => cancelChat(matchId || "")}
+      />
+      <ChatMessages messages={messages} currentUserId={userId} />
+      <ChatInput
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        onSend={sendMessage}
+        isConnected={isConnected}
+      />
     </div>
   );
 };
