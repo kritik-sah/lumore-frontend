@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import GeneralHeader from "./components/headers/General";
 import LumoreSplash from "./components/LumoreSplash";
 import MobileNav from "./components/MobileNav";
+import { ExploreChatProvider } from "./context/ExploreChatContext";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
@@ -17,10 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <Provider>
-      <LumoreSplash />
-      <div className="flex flex-col h-screen">
-        <main className="flex-1 overflow-y-auto">{children}</main>
-      </div>
+      <ExploreChatProvider>
+        <LumoreSplash />
+        <div className="flex flex-col h-screen">
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
+      </ExploreChatProvider>
     </Provider>
   );
 }

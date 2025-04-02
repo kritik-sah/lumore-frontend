@@ -53,27 +53,27 @@ const EditPreferences = () => {
     keyof UserPreferences | ""
   >("");
   const [preferences, setPreferences] = useState<UserPreferences>({
-    interestedIn: "Men",
-    ageRange: { min: 18, max: 27 },
-    distance: 10,
+    interestedIn: "",
+    ageRange: { min: 18, max: 18 },
+    distance: 0,
     goal: {
-      primary: "Undecided",
-      secondary: "Undecided",
-      tertiary: "Undecided",
+      primary: "",
+      secondary: "",
+      tertiary: "",
     },
     interests: {
       professional: [],
       hobbies: [],
     },
-    relationshipType: "Not Specified",
+    relationshipType: "",
     preferredLanguages: [],
-    zodiacPreference: ["Any"],
+    zodiacPreference: [],
     education: {
       institutions: [],
-      minimumDegreeLevel: "No Preference",
+      minimumDegreeLevel: "",
     },
-    personalityTypePreference: ["Any"],
-    dietPreference: ["Any"],
+    personalityTypePreference: [],
+    dietPreference: [],
     locationPreferences: {
       homeTown: [],
       currentLocation: [],
@@ -343,15 +343,15 @@ const FieldEditor = ({
       case "interests":
         return { professional: [], hobbies: [] };
       case "ageRange":
-        return { min: 18, max: 27 };
+        return { min: 18, max: 18 };
       case "goal":
         return {
-          primary: "Undecided",
-          secondary: "Undecided",
-          tertiary: "Undecided",
+          primary: "",
+          secondary: "",
+          tertiary: "",
         };
       case "education":
-        return { institutions: [], minimumDegreeLevel: "No Preference" };
+        return { institutions: [], minimumDegreeLevel: "" };
       case "locationPreferences":
         return { homeTown: [], currentLocation: [] };
       case "preferredLanguages":
@@ -360,7 +360,7 @@ const FieldEditor = ({
       case "dietPreference":
         return [];
       default:
-        return null;
+        return "";
     }
   };
 

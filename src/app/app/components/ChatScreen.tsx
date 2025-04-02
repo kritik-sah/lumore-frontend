@@ -198,7 +198,7 @@ const ChatScreen: React.FC = () => {
   return (
     <div className="flex flex-col h-[95vh] bg-ui-background/10">
       <ChatHeader
-        username={matchedUser.username}
+        user={matchedUser}
         isConnected={isConnected}
         onEndChat={() => cancelChat(matchId || "")}
       />

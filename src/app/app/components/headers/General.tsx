@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React from "react";
 import { HiAdjustments } from "react-icons/hi";
+import { MdOutlineSettings } from "react-icons/md";
 import { useSocket } from "../../context/SocketContext";
 
 const General = () => {
@@ -26,9 +27,12 @@ const General = () => {
               {isActive ? "Online" : "Offline"}
             </span>
           </div>
-          <div className="">
+          <div className="flex items-center space-x-2 text-lg">
             <Link href="/app/edit-preferences">
               <HiAdjustments />
+            </Link>
+            <Link href="/app/user-settings">
+              <MdOutlineSettings />
             </Link>
           </div>
         </div>

@@ -50,43 +50,74 @@ export const ExploreChatProvider = ({
 
   const cancelChat = (matchId: string) => {
     if (!socket) return;
-    console.log("Cancelling chat for matchId:", matchId);
+    console.log(
+      "[ExploreChatContext] Emitting cancelChat event for matchId:",
+      matchId
+    );
     socket.emit("cancelChat", { matchId });
-    clearMatch({ matchId });
   };
 
   const clearMatch = (data: any) => {
-    console.log("clearMatch", data);
+    console.log("[ExploreChatContext] clearMatch called with data:", data);
     setMatchId(null);
     setMatchedUser(null);
     setError(null);
+    setIsMatching(false);
   };
 
   useEffect(() => {
     if (!socket) return;
 
     const handleMatchFound = (data: { matchId: string; matchedUser: any }) => {
-      console.log("Match found:", data);
+      console.log("[ExploreChatContext] Match found:", data);
       setMatchId(data.matchId);
       setMatchedUser(data.matchedUser);
       setIsMatching(false);
     };
 
     const handleError = (error: { message: string }) => {
+      console.log("[ExploreChatContext] Matchmaking error:", error);
       setError(error.message);
       setIsMatching(false);
     };
 
+    const handleChatCancelled = (data: any) => {
+      console.log("[ExploreChatContext] Received chatCancelled event:", data);
+      if (data && data.matchId) {
+        clearMatch(data);
+      } else {
+        console.log("[ExploreChatContext] Invalid chatCancelled data:", data);
+      }
+    };
+
+    const handleUserDisconnected = (data: any) => {
+      console.log(
+        "[ExploreChatContext] Received userDisconnected event:",
+        data
+      );
+      if (data && data.matchId) {
+        clearMatch(data);
+      } else {
+        console.log(
+          "[ExploreChatContext] Invalid userDisconnected data:",
+          data
+        );
+      }
+    };
+
+    console.log("[ExploreChatContext] Registering socket event listeners");
+
     socket.on("matchFound", handleMatchFound);
     socket.on("matchmakingError", handleError);
-    socket.on("chatCancelled", clearMatch);
-    socket.on("userDisconnected", clearMatch);
+    socket.on("chatCancelled", handleChatCancelled);
+    socket.on("userDisconnected", handleUserDisconnected);
 
     return () => {
+      console.log("[ExploreChatContext] Cleaning up socket event listeners");
       socket.off("matchFound", handleMatchFound);
       socket.off("matchmakingError", handleError);
-      socket.off("chatCancelled", clearMatch);
-      socket.off("userDisconnected", clearMatch);
+      socket.off("chatCancelled", handleChatCancelled);
+      socket.off("userDisconnected", handleUserDisconnected);
     };
   }, [socket]);
 

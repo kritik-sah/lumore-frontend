@@ -1,10 +1,16 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
-import ProfileWrapper from "../components/ProfileWrapper";
-import GeneralLayout from "../components/layout/general";
+import GeneralLayout from "../../components/layout/general";
+import ProfileWrapper from "../../components/ProfileWrapper";
 
-const Profile = async () => {
+interface UserProfileProps {
+  params: {
+    "user-id": string;
+  };
+}
+
+const UserProfile = async ({ params }: UserProfileProps) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const user = cookieStore.get("user")?.value
@@ -14,12 +20,12 @@ const Profile = async () => {
   if (!token || !user) {
     redirect("/login");
   }
-  console.log("user rocx", user);
+
   return (
     <GeneralLayout>
-      <ProfileWrapper userId={user._id} />
+      <ProfileWrapper userId={params["user-id"]} />
     </GeneralLayout>
   );
 };
 
-export default Profile;
+export default UserProfile;
