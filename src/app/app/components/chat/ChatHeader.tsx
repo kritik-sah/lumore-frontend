@@ -1,19 +1,38 @@
+import { useProfileLock } from "@/app/app/hooks/useProfileLock";
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { calculateAge } from "@/utils/helpers";
+import { Lock, Unlock } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { useExploreChat } from "../../context/ExploreChatContext";
 
 interface ChatHeaderProps {
   user: any;
   isConnected: boolean;
   onEndChat: () => void;
+  currentUserId: string;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   user,
   isConnected,
   onEndChat,
+  currentUserId,
 }) => {
+  const { matchId, matchedUser, cancelChat, lockProfile, unlockProfile } =
+    useExploreChat();
+
+  const handleUnlockProfile = async () => {
+    if (!matchId || !currentUserId || !matchedUser) return;
+    await unlockProfile(matchId, currentUserId, matchedUser);
+  };
+
+  const handleLockProfile = async () => {
+    if (!matchId || !currentUserId || !matchedUser) return;
+    await lockProfile(matchId, currentUserId, matchedUser);
+  };
+
   return (
     <div className="flex items-center justify-between p-4 border-b border-ui-shade/10">
       <div className="flex items-center gap-2">
@@ -45,9 +64,26 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           </div>
         </div>
       </div>
-      <Button variant="destructive" size="sm" onClick={onEndChat}>
-        End Chat
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={user?.isUnlocked ? handleLockProfile : handleUnlockProfile}
+          className="hover:bg-gray-100"
+        >
+          {user?.isUnlocked ? (
+            <Icon name="HiOutlineLockOpen" className="h-5 w-5 text-gray-500" />
+          ) : (
+            <Icon
+              name="HiOutlineLockClosed"
+              className="h-5 w-5 text-gray-500"
+            />
+          )}
+        </Button>
+        <Button variant="destructive" size="sm" onClick={onEndChat}>
+          End Chat
+        </Button>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 "use client";
+import { useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
@@ -13,6 +14,8 @@ interface ExploreChatContextType {
   stopMatchmaking: () => void;
   clearMatch: (data: any) => void;
   cancelChat: (matchId: string) => void;
+  lockProfile: (matchId: string, userId: string, profileId: string) => void;
+  unlockProfile: (matchId: string, userId: string, profileId: string) => void;
 }
 
 const ExploreChatContext = createContext<ExploreChatContextType | undefined>(
@@ -32,7 +35,7 @@ export const ExploreChatProvider = ({
   const { _id: userId } = JSON.parse(Cookies.get("user") || "{}");
   const { user } = useUser(userId);
   const { user: matchedUserData } = useUser(matchedUser || "");
-
+  const queryClient = useQueryClient();
   const startMatchmaking = () => {
     if (!socket || !user || isMatching) return;
     setIsMatching(true);
@@ -55,10 +58,10 @@ export const ExploreChatProvider = ({
       matchId
     );
     socket.emit("cancelChat", { matchId });
+    clearMatch(matchId);
   };
 
   const clearMatch = (data: any) => {
-    console.log("[ExploreChatContext] clearMatch called with data:", data);
     const matchIdToClear = typeof data === "string" ? data : data?.matchId;
     if (matchIdToClear === matchId) {
       setMatchId(null);
@@ -73,6 +76,19 @@ export const ExploreChatProvider = ({
         matchId
       );
     }
+  };
+
+  const lockProfile = (matchId: string, userId: string, profileId: string) => {
+    if (!socket) return;
+    socket.emit("lockProfile", { matchId, userId, profileId });
+  };
+  const unlockProfile = (
+    matchId: string,
+    userId: string,
+    profileId: string
+  ) => {
+    if (!socket) return;
+    socket.emit("unlockProfile", { matchId, userId, profileId });
   };
 
   useEffect(() => {
@@ -125,12 +141,22 @@ export const ExploreChatProvider = ({
       }
     };
 
-    console.log("[ExploreChatContext] Registering socket event listeners");
+    const handleProfileLocked = (data: any) => {
+      console.log("[ExploreChatContext] Received profileLocked event:", data);
+      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
+    };
+
+    const handleProfileUnlocked = (data: any) => {
+      console.log("[ExploreChatContext] Received profileUnlocked event:", data);
+      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
+    };
 
     socket.on("matchFound", handleMatchFound);
     socket.on("matchmakingError", handleError);
     socket.on("chatCancelled", handleChatCancelled);
     socket.on("userDisconnected", handleUserDisconnected);
+    socket.on("profileLocked", handleProfileLocked);
+    socket.on("profileUnlocked", handleProfileUnlocked);
 
     return () => {
       console.log("[ExploreChatContext] Cleaning up socket event listeners");
@@ -152,6 +178,8 @@ export const ExploreChatProvider = ({
         stopMatchmaking,
         clearMatch,
         cancelChat,
+        lockProfile,
+        unlockProfile,
       }}
     >
       {children}

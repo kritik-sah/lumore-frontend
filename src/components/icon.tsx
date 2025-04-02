@@ -61,6 +61,8 @@ import {
   HiOutlineHome,
   HiOutlineInformationCircle,
   HiOutlineLanguage,
+  HiOutlineLockClosed,
+  HiOutlineLockOpen,
   HiOutlinePlusCircle,
   HiOutlineUser,
 } from "react-icons/hi2";
@@ -186,6 +188,8 @@ const iconComponents: Record<string, IconType> = {
   RiPinDistanceLine,
   MdOutlineVerified,
   MdOutlineBloodtype,
+  HiOutlineLockClosed,
+  HiOutlineLockOpen,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {
