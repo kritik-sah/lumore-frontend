@@ -11,15 +11,17 @@ interface VisibilityToggleProps {
   field: string;
   currentVisibility: string;
   onVisibilityChange: (field: string, visibility: string) => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const VisibilityToggle = ({
   field,
   currentVisibility,
   onVisibilityChange,
+  onClick,
 }: VisibilityToggleProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" onClick={onClick}>
       <Select
         value={currentVisibility}
         onValueChange={(value) => onVisibilityChange(field, value)}

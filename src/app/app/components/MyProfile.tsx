@@ -5,11 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import getLastActive from "@/utils/getLastActive";
 import { calculateAge, convertHeight } from "@/utils/helpers";
+import Cookies from "js-cookie";
 import Link from "next/link";
 import React from "react";
 import { useLogout } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 
 const MyProfile = ({ user }: { user: any }) => {
+  let userId = "";
+  try {
+    const userCookie = Cookies.get("user");
+    if (userCookie) {
+      const parsedUser = JSON.parse(userCookie);
+      userId = parsedUser?._id || "";
+    }
+  } catch (error) {
+    console.error("[ChatScreen] Error parsing user cookie:", error);
+  }
+
   const { logout } = useLogout();
 
   return (
@@ -75,9 +88,11 @@ const MyProfile = ({ user }: { user: any }) => {
               </div>
             </div>
             <div className="flex items-center justify-end">
-              <Link href="/app/profile/edit">
-                <Icon name="FaUserPen" />
-              </Link>
+              {userId === user?._id ? (
+                <Link href="/app/profile/edit">
+                  <Icon name="FaUserPen" />
+                </Link>
+              ) : null}
             </div>
           </div>
           <div className="absolute -bottom-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-ui-foreground outline outline-ui-accent outline-offset-4 rounded-full h-24 w-24 flex-shrink-0 aspect-square"></div>

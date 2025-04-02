@@ -365,6 +365,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                 user.fieldVisibility?.sexualOrientation || "public"
               }
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -394,6 +395,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="interests"
               currentVisibility={user.fieldVisibility?.interests || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -410,6 +412,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="bloodGroup"
               currentVisibility={user.fieldVisibility?.bloodGroup || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -426,6 +429,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="height"
               currentVisibility={user.fieldVisibility?.height || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -444,6 +448,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                 user.fieldVisibility?.currentLocation || "public"
               }
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -460,6 +465,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="diet"
               currentVisibility={user.fieldVisibility?.diet || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -476,6 +482,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="zodiacSign"
               currentVisibility={user.fieldVisibility?.zodiacSign || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -512,6 +519,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="lifestyle"
               currentVisibility={user.fieldVisibility?.lifestyle || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -529,6 +537,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="work"
               currentVisibility={user.fieldVisibility?.work || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -550,6 +559,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                 user.fieldVisibility?.education?.degree || "public"
               }
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -569,6 +579,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                 user.fieldVisibility?.maritalStatus || "public"
               }
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -585,6 +596,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="languages"
               currentVisibility={user.fieldVisibility?.languages || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -603,6 +615,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
                 user.fieldVisibility?.personalityType || "public"
               }
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
@@ -619,6 +632,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               field="religion"
               currentVisibility={user.fieldVisibility?.religion || "public"}
               onVisibilityChange={handleVisibilityChange}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
