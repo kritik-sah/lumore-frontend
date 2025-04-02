@@ -59,10 +59,20 @@ export const ExploreChatProvider = ({
 
   const clearMatch = (data: any) => {
     console.log("[ExploreChatContext] clearMatch called with data:", data);
-    setMatchId(null);
-    setMatchedUser(null);
-    setError(null);
-    setIsMatching(false);
+    const matchIdToClear = typeof data === "string" ? data : data?.matchId;
+    if (matchIdToClear === matchId) {
+      setMatchId(null);
+      setMatchedUser(null);
+      setError(null);
+      setIsMatching(false);
+    } else {
+      console.log(
+        "[ExploreChatContext] Ignoring clearMatch for different matchId:",
+        matchIdToClear,
+        "current:",
+        matchId
+      );
+    }
   };
 
   useEffect(() => {
@@ -83,7 +93,12 @@ export const ExploreChatProvider = ({
 
     const handleChatCancelled = (data: any) => {
       console.log("[ExploreChatContext] Received chatCancelled event:", data);
-      if (data && data.matchId) {
+      if (Array.isArray(data)) {
+        const matchId = data[1]?.matchId;
+        if (matchId) {
+          clearMatch(matchId);
+        }
+      } else if (data?.matchId) {
         clearMatch(data);
       } else {
         console.log("[ExploreChatContext] Invalid chatCancelled data:", data);
@@ -95,7 +110,12 @@ export const ExploreChatProvider = ({
         "[ExploreChatContext] Received userDisconnected event:",
         data
       );
-      if (data && data.matchId) {
+      if (Array.isArray(data)) {
+        const matchId = data[1]?.matchId;
+        if (matchId) {
+          clearMatch(matchId);
+        }
+      } else if (data?.matchId) {
         clearMatch(data);
       } else {
         console.log(
@@ -119,7 +139,7 @@ export const ExploreChatProvider = ({
       socket.off("chatCancelled", handleChatCancelled);
       socket.off("userDisconnected", handleUserDisconnected);
     };
-  }, [socket]);
+  }, [socket, matchId, clearMatch]);
 
   return (
     <ExploreChatContext.Provider

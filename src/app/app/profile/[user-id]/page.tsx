@@ -1,16 +1,16 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
 import React from "react";
 import GeneralLayout from "../../components/layout/general";
 import ProfileWrapper from "../../components/ProfileWrapper";
 
-interface UserProfileProps {
-  params: {
-    "user-id": string;
-  };
-}
-
-const UserProfile = async ({ params }: UserProfileProps) => {
+const UserProfile = async ({
+  params,
+}: {
+  params: Promise<{ "user-id": string }>;
+}) => {
+  const { "user-id": userId } = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const user = cookieStore.get("user")?.value
@@ -23,7 +23,7 @@ const UserProfile = async ({ params }: UserProfileProps) => {
 
   return (
     <GeneralLayout>
-      <ProfileWrapper userId={params["user-id"]} />
+      <ProfileWrapper userId={userId || ""} />
     </GeneralLayout>
   );
 };
