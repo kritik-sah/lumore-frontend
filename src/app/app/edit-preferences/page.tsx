@@ -167,7 +167,7 @@ const EditPreferences = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Interested In</h3>
-                  {preferences.interestedIn}
+                  {preferences?.interestedIn}
                 </div>
               </div>
             </div>
@@ -178,7 +178,8 @@ const EditPreferences = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Age Range</h3>
-                  {preferences.ageRange.min} - {preferences.ageRange.max} years
+                  {preferences?.ageRange?.min} - {preferences?.ageRange?.max}{" "}
+                  years
                 </div>
               </div>
             </div>
@@ -189,7 +190,7 @@ const EditPreferences = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Maximum Distance</h3>
-                  {preferences.distance} km
+                  {preferences?.distance} km
                 </div>
               </div>
             </div>
@@ -200,9 +201,9 @@ const EditPreferences = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Goals</h3>
-                  <div>Primary: {preferences.goal.primary}</div>
-                  <div>Secondary: {preferences.goal.secondary}</div>
-                  <div>Tertiary: {preferences.goal.tertiary}</div>
+                  <div>Primary: {preferences?.goal?.primary}</div>
+                  <div>Secondary: {preferences?.goal?.secondary}</div>
+                  <div>Tertiary: {preferences?.goal?.tertiary}</div>
                 </div>
               </div>
             </div>
@@ -214,18 +215,18 @@ const EditPreferences = () => {
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Interests</h3>
                   <div className="mt-1">
-                    {preferences.interests.professional.length > 0 && (
+                    {preferences?.interests?.professional?.length > 0 && (
                       <div>
                         <span className="text-sm font-medium">
                           Professional:
                         </span>{" "}
-                        {preferences.interests.professional.join(", ")}
+                        {preferences?.interests?.professional?.join(", ")}
                       </div>
                     )}
-                    {preferences.interests.hobbies.length > 0 && (
+                    {preferences?.interests?.hobbies?.length > 0 && (
                       <div>
                         <span className="text-sm font-medium">Hobbies:</span>{" "}
-                        {preferences.interests.hobbies.join(", ")}
+                        {preferences?.interests?.hobbies?.join(", ")}
                       </div>
                     )}
                   </div>
@@ -241,7 +242,7 @@ const EditPreferences = () => {
                   <h3 className="text-sm text-ui-shade/60">
                     Relationship Type
                   </h3>
-                  {preferences.relationshipType}
+                  {preferences?.relationshipType}
                 </div>
               </div>
             </div>
@@ -254,7 +255,7 @@ const EditPreferences = () => {
                   <h3 className="text-sm text-ui-shade/60">
                     Preferred Languages
                   </h3>
-                  {preferences.preferredLanguages.join(", ") || "Not set"}
+                  {preferences?.preferredLanguages?.join(", ") || "Not set"}
                 </div>
               </div>
             </div>
@@ -267,7 +268,7 @@ const EditPreferences = () => {
                   <h3 className="text-sm text-ui-shade/60">
                     Zodiac Preferences
                   </h3>
-                  {preferences.zodiacPreference.join(", ")}
+                  {preferences?.zodiacPreference?.join(", ")}
                 </div>
               </div>
             </div>
@@ -281,11 +282,12 @@ const EditPreferences = () => {
                     Education Preferences
                   </h3>
                   <div>
-                    Minimum Degree: {preferences.education.minimumDegreeLevel}
+                    Minimum Degree: {preferences?.education?.minimumDegreeLevel}
                   </div>
                   <div>
                     Institutions:{" "}
-                    {preferences.education.institutions.join(", ") || "Not set"}
+                    {preferences?.education?.institutions?.join(", ") ||
+                      "Not set"}
                   </div>
                 </div>
               </div>
@@ -299,7 +301,7 @@ const EditPreferences = () => {
                   <h3 className="text-sm text-ui-shade/60">
                     Personality Type Preferences
                   </h3>
-                  {preferences.personalityTypePreference.join(", ")}
+                  {preferences?.personalityTypePreference?.join(", ")}
                 </div>
               </div>
             </div>
@@ -310,7 +312,7 @@ const EditPreferences = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-ui-shade/60">Diet Preferences</h3>
-                  {preferences.dietPreference.join(", ")}
+                  {preferences?.dietPreference?.join(", ")}
                 </div>
               </div>
             </div>
