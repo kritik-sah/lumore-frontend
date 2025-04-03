@@ -53,27 +53,27 @@ const EditPreferences = () => {
     keyof UserPreferences | ""
   >("");
   const [preferences, setPreferences] = useState<UserPreferences>({
-    interestedIn: "",
-    ageRange: { min: 18, max: 18 },
-    distance: 0,
+    interestedIn: "Any",
+    ageRange: { min: 18, max: 100 },
+    distance: 100,
     goal: {
-      primary: "",
-      secondary: "",
-      tertiary: "",
+      primary: "Undecided",
+      secondary: "Undecided",
+      tertiary: "Undecided",
     },
     interests: {
       professional: [],
       hobbies: [],
     },
-    relationshipType: "",
+    relationshipType: "Not Specified",
     preferredLanguages: [],
-    zodiacPreference: [],
+    zodiacPreference: ["Any"],
     education: {
       institutions: [],
-      minimumDegreeLevel: "",
+      minimumDegreeLevel: "No Preference",
     },
-    personalityTypePreference: [],
-    dietPreference: [],
+    personalityTypePreference: ["Any"],
+    dietPreference: ["Any"],
     locationPreferences: {
       homeTown: [],
       currentLocation: [],
