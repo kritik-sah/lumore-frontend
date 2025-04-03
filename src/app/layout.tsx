@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Work_Sans } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Providers from "./provider";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
         <Providers>{children}</Providers>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

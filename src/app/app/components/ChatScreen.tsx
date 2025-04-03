@@ -46,7 +46,8 @@ const ChatScreen: React.FC = () => {
 
   const { user } = useUser(userId);
   const { socket } = useSocket();
-  const { clearMatch, matchId, matchedUser, cancelChat } = useExploreChat();
+  const { matchId, matchedUser, cancelChat, lockProfile, unlockProfile } =
+    useExploreChat();
 
   useEffect(() => {
     if (!socket || !matchId) return;
@@ -201,6 +202,7 @@ const ChatScreen: React.FC = () => {
         user={matchedUser}
         isConnected={isConnected}
         onEndChat={() => cancelChat(matchId || "")}
+        currentUserId={userId}
       />
       <ChatMessages messages={messages} currentUserId={userId} />
       <ChatInput
