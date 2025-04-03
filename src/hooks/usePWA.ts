@@ -55,11 +55,37 @@ export const usePWA = () => {
       const { outcome } = await deferredPrompt.userChoice;
 
       if (outcome === "accepted") {
+        // Track PWA installation in Google Analytics
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag("event", "pwa_install", {
+            event_category: "engagement",
+            event_label: "PWA Installation",
+            value: 1,
+          });
+        }
+
         setDeferredPrompt(null);
         setIsInstallable(false);
+      } else {
+        // Track PWA installation rejection
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag("event", "pwa_install_rejected", {
+            event_category: "engagement",
+            event_label: "PWA Installation Rejected",
+            value: 0,
+          });
+        }
       }
     } catch (error) {
       console.error("Error installing PWA:", error);
+      // Track PWA installation error
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag("event", "pwa_install_error", {
+          event_category: "error",
+          event_label: "PWA Installation Error",
+          value: 0,
+        });
+      }
     }
   };
 
