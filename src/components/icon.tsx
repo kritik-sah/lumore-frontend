@@ -50,8 +50,11 @@ import {
   HiChevronDoubleLeft,
   HiChevronDoubleRight,
   HiEllipsisVertical,
+  HiLockClosed,
+  HiLockOpen,
   HiMiniCheckBadge,
   HiMiniClock,
+  HiMiniEllipsisVertical,
   HiMiniExclamationTriangle,
   HiOutlineBookOpen,
   HiOutlineCake,
@@ -190,6 +193,9 @@ const iconComponents: Record<string, IconType> = {
   MdOutlineBloodtype,
   HiOutlineLockClosed,
   HiOutlineLockOpen,
+  HiLockClosed,
+  HiLockOpen,
+  HiMiniEllipsisVertical,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

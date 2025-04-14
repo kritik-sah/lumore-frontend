@@ -95,6 +95,16 @@ export const updateUserPreferences = async (data: any) => {
   return response.data;
 };
 
+export const fetchUserSlots = async () => {
+  const token = Cookies.get("token");
+  const response = await axios.get(`${API_URL}/slots`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data.slots;
+};
+
 export const deleteAccount = async () => {
   const token = Cookies.get("token");
   const { _id: userId } = JSON.parse(Cookies.get("user") || "");
@@ -115,4 +125,31 @@ export const handleLogout = async (callback: () => void) => {
   } catch (error) {
     console.error("Error logging out:", error);
   }
+};
+
+export const createSlot = async () => {
+  const token = Cookies.get("token");
+  const response = await axios.post(
+    `${API_URL}/slots`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data.data.slot;
+};
+
+export const updateSlot = async (
+  slotId: string,
+  data: { profile?: string; roomId?: string }
+) => {
+  const token = Cookies.get("token");
+  const response = await axios.patch(`${API_URL}/slots/${slotId}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data.slot;
 };
