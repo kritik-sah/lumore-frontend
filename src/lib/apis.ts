@@ -2,6 +2,15 @@ import axios from "axios";
 import Cookies from "js-cookie";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const getFormattedAddress = async (lat: number, lng: number) => {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+  const response = await axios.get(url, {
+    headers: { "User-Agent": "Lumore/1.0" }, // Required by OSM
+  });
+
+  return response.data.display_name || null;
+};
+
 export const signupUser = async (data: {
   username: string;
   password: string;
@@ -95,6 +104,16 @@ export const updateUserPreferences = async (data: any) => {
   return response.data;
 };
 
+export const fetchUserSlots = async () => {
+  const token = Cookies.get("token");
+  const response = await axios.get(`${API_URL}/slots`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data.slots;
+};
+
 export const deleteAccount = async () => {
   const token = Cookies.get("token");
   const { _id: userId } = JSON.parse(Cookies.get("user") || "");
@@ -115,4 +134,31 @@ export const handleLogout = async (callback: () => void) => {
   } catch (error) {
     console.error("Error logging out:", error);
   }
+};
+
+export const createSlot = async () => {
+  const token = Cookies.get("token");
+  const response = await axios.post(
+    `${API_URL}/slots`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data.data.slot;
+};
+
+export const updateSlot = async (
+  slotId: string,
+  data: { profile?: string; roomId?: string }
+) => {
+  const token = Cookies.get("token");
+  const response = await axios.patch(`${API_URL}/slots/${slotId}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data.slot;
 };

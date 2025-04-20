@@ -8,6 +8,7 @@ import { calculateAge, convertHeight } from "@/utils/helpers";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import React from "react";
+import { extractFullAddressParts } from "../context/LocationProvider";
 import { useLogout } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
 
@@ -143,14 +144,19 @@ const MyProfile = ({ user }: { user: any }) => {
                   <p>{convertHeight(user?.height)}</p>
                 </div>
               ) : null}
-              {user?.currentLocation ? (
+              {user?.location?.formattedAddress ? (
                 <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
                   <Icon
                     name="MdOutlineLocationOn"
                     className="text-xl flex-shrink-0"
                   />{" "}
                   <p className="w-full flex-shrink-0">
-                    {user?.currentLocation}
+                    {`${
+                      extractFullAddressParts(
+                        user?.location?.formattedAddress,
+                        ["district"]
+                      ).district
+                    }`}
                   </p>
                 </div>
               ) : null}

@@ -1,7 +1,9 @@
 "use client";
+import { createSlot, updateSlot } from "@/lib/apis";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useSocket } from "../context/SocketContext";
 import { useUser } from "../hooks/useUser";
@@ -9,7 +11,7 @@ import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
 import { ChatMessages } from "./chat/ChatMessages";
 
-interface Message {
+export interface Message {
   sender: string;
   message: string;
   timestamp: number;
@@ -28,7 +30,6 @@ interface KeyExchangeResponse {
 }
 
 const ChatScreen: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
 
@@ -46,8 +47,15 @@ const ChatScreen: React.FC = () => {
 
   const { user } = useUser(userId);
   const { socket } = useSocket();
-  const { matchId, matchedUser, cancelChat, lockProfile, unlockProfile } =
-    useExploreChat();
+  const {
+    matchId,
+    matchedUser,
+    cancelChat,
+    lockProfile,
+    unlockProfile,
+    messages,
+    setMessages,
+  } = useExploreChat();
 
   useEffect(() => {
     if (!socket || !matchId) return;
@@ -90,53 +98,6 @@ const ChatScreen: React.FC = () => {
         setIsConnected(true);
       }
     });
-
-    // Handle new messages
-    socket.on(
-      "new_message",
-      (data: {
-        senderId: string;
-        encryptedData: string;
-        iv: string;
-        timestamp: number;
-      }) => {
-        console.log("[ChatScreen] Received new message:", data);
-
-        const encryptionKey = sessionStorage.getItem(`chat_key_${matchId}`);
-        if (!encryptionKey) {
-          console.log(
-            "[ChatScreen] No encryption key available, message cannot be decrypted"
-          );
-          return;
-        }
-
-        try {
-          const key = CryptoJS.enc.Hex.parse(encryptionKey);
-          const iv = CryptoJS.enc.Hex.parse(data.iv);
-          const decrypted = CryptoJS.AES.decrypt(
-            CryptoJS.enc.Hex.parse(data.encryptedData).toString(
-              CryptoJS.enc.Base64
-            ),
-            key,
-            {
-              iv,
-              mode: CryptoJS.mode.CBC,
-              padding: CryptoJS.pad.Pkcs7,
-            }
-          );
-
-          const message = decrypted.toString(CryptoJS.enc.Utf8);
-          if (!message) throw new Error("Decryption failed, empty message");
-
-          setMessages((prev) => [
-            ...prev,
-            { sender: data.senderId, message, timestamp: data.timestamp },
-          ]);
-        } catch (error) {
-          console.error("[ChatScreen] Error decrypting message:", error);
-        }
-      }
-    );
 
     // Initiate key exchange
     socket.emit("init_key_exchange", { matchId });
@@ -194,14 +155,40 @@ const ChatScreen: React.FC = () => {
     }
   };
 
+  const saveChat = async () => {
+    if (!matchId || !matchedUser) {
+      toast.error("Missing required information to save chat");
+      return;
+    }
+
+    try {
+      // First create a new slot
+      const newSlot = await createSlot();
+
+      // Then update the slot with the chat room and profile information
+      await updateSlot(newSlot._id, {
+        profile: matchedUser._id,
+        roomId: matchId,
+      });
+
+      toast.success("Chat saved successfully!");
+    } catch (error: any) {
+      console.error("Error saving chat:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to save chat";
+      toast.error(errorMessage);
+    }
+  };
+
   if (!matchedUser) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col h-[95vh] bg-ui-background/10">
+    <div className="flex flex-col h-[95vh] bg-ui-background/10 pb-4">
       <ChatHeader
         user={matchedUser}
         isConnected={isConnected}
         onEndChat={() => cancelChat(matchId || "")}
+        onSaveChat={() => saveChat()}
         currentUserId={userId}
       />
       <ChatMessages messages={messages} currentUserId={userId} />

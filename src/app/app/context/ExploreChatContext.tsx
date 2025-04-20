@@ -1,7 +1,16 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
+import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { Message } from "../components/ChatScreen";
 import { useUser } from "../hooks/useUser";
 import { useSocket } from "./SocketContext";
 
@@ -10,6 +19,8 @@ interface ExploreChatContextType {
   matchedUser: any | null;
   isMatching: boolean;
   error: string | null;
+  messages: Message[];
+  setMessages: Dispatch<SetStateAction<Message[]>>;
   startMatchmaking: () => void;
   stopMatchmaking: () => void;
   clearMatch: (data: any) => void;
@@ -27,15 +38,17 @@ export const ExploreChatProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { _id: userId } = JSON.parse(Cookies.get("user") || "{}");
+  const { user } = useUser(userId);
   const [matchId, setMatchId] = useState<string | null>(null);
   const [matchedUser, setMatchedUser] = useState<any | null>(null);
   const [isMatching, setIsMatching] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { socket } = useSocket();
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "{}");
-  const { user } = useUser(userId);
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
+
   const startMatchmaking = () => {
     if (!socket || !user || isMatching) return;
     setIsMatching(true);
@@ -67,6 +80,7 @@ export const ExploreChatProvider = ({
       setMatchId(null);
       setMatchedUser(null);
       setError(null);
+      setMessages([]);
       setIsMatching(false);
     } else {
       console.log(
@@ -89,6 +103,62 @@ export const ExploreChatProvider = ({
   ) => {
     if (!socket) return;
     socket.emit("unlockProfile", { matchId, userId, profileId });
+  };
+
+  const handleNewMessage = (data: {
+    senderId: string;
+    encryptedData: string;
+    iv: string;
+    timestamp: number;
+  }) => {
+    console.log("[ChatScreen] Received new message:", data);
+
+    const encryptionKey = sessionStorage.getItem(`chat_key_${matchId}`);
+    if (!encryptionKey) {
+      console.log(
+        "[ChatScreen] No encryption key available, message cannot be decrypted"
+      );
+      return;
+    }
+
+    try {
+      const key = CryptoJS.enc.Hex.parse(encryptionKey);
+      const iv = CryptoJS.enc.Hex.parse(data.iv);
+      const decrypted = CryptoJS.AES.decrypt(
+        CryptoJS.enc.Hex.parse(data.encryptedData).toString(
+          CryptoJS.enc.Base64
+        ),
+        key,
+        {
+          iv,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7,
+        }
+      );
+
+      const message = decrypted.toString(CryptoJS.enc.Utf8);
+      if (!message) throw new Error("Decryption failed, empty message");
+
+      setMessages((prev) => {
+        // Check if message with same timestamp and sender already exists
+        const isDuplicate = prev.some(
+          (msg) =>
+            msg.timestamp === data.timestamp && msg.sender === data.senderId
+        );
+
+        if (isDuplicate) {
+          console.log("[ChatScreen] Duplicate message detected, skipping");
+          return prev;
+        }
+
+        return [
+          ...prev,
+          { sender: data.senderId, message, timestamp: data.timestamp },
+        ];
+      });
+    } catch (error) {
+      console.error("[ChatScreen] Error decrypting message:", error);
+    }
   };
 
   useEffect(() => {
@@ -126,19 +196,19 @@ export const ExploreChatProvider = ({
         "[ExploreChatContext] Received userDisconnected event:",
         data
       );
-      if (Array.isArray(data)) {
-        const matchId = data[1]?.matchId;
-        if (matchId) {
-          clearMatch(matchId);
-        }
-      } else if (data?.matchId) {
-        clearMatch(data);
-      } else {
-        console.log(
-          "[ExploreChatContext] Invalid userDisconnected data:",
-          data
-        );
-      }
+      // if (Array.isArray(data)) {
+      //   const matchId = data[1]?.matchId;
+      //   if (matchId) {
+      //     clearMatch(matchId);
+      //   }
+      // } else if (data?.matchId) {
+      //   clearMatch(data);
+      // } else {
+      //   console.log(
+      //     "[ExploreChatContext] Invalid userDisconnected data:",
+      //     data
+      //   );
+      // }
     };
 
     const handleProfileLocked = (data: any) => {
@@ -152,6 +222,7 @@ export const ExploreChatProvider = ({
     };
 
     socket.on("matchFound", handleMatchFound);
+    socket.on("new_message", handleNewMessage);
     socket.on("matchmakingError", handleError);
     socket.on("chatCancelled", handleChatCancelled);
     socket.on("userDisconnected", handleUserDisconnected);
@@ -160,9 +231,9 @@ export const ExploreChatProvider = ({
 
     return () => {
       console.log("[ExploreChatContext] Cleaning up socket event listeners");
-      socket.off("matchFound", handleMatchFound);
-      socket.off("matchmakingError", handleError);
-      socket.off("chatCancelled", handleChatCancelled);
+      // socket.off("matchFound", handleMatchFound);
+      // socket.off("matchmakingError", handleError);
+      // socket.off("chatCancelled", handleChatCancelled);
       socket.off("userDisconnected", handleUserDisconnected);
     };
   }, [socket, matchId, clearMatch]);
@@ -174,6 +245,8 @@ export const ExploreChatProvider = ({
         matchedUser: matchedUserData,
         isMatching,
         error,
+        messages,
+        setMessages,
         startMatchmaking,
         stopMatchmaking,
         clearMatch,

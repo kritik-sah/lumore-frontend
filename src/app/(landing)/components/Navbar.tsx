@@ -3,7 +3,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { usePWA } from "@/hooks/usePWA";
 import { PopupButton } from "@typeform/embed-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { HiOutlineMenu } from "react-icons/hi";
@@ -16,12 +18,19 @@ const menuList = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-
+  const { install } = usePWA();
   return (
-    <nav className="max-w-7xl mx-auto flex justify-between items-center py-5 px-4 lg:px-10 bg-ui-light">
+    <nav className="max-w-7xl mx-auto flex justify-between items-center py-5 px-4 bg-ui-light">
       {/* Logo */}
       <h1 className="text-xl font-bold">
-        <Link href="/">Lumore</Link>
+        <Link href="/">
+          <Image
+            src="/assets/lumore-hr.svg"
+            alt="lumore"
+            height={20}
+            width={120}
+          />
+        </Link>
       </h1>
 
       {/* Desktop Menu */}
@@ -38,11 +47,18 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
-        <PopupButton id="ITzseckk">
+        <Button
+          size="lg"
+          className="text-base md:text-lg py-4 md:py-6"
+          onClick={install}
+        >
+          Install Lumore
+        </Button>
+        {/* <PopupButton id="ITzseckk">
           <Button variant="outline" size="lg" className="text-base">
             Join waitlist <span className="text-ui-highlight">!!</span>
           </Button>
-        </PopupButton>
+        </PopupButton> */}
       </div>
 
       {/* Mobile Menu */}

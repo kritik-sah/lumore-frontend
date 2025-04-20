@@ -25,7 +25,7 @@ import VisibilityToggle from "./VisibilityToggle";
 // Form validation schema
 const profileSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
-  nickname: z.string().min(2, "Nickname must be at least 2 characters"),
+  nickname: z.string().min(1, "Nickname must be at least 1 characters"),
   realName: z.string().min(2, "Real name must be at least 2 characters"),
   phoneNumber: z
     .string()

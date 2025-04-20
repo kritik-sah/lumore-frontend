@@ -1,3 +1,4 @@
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -17,7 +18,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isConnected,
 }) => {
   return (
-    <div className="p-4 border-t border-ui-shade/10">
+    <div className="p-2 border border-ui-shade/10 rounded-full mx-2">
       <div className="flex gap-2">
         <Input
           value={value}
@@ -25,9 +26,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           onKeyPress={onKeyPress}
           placeholder="Type a message..."
           disabled={!isConnected}
+          className="border-0 focus-visible:ring-0 focus-visible:outline-none flex-grow"
         />
-        <Button onClick={onSend} disabled={!isConnected}>
-          Send
+        <Button
+          size={"icon"}
+          onClick={onSend}
+          disabled={!isConnected}
+          className="border-0 aspect-square rounded-full"
+        >
+          <Icon name="IoPaperPlane" />
         </Button>
       </div>
     </div>

@@ -50,8 +50,11 @@ import {
   HiChevronDoubleLeft,
   HiChevronDoubleRight,
   HiEllipsisVertical,
+  HiLockClosed,
+  HiLockOpen,
   HiMiniCheckBadge,
   HiMiniClock,
+  HiMiniEllipsisVertical,
   HiMiniExclamationTriangle,
   HiOutlineBookOpen,
   HiOutlineCake,
@@ -67,7 +70,7 @@ import {
   HiOutlineUser,
 } from "react-icons/hi2";
 import { ImSpinner6 } from "react-icons/im";
-import { IoMagnet } from "react-icons/io5";
+import { IoMagnet, IoPaperPlane } from "react-icons/io5";
 import { LuDot, LuGraduationCap, LuVenetianMask } from "react-icons/lu";
 import {
   MdOutlineBloodtype,
@@ -190,6 +193,10 @@ const iconComponents: Record<string, IconType> = {
   MdOutlineBloodtype,
   HiOutlineLockClosed,
   HiOutlineLockOpen,
+  HiLockClosed,
+  HiLockOpen,
+  HiMiniEllipsisVertical,
+  IoPaperPlane,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

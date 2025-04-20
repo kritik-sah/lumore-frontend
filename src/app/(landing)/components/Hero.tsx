@@ -1,11 +1,13 @@
 // components/Hero.tsx
 "use client";
 import { Button } from "@/components/ui/button";
+import { usePWA } from "@/hooks/usePWA";
 import { PopupButton } from "@typeform/embed-react";
 import Image from "next/image";
 import ProductHuntBadge from "./ProductHuntBadge";
 
 export default function Hero() {
+  const { install } = usePWA();
   return (
     <section className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left">
       {/* Left Content */}
@@ -21,11 +23,18 @@ export default function Hero() {
           based on interests, location, and preferences.
         </p>
         <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
-          <PopupButton id="ITzseckk">
+          <Button
+            size="lg"
+            className="text-base md:text-lg py-4 md:py-6"
+            onClick={install}
+          >
+            Install Lumore
+          </Button>
+          {/* <PopupButton id="ITzseckk">
             <Button size="lg" className="text-base md:text-lg py-4 md:py-6">
               Join Lumore Waitlist !!
             </Button>
-          </PopupButton>
+          </PopupButton> */}
           <ProductHuntBadge />
         </div>
       </div>
