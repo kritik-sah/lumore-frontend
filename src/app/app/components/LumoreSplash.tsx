@@ -20,7 +20,7 @@ export default function LumoreSplash() {
         <div className="absolute inset-2 border-4 border-white rounded-[24px] animate-spin" />
         <div className="absolute inset-4 flex items-center justify-center">
           <Image
-            src="/logo.png"
+            src="/lumore-logo.png"
             alt="Lumore"
             width={90}
             height={90}
