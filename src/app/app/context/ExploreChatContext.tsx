@@ -38,16 +38,17 @@ export const ExploreChatProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { _id: userId } = JSON.parse(Cookies.get("user") || "{}");
+  const { user } = useUser(userId);
   const [matchId, setMatchId] = useState<string | null>(null);
   const [matchedUser, setMatchedUser] = useState<any | null>(null);
   const [isMatching, setIsMatching] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { socket } = useSocket();
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "{}");
-  const { user } = useUser(userId);
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
+
   const startMatchmaking = () => {
     if (!socket || !user || isMatching) return;
     setIsMatching(true);
@@ -195,19 +196,19 @@ export const ExploreChatProvider = ({
         "[ExploreChatContext] Received userDisconnected event:",
         data
       );
-      if (Array.isArray(data)) {
-        const matchId = data[1]?.matchId;
-        if (matchId) {
-          clearMatch(matchId);
-        }
-      } else if (data?.matchId) {
-        clearMatch(data);
-      } else {
-        console.log(
-          "[ExploreChatContext] Invalid userDisconnected data:",
-          data
-        );
-      }
+      // if (Array.isArray(data)) {
+      //   const matchId = data[1]?.matchId;
+      //   if (matchId) {
+      //     clearMatch(matchId);
+      //   }
+      // } else if (data?.matchId) {
+      //   clearMatch(data);
+      // } else {
+      //   console.log(
+      //     "[ExploreChatContext] Invalid userDisconnected data:",
+      //     data
+      //   );
+      // }
     };
 
     const handleProfileLocked = (data: any) => {
@@ -230,9 +231,9 @@ export const ExploreChatProvider = ({
 
     return () => {
       console.log("[ExploreChatContext] Cleaning up socket event listeners");
-      socket.off("matchFound", handleMatchFound);
-      socket.off("matchmakingError", handleError);
-      socket.off("chatCancelled", handleChatCancelled);
+      // socket.off("matchFound", handleMatchFound);
+      // socket.off("matchmakingError", handleError);
+      // socket.off("chatCancelled", handleChatCancelled);
       socket.off("userDisconnected", handleUserDisconnected);
     };
   }, [socket, matchId, clearMatch]);

@@ -2,6 +2,15 @@ import axios from "axios";
 import Cookies from "js-cookie";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const getFormattedAddress = async (lat: number, lng: number) => {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+  const response = await axios.get(url, {
+    headers: { "User-Agent": "Lumore/1.0" }, // Required by OSM
+  });
+
+  return response.data.display_name || null;
+};
+
 export const signupUser = async (data: {
   username: string;
   password: string;

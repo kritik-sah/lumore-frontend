@@ -183,7 +183,7 @@ const ChatScreen: React.FC = () => {
   if (!matchedUser) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col h-[95vh] bg-ui-background/10">
+    <div className="flex flex-col h-[95vh] bg-ui-background/10 pb-4">
       <ChatHeader
         user={matchedUser}
         isConnected={isConnected}

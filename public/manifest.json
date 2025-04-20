@@ -83,10 +83,10 @@
   ],
   "shortcuts": [
     {
-      "name": "New Chat",
-      "short_name": "Chat",
-      "description": "Start a new conversation",
-      "url": "/app/chat",
+      "name": "Start Exploring",
+      "short_name": "Explore",
+      "description": "Discover new connections",
+      "url": "/app",
       "icons": [{ "src": "/icons/chat-96x96.png", "sizes": "96x96" }]
     },
     {
