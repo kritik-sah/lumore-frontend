@@ -4,8 +4,14 @@ import { useExploreChat } from "../context/ExploreChatContext";
 import ChatScreen from "./ChatScreen";
 
 const MatchmakingScreen = () => {
-  const { matchId, matchedUser, isMatching, error, startMatchmaking } =
-    useExploreChat();
+  const {
+    matchId,
+    matchedUser,
+    isMatching,
+    error,
+    startMatchmaking,
+    stopMatchmaking,
+  } = useExploreChat();
 
   // If we have a match, show the chat screen
   if (matchId && matchedUser) {
@@ -22,7 +28,10 @@ const MatchmakingScreen = () => {
         </p>
       </div>
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      <Button disabled={isMatching} onClick={startMatchmaking}>
+      <Button
+        disabled={isMatching}
+        onClick={isMatching ? stopMatchmaking : startMatchmaking}
+      >
         {isMatching ? "Stop Matchmaking" : "Start Matchmaking"}
       </Button>
     </div>
