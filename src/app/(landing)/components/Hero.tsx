@@ -1,5 +1,6 @@
 // components/Hero.tsx
 "use client";
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/usePWA";
 import { PopupButton } from "@typeform/embed-react";
@@ -25,10 +26,12 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
           <Button
             size="lg"
-            className="text-base md:text-lg py-4 md:py-6"
+            className="text-xl md:text-lg py-8 md:py-6 w-full md:w-auto rounded-xl"
             onClick={install}
           >
             Install Lumore
+            <Icon name="FaApple" className="text-3xl flex-shrink-0" />
+            <Icon name="AiFillAndroid" className="text-3xl flex-shrink-0" />
           </Button>
           {/* <PopupButton id="ITzseckk">
             <Button size="lg" className="text-base md:text-lg py-4 md:py-6">
