@@ -1,9 +1,13 @@
 import React from "react";
 import { IconType } from "react-icons";
+import { AiFillAndroid } from "react-icons/ai";
 import { FaGlassMartiniAlt, FaTelegramPlane } from "react-icons/fa";
 import {
   FaAddressBook,
+  FaAndroid,
   FaAngleDown,
+  FaApple,
+  FaAppStoreIos,
   FaArrowRightToBracket,
   FaArrowUpRightFromSquare,
   FaBars,
@@ -41,6 +45,7 @@ import {
   FaXTwitter,
   FaYoutube,
 } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 import { GiRingBox } from "react-icons/gi";
 import { HiOutlineLogout } from "react-icons/hi";
 import {
@@ -197,6 +202,11 @@ const iconComponents: Record<string, IconType> = {
   HiLockOpen,
   HiMiniEllipsisVertical,
   IoPaperPlane,
+  FaAppStoreIos,
+  FaAndroid,
+  FaApple,
+  AiFillAndroid,
+  FcGoogle,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

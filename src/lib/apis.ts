@@ -13,7 +13,13 @@ export const getFormattedAddress = async (lat: number, lng: number) => {
 
 export const signupUser = async (data: {
   username: string;
+  email: string;
   password: string;
+  location: {
+    type: string;
+    coordinates: number[];
+    formattedAddress: string;
+  };
 }) => {
   const response = await axios.post(`${API_URL}/auth/signup`, data);
   return response.data; // Returns { _id, username, email, token }

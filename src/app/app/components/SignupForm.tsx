@@ -1,4 +1,5 @@
 "use client";
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,11 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiBan, HiOutlineBadgeCheck } from "react-icons/hi";
 import { TbFidgetSpinner } from "react-icons/tb";
+import { useLocation } from "../context/LocationProvider";
 import { useCheckUsername, useSignup } from "../hooks/useAuth";
 import { useDebounce } from "../hooks/useDebounce";
 
@@ -22,14 +26,29 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const debouncedUsername = useDebounce(formData.username, 1000); // Debounce input
   const { data: isAvailable, isLoading } = useCheckUsername(debouncedUsername); // Query API only after debounce delay
 
-  const [errors, setErrors] = useState({ username: "", password: "" });
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { mutate, isError } = useSignup();
+  const { longitude, latitude, error: locationError } = useLocation();
+
+  useEffect(() => {
+    if (locationError) {
+      toast.error("Please allow location access to continue");
+    }
+  }, [locationError]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,18 +57,26 @@ export function SignupForm({
 
   const validate = () => {
     let valid = true;
-    const newErrors = { username: "", password: "" };
+    const newErrors = { username: "", email: "", password: "" };
 
-    const { username, password } = formData;
+    const { username, email, password } = formData;
 
     const usernameRegex = /^(?!.*\.{2})(?!.*\.$)[a-zA-Z0-9._]+$/; // Allows letters, numbers, underscores, and single dots
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email regex
 
     if (!username) {
-      newErrors.username = "Email, phone, or username is required";
+      newErrors.username = "username is required";
       valid = false;
     } else if (!usernameRegex.test(username)) {
       newErrors.username =
         "Invalid format. Only letters, numbers, underscores, and single dots allowed";
+      valid = false;
+    }
+    if (!email) {
+      newErrors.email = "Email is required";
+      valid = false;
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Invalid email format.";
       valid = false;
     }
 
@@ -68,12 +95,22 @@ export function SignupForm({
     e.preventDefault();
     if (validate()) {
       console.log("Form submitted", formData);
-      mutate(formData, {
-        onSuccess: (data) => {
-          console.log("Logedin :", data);
-          router.push("/app"); // Redirect after login
+      mutate(
+        {
+          ...formData,
+          location: {
+            type: "Point",
+            coordinates: [longitude || 0, latitude || 0],
+            formattedAddress: "",
+          },
         },
-      });
+        {
+          onSuccess: (data) => {
+            console.log("Logedin :", data);
+            router.push("/app"); // Redirect after login
+          },
+        }
+      );
     }
   };
 
@@ -85,6 +122,13 @@ export function SignupForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Image
+        src="/assets/lumore-hr.svg"
+        alt="Lumore"
+        height="100"
+        width="100"
+        className="mx-auto"
+      />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Signup</CardTitle>
@@ -94,7 +138,25 @@ export function SignupForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
+            {/* <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="text-sm"
+                    required
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email}</p>
+                )}
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <div className="relative">
@@ -163,12 +225,13 @@ export function SignupForm({
               <Button type="submit" className="w-full">
                 Signup
               </Button>
-            </div>
+            </div> */}
             <Button
               onClick={handleGoogleLogin}
               variant="outline"
-              className="w-full mt-4"
+              className="w-full mt-2 text-lg p-6"
             >
+              <Icon name="FcGoogle" className="!text-2xl !h-6 !w-6" />
               Login with Google
             </Button>
             <div className="mt-4 text-center text-sm">
