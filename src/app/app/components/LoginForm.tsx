@@ -1,4 +1,5 @@
 "use client";
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -85,7 +87,14 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col  gap-6", className)} {...props}>
+      <Image
+        src="/assets/lumore-hr.svg"
+        alt="Lumore"
+        height="100"
+        width="100"
+        className="mx-auto"
+      />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
@@ -155,8 +164,9 @@ export function LoginForm({
             <Button
               onClick={handleGoogleLogin}
               variant="outline"
-              className="w-full mt-4"
+              className="w-full mt-2 text-lg p-6"
             >
+              <Icon name="FcGoogle" className="!text-2xl !h-6 !w-6" />
               Login with Google
             </Button>
             <div className="mt-4 text-center text-sm">
