@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { TextField } from "../components/InputField";
 import GeneralLayout from "../components/layout/general";
 import { useUser } from "../hooks/useUser";
+import SubPageLayout from "../components/layout/SubPageLayout";
 
 interface UserSettings {
   email: string;
@@ -119,7 +120,7 @@ const UserSettings = () => {
   }
 
   return (
-    <GeneralLayout>
+    <SubPageLayout title="User Settings">
       <div className="bg-ui-background/10 p-4">
         <div className="w-full max-w-3xl mx-auto pb-10">
           <h3 className="text-xl font-medium">User Settings</h3>
@@ -132,8 +133,8 @@ const UserSettings = () => {
               editFieldType === "web3Wallet"
                 ? settings.web3Wallet.addresses[0]
                 : editFieldType
-                ? settings[editFieldType] ?? null
-                : null
+                  ? settings[editFieldType] ?? null
+                  : null
             }
           />
 
@@ -196,7 +197,7 @@ const UserSettings = () => {
           </div>
         </div>
       </div>
-    </GeneralLayout>
+    </SubPageLayout>
   );
 };
 
@@ -286,19 +287,18 @@ const FieldEditor = ({
                 fieldType === "phoneNumber"
                   ? "Phone Number"
                   : fieldType === "web3Wallet"
-                  ? "Wallet Address"
-                  : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
+                    ? "Wallet Address"
+                    : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
               }
               type={fieldType === "email" ? "email" : "text"}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={`Enter your ${
-                fieldType === "phoneNumber"
+              placeholder={`Enter your ${fieldType === "phoneNumber"
                   ? "phone number"
                   : fieldType === "web3Wallet"
-                  ? "wallet address"
-                  : fieldType
-              }`}
+                    ? "wallet address"
+                    : fieldType
+                }`}
               error={error}
             />
           </div>

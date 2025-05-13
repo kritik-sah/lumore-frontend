@@ -2,13 +2,13 @@ import React from "react";
 import GeneralHeader from "../headers/General";
 import MobileNav from "../MobileNav";
 
-const GeneralLayout = ({ children }: { children: React.ReactNode }) => {
+const GeneralLayout = ({ children, userSetting }: { children: React.ReactNode, userSetting: boolean }) => {
   return (
-    <div>
-      <GeneralHeader />
+    <>
+      <GeneralHeader userSetting={userSetting} />
       {children}
       <MobileNav />
-    </div>
+    </>
   );
 };
 

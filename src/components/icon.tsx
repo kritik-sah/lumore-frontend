@@ -47,7 +47,7 @@ import {
 } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { GiRingBox } from "react-icons/gi";
-import { HiOutlineLogout } from "react-icons/hi";
+import { HiOutlineLogout, HiAdjustments } from "react-icons/hi";
 import {
   HiAdjustmentsHorizontal,
   HiArrowLongRight,
@@ -75,8 +75,8 @@ import {
   HiOutlineUser,
 } from "react-icons/hi2";
 import { ImSpinner6 } from "react-icons/im";
-import { IoMagnet, IoPaperPlane } from "react-icons/io5";
-import { LuDot, LuGraduationCap, LuVenetianMask } from "react-icons/lu";
+import { IoMagnet, IoPaperPlane, IoCompassOutline, IoChatbubbleOutline, IoOptionsOutline, IoSettingsOutline, IoSparklesSharp, IoRoseOutline, IoChevronBackOutline } from "react-icons/io5";
+import { LuDot, LuUser, LuGraduationCap, LuVenetianMask } from "react-icons/lu";
 import {
   MdOutlineBloodtype,
   MdOutlineDashboard,
@@ -207,6 +207,15 @@ const iconComponents: Record<string, IconType> = {
   FaApple,
   AiFillAndroid,
   FcGoogle,
+  IoCompassOutline,
+  IoChatbubbleOutline,
+  LuUser,
+  HiAdjustments,
+  IoOptionsOutline,
+  IoSparklesSharp,
+  IoRoseOutline,
+  IoChevronBackOutline,
+  IoSettingsOutline
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

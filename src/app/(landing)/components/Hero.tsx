@@ -26,7 +26,7 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
           <Button
             size="lg"
-            className="text-xl md:text-lg py-8 md:py-6 w-full md:w-auto rounded-xl"
+            className="bg-ui-primary text-ui-shade hover:bg-ui-primary/90 text-xl md:text-lg py-8 md:py-6 w-full md:w-auto rounded-xl"
             onClick={install}
           >
             Install Lumore

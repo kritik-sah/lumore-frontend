@@ -17,6 +17,7 @@ import MultiSelectField from "../components/MultiSelectField";
 import General from "../components/headers/General";
 import GeneralLayout from "../components/layout/general";
 import { useUser } from "../hooks/useUser";
+import SubPageLayout from "../components/layout/SubPageLayout";
 
 interface UserPreferences {
   interestedIn: string;
@@ -148,8 +149,8 @@ const EditPreferences = () => {
 
   return (
     <>
-      <GeneralLayout>
-        <div className="bg-ui-background/10 p-4">
+      <SubPageLayout title="Edit Preferences">
+        <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
           <div className="w-full max-w-3xl mx-auto pb-10">
             <h3 className="text-xl font-medium">Edit Preferences</h3>
             <FieldEditor
@@ -318,7 +319,7 @@ const EditPreferences = () => {
             </div>
           </div>
         </div>
-      </GeneralLayout>
+      </SubPageLayout>
     </>
   );
 };

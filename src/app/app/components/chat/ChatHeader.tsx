@@ -46,14 +46,14 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b border-ui-shade/10">
+    <div className="flex items-center justify-between p-2 pt-0 border-b border-ui-shade/10">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="w-10 h-10 rounded-full bg-ui-highlight">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user.profilePicture} alt={user.username} />
+              <AvatarImage src={user.profilePicture} alt={user.realName || user.nickname || user.username} />
               <AvatarFallback>
-                {user.username.charAt(0).toUpperCase()}
+                {`${user.realName || user.nickname || user.username}`.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>

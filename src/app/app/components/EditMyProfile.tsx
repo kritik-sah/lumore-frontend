@@ -8,11 +8,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { updateFieldVisibility } from "@/lib/apis";
+import { updateFieldVisibility, uploadProfilePicture } from "@/lib/apis";
 import allLanguages from "@/lib/languages.json";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import React, { useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useLogout } from "../hooks/useAuth";
@@ -51,29 +51,15 @@ const profileSchema = z.object({
     hobbies: z.array(z.string()),
   }),
   bio: z.string().max(500, "Bio must not exceed 500 characters"),
-  gender: z.enum(["Man", "Woman", "Non-Binary", "Prefer Not to Say"]),
+  gender: z.enum(["Man", "Woman", "Gay", "Lesbian", "Non-Binary", "Prefer Not to Say"]),
   dob: z.string(),
-  sexualOrientation: z.enum([
-    "Straight",
-    "Gay",
-    "Lesbian",
-    "Bisexual",
-    "Pansexual",
-    "Asexual",
-    "Queer",
-    "Questioning",
-    "Prefer Not to Say",
-  ]),
   height: z.string().regex(/^\d{2,3}$/, "Height must be a valid number in cm"),
   currentLocation: z.string(),
   diet: z.enum([
     "Vegetarian",
     "Vegan",
-    "Pescatarian",
+    "Jain",
     "Non-Vegetarian",
-    "Gluten-Free",
-    "Kosher",
-    "Halal",
     "No Specific Diet",
   ]),
   zodiacSign: z.enum([
@@ -120,23 +106,7 @@ const profileSchema = z.object({
     })
     .optional(),
 
-  education: z
-    .object({
-      degree: z
-        .enum([
-          "High School",
-          "Associate's",
-          "Bachelor's",
-          "Master's",
-          "Doctorate",
-          "Professional Degree",
-          "Other",
-        ])
-        .optional(),
-      field: z.string().optional(),
-      institution: z.string().optional(),
-    })
-    .optional(),
+  institution: z.string().optional(),
   maritalStatus: z.enum([
     "Single",
     "Divorced",
@@ -184,6 +154,11 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   const { logout } = useLogout();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [editFieldType, setEditFieldType] = useState("");
 
@@ -202,7 +177,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
       bio: user?.bio || "",
       gender: user?.gender || "Prefer Not to Say",
       dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
-      sexualOrientation: user?.sexualOrientation || "Prefer Not to Say",
       height: user?.height || "170",
       currentLocation: user?.currentLocation || "",
       diet: user?.diet || "No Specific Diet",
@@ -213,11 +187,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         pets: "Prefer Not to Say",
       },
       work: user?.work || { title: "", company: "" },
-      education: user?.education || {
-        degree: "Other",
-        field: "",
-        institution: "",
-      },
+      institution: user?.institution || "",
       maritalStatus: user?.maritalStatus || "Prefer Not to Say",
       languages: user?.languages || [],
       personalityType: user?.personalityType || "Not Sure",
@@ -247,6 +217,24 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     }
   };
 
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      const response = await uploadProfilePicture(file);
+      console.log("Upload success:", response);
+    } catch (error) {
+      console.error("Upload error:", error instanceof Error ? error.message : error);
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -256,7 +244,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   }
 
   return (
-    <div className="bg-ui-background/10 p-4">
+    <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto pb-10">
         <h3 className="text-xl font-medium">Edit Profile</h3>
         <FieldEditor
@@ -268,9 +256,22 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           isLoading={isUpdating}
           form={form}
         />
-        <div className="flex items-center justify-start gap-3 mt-3">
-          <div className="h-20 w-20 bg-ui-highlight rounded-full"></div>
-          Change Profile Picture
+        <div className="flex items-center justify-start gap-3 mt-3 cursor-pointer" onClick={handleClick}>
+          <div className="h-20 w-20 bg-ui-highlight rounded-full overflow-hidden">
+            {preview ? (
+              <img src={preview} alt="Preview" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full bg-gray-300 rounded-full" />
+            )}
+          </div>
+          <span className="text-sm font-medium text-gray-700">Change Profile Picture</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            ref={fileInputRef}
+            onChange={handleChange}
+            className="hidden"
+          />
         </div>
         <div
           onClick={() => handleEditField("username")}
@@ -350,25 +351,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
             </div>
           </div>
         </div>
-        <div
-          onClick={() => handleEditField("sexualOrientation")}
-          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-sm text-ui-shade/60">Sexual orientation</h3>
-              {user.sexualOrientation}
-            </div>
-            <VisibilityToggle
-              field="sexualOrientation"
-              currentVisibility={
-                user.fieldVisibility?.sexualOrientation || "public"
-              }
-              onVisibilityChange={handleVisibilityChange}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        </div>
+
         <div
           onClick={() => handleEditField("interests")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
@@ -433,25 +416,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
             />
           </div>
         </div>
-        <div
-          onClick={() => handleEditField("currentLocation")}
-          className="border border-ui-shade/10 rounded-xl p-2 mt-3"
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-sm text-ui-shade/60">Current Location</h3>
-              {user.currentLocation}
-            </div>
-            <VisibilityToggle
-              field="currentLocation"
-              currentVisibility={
-                user.fieldVisibility?.currentLocation || "public"
-              }
-              onVisibilityChange={handleVisibilityChange}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        </div>
+
         <div
           onClick={() => handleEditField("diet")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
@@ -543,20 +508,19 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         </div>
 
         <div
-          onClick={() => handleEditField("education")}
+          onClick={() => handleEditField("institution")}
           className="border border-ui-shade/10 rounded-xl p-2 mt-3"
         >
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-sm text-ui-shade/60">Education</h3>
-              {user?.education?.degree}{" "}
-              {user?.education?.field ? `(${user?.education?.field})` : null}{" "}
-              from {user?.education?.institution}
+
+              {user?.institution}
             </div>
             <VisibilityToggle
-              field="education"
+              field="institution"
               currentVisibility={
-                user.fieldVisibility?.education?.degree || "public"
+                user.fieldVisibility?.institution || "public"
               }
               onVisibilityChange={handleVisibilityChange}
               onClick={(e) => e.stopPropagation()}
@@ -871,26 +835,7 @@ const FieldEditor = ({
                 placeholder={value || "Select your date of birth"}
               />
             ) : null}
-            {fieldType === "sexualOrientation" ? (
-              <SelectField
-                label="Sexual Orientation"
-                options={[
-                  { label: "Straight", value: "Straight" },
-                  { label: "Gay", value: "Gay" },
-                  { label: "Lesbian", value: "Lesbian" },
-                  { label: "Bisexual", value: "Bisexual" },
-                  { label: "Pansexual", value: "Pansexual" },
-                  { label: "Asexual", value: "Asexual" },
-                  { label: "Queer", value: "Queer" },
-                  { label: "Questioning", value: "Questioning" },
-                  { label: "Prefer Not to Say", value: "Prefer Not to Say" },
-                ]}
-                value={value}
-                name={fieldType}
-                onChange={(e) => setValue(e)}
-                placeholder="Select your sexual orientation"
-              />
-            ) : null}
+
             {fieldType === "height" ? (
               <TextField
                 label="Height in cm."
@@ -902,15 +847,7 @@ const FieldEditor = ({
                 max={250}
               />
             ) : null}
-            {fieldType === "currentLocation" ? (
-              <TextField
-                label="Current Location"
-                value={value}
-                name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="Enter your current location"
-              />
-            ) : null}
+
             {fieldType === "diet" ? (
               <SelectField
                 label="Diet"
@@ -1023,9 +960,9 @@ const FieldEditor = ({
               </>
             ) : null}
 
-            {fieldType === "education" ? (
+            {fieldType === "institution" ? (
               <>
-                <SelectField
+                {/* <SelectField
                   label="Education Degree"
                   options={[
                     { label: "High School", value: "High School" },
@@ -1043,8 +980,8 @@ const FieldEditor = ({
                   name={"education.degree"}
                   onChange={(e) => setValue({ ...value, degree: e })}
                   placeholder="What is your highest education degree?"
-                />
-                <TextField
+                /> */}
+                {/* <TextField
                   label="Field of Study"
                   value={value?.field}
                   name={"education.field"}
@@ -1052,13 +989,13 @@ const FieldEditor = ({
                     setValue({ ...value, field: e.target.value })
                   }
                   placeholder="What's your field of study?"
-                />
+                /> */}
                 <TextField
                   label="Institution"
-                  value={value?.institution}
-                  name={"education.institution"}
+                  value={value}
+                  name={"institution"}
                   onChange={(e) =>
-                    setValue({ ...value, institution: e.target.value })
+                    setValue(e?.target?.value)
                   }
                   placeholder="Where did you study?"
                 />

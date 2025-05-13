@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "@tailwindcss/typography";
 
 /* @media (prefers-color-scheme: dark) {
   :root {
@@ -22,6 +23,7 @@ body {
   :root {
     --radius: 0.5rem;
   }
+
   h1,
   h2,
   h3,
@@ -37,6 +39,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .rdp-vhidden {
   display: none;
 }
@@ -47,6 +50,7 @@ body {
       opacity: 0;
       transform: translateY(10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -61,9 +65,11 @@ body {
     0% {
       width: 0%;
     }
+
     50% {
       width: 100%;
     }
+
     100% {
       width: 0%;
     }

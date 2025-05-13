@@ -18,15 +18,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isConnected,
 }) => {
   return (
-    <div className="p-2 border border-ui-shade/10 rounded-full mx-2">
+    <div className="p-2 bg-ui-light border border-ui-shade/10 rounded-full mx-2">
       <div className="flex gap-2">
         <Input
           value={value}
           onChange={onChange}
           onKeyPress={onKeyPress}
-          placeholder="Type a message..."
+          placeholder="Say Hi 👋"
           disabled={!isConnected}
-          className="border-0 focus-visible:ring-0 focus-visible:outline-none flex-grow"
+          className="border-0 focus-visible:ring-0 focus-visible:outline-none flex-grow shadow-none"
         />
         <Button
           size={"icon"}
