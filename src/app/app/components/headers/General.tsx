@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Icon from "@/components/icon";
 
-const General = ({ userSetting }: { userSetting: boolean }) => {
+const General = ({ userSetting }: { userSetting?: boolean }) => {
   return (
     <header className="z-50 w-full bg-ui-light max-h-16">
       <div className="container mx-auto px-2 md:px-0 flex h-14 items-center">
