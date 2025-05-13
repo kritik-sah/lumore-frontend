@@ -39,7 +39,12 @@ const Slots = () => {
     return (
       <NavLayout>
         <div className="max-w-md mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-4">Loading slots...</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Chats</h1>
+          </div>
+          <p className=" text-center mb-4 text-ui-shade">
+            Fetching your chats...
+          </p>
         </div>
       </NavLayout>
     );
@@ -49,17 +54,20 @@ const Slots = () => {
     return (
       <NavLayout>
         <div className="max-w-md mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-4 text-red-500">
-            Failed to fetch slots
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Chats</h1>
+          </div>
+          <p className=" text-center mb-4 text-red-500">
+            No active chats yet
+          </p>
         </div>
-      </NavLayout>
+      </NavLayout >
     );
   }
 
   return (
     <NavLayout>
-      <div className="max-w-md mx-auto p-4">
+      <div className="w-full h-full max-w-md mx-auto p-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Chats</h1>
           <span>

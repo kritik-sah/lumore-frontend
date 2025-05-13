@@ -168,3 +168,36 @@ export const updateSlot = async (
   });
   return response.data.data.slot;
 };
+
+
+export interface UploadResponse {
+  message: string;
+  profilePicture: string;
+}
+
+
+/**
+ * Upload a profile picture to the backend.
+ * @param file - The image file to upload
+ * @returns Promise with upload response
+ */
+export const uploadProfilePicture = async (file: File): Promise<UploadResponse> => {
+  const formData = new FormData();
+  formData.append("profilePic", file);
+  const token = Cookies.get("token");
+  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
+  console.log("[uploadProfilePicture]", token)
+  try {
+    const res = await axios.patch<UploadResponse>(`${API_URL}/profile/${userId}/update-profile-picture`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data;
+  } catch (error: any) {
+    const message = error?.response?.data?.message || "Upload failed";
+    throw new Error(message);
+  }
+};

@@ -1,39 +1,28 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { HiAdjustments } from "react-icons/hi";
-import { MdOutlineSettings } from "react-icons/md";
-import { useSocket } from "../../context/SocketContext";
+import Image from "next/image";
+import Icon from "@/components/icon";
 
-const General = () => {
-  const { isActive } = useSocket();
-
+const General = ({ userSetting }: { userSetting: boolean }) => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="z-50 w-full bg-ui-light max-h-16">
       <div className="container mx-auto px-2 md:px-0 flex h-14 items-center">
         <div className="mr-4 flex">
           <Link href="/app" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold">Lumore</span>
+            <Image src={"/assets/lumore-hr.svg"} alt="Lumore" height={60} width={100} />
+            <span className="sr-only font-bold">Lumore</span>
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="flex items-center space-x-2">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                isActive ? "bg-green-500" : "bg-gray-500"
-              }`}
-            />
-            <span className="text-sm text-muted-foreground">
-              {isActive ? "Online" : "Offline"}
-            </span>
-          </div>
+        <div className="flex flex-1 items-center justify-end space-x-2 md:justify-end">
           <div className="flex items-center space-x-2 text-lg">
             <Link href="/app/edit-preferences">
-              <HiAdjustments />
+              <Icon name="IoOptionsOutline" className="h-7 w-7" />
             </Link>
-            <Link href="/app/user-settings">
-              <MdOutlineSettings />
-            </Link>
+            {userSetting ? <Link href="/app/user-settings">
+              <Icon name="IoSettingsOutline" className="h-7 w-7" />
+            </Link> : null}
+
           </div>
         </div>
       </div>

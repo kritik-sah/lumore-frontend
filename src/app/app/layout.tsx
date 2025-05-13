@@ -20,8 +20,8 @@ export default function RootLayout({
     <Provider>
       <ExploreChatProvider>
         <LumoreSplash />
-        <div className="flex flex-col h-screen">
-          <main className="flex-1 overflow-y-auto">{children}</main>
+        <div className="h-screen">
+          <main className="flex flex-col h-full">{children}</main>
         </div>
       </ExploreChatProvider>
     </Provider>

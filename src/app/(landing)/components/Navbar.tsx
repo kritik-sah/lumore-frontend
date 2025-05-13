@@ -50,7 +50,7 @@ export default function Navbar() {
           </ul>
           <Button
             size="lg"
-            className="text-base md:text-lg py-4 md:py-6"
+            className="bg-ui-primary text-ui-shade hover:bg-ui-primary/90 text-base md:text-lg py-4 md:py-6"
             onClick={install}
           >
             Install Lumore

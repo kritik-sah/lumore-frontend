@@ -132,7 +132,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     const watchId = navigator.geolocation.watchPosition(
       handleSuccess,
       handleError,
-      { enableHighAccuracy: true, maximumAge: 1000000 } // Reduce frequency
+      { enableHighAccuracy: true, maximumAge: 1000000000 } // Reduce frequency
     );
 
     return () => {
@@ -145,8 +145,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
       // Avoid unnecessary API calls if location hasn't changed significantly
       const hasSignificantChange =
         !lastSentLocation.current ||
-        Math.abs(lastSentLocation.current.latitude - latitude) > 0.0001 ||
-        Math.abs(lastSentLocation.current.longitude - longitude) > 0.0001;
+        Math.abs(lastSentLocation.current.latitude - latitude) > 1 ||
+        Math.abs(lastSentLocation.current.longitude - longitude) > 1;
 
       if (hasSignificantChange) {
         lastSentLocation.current = { latitude, longitude };

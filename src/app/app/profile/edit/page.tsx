@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import ProfileEditWrapper from "../../components/ProfileEditWrapper";
 import GeneralLayout from "../../components/layout/general";
+import SubPageLayout from "../../components/layout/SubPageLayout";
 
 const EditProfile = async () => {
   const cookieStore = await cookies();
@@ -16,9 +17,9 @@ const EditProfile = async () => {
   }
 
   return (
-    <GeneralLayout>
+    <SubPageLayout title="Edit Profile">
       <ProfileEditWrapper userId={user._id} />
-    </GeneralLayout>
+    </SubPageLayout>
   );
 };
 
