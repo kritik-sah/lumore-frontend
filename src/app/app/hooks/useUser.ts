@@ -50,10 +50,7 @@ interface User {
     relationshipType: string;
     preferredLanguages: string[];
     zodiacPreference: string[];
-    education: {
-      institutions: string[];
-      minimumDegreeLevel: string;
-    };
+    institutions: string[];
     personalityTypePreference: string[];
     dietPreference: string[];
     locationPreferences: {
