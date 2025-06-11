@@ -150,7 +150,7 @@ const MyProfile = ({ user }: { user: any }) => {
             </div>
           </div>
           <div className="my-3">
-            <p className="text-lg">Tired of swiping... & no results...</p>
+            <p className="text-lg">{user?.bio}</p>
           </div>
           {userId === user?._id ? (
             <Link href="/app/profile/edit">

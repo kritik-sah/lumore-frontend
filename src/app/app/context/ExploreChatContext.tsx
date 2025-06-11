@@ -1,5 +1,5 @@
 "use client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import {
@@ -13,6 +13,7 @@ import {
 import { Message } from "../components/ChatScreen";
 import { useUser } from "../hooks/useUser";
 import { useSocket } from "./SocketContext";
+import { fetchRoomChat } from "@/lib/apis";
 
 interface ExploreChatContextType {
   matchId: string | null;
@@ -48,6 +49,63 @@ export const ExploreChatProvider = ({
   const { socket } = useSocket();
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!matchId) return;
+
+      const encryptionKey = localStorage.getItem(`chat_key_${matchId}`);
+      console.log("Encryption Key:", encryptionKey);
+
+      if (!encryptionKey) {
+        console.warn("[ExploreChatContext] No encryption key found.");
+        return;
+      }
+
+      try {
+        const rawMessages = await fetchRoomChat(matchId);
+        const key = CryptoJS.enc.Hex.parse(encryptionKey);
+
+        const decryptedMessages: Message[] = rawMessages.map((msg: any) => {
+          try {
+            // Convert character codes to hex string
+            const encryptedHexStr = String.fromCharCode(...msg.encryptedData.data);
+            const ivHexStr = String.fromCharCode(...msg.iv.data);
+
+            const ciphertextWordArray = CryptoJS.enc.Hex.parse(encryptedHexStr);
+            const base64CipherText = CryptoJS.enc.Base64.stringify(ciphertextWordArray);
+            const iv = CryptoJS.enc.Hex.parse(ivHexStr);
+
+            const decrypted = CryptoJS.AES.decrypt(base64CipherText, key, {
+              iv,
+              mode: CryptoJS.mode.CBC,
+              padding: CryptoJS.pad.Pkcs7,
+            });
+
+            const message = decrypted.toString(CryptoJS.enc.Utf8);
+            if (!message) throw new Error("Failed to decrypt message");
+
+            console.log("[ExploreChatContext] Decrypted message:", message);
+
+            return {
+              sender: msg.sender?._id || msg.sender,
+              message,
+              timestamp: new Date(msg.createdAt).getTime(),
+            };
+          } catch (err) {
+            console.warn("[ExploreChatContext] Skipped a message due to decryption error:", err);
+            return null;
+          }
+        }).filter(Boolean) as Message[];
+
+        setMessages(decryptedMessages);
+      } catch (error) {
+        console.error("[ExploreChatContext] Error loading messages:", error);
+      }
+    };
+
+    loadMessages();
+  }, [matchId]);
 
   const startMatchmaking = () => {
     if (!socket || !user || isMatching) return;
@@ -113,53 +171,52 @@ export const ExploreChatProvider = ({
   }) => {
     console.log("[ChatScreen] Received new message:", data);
 
-    const encryptionKey = sessionStorage.getItem(`chat_key_${matchId}`);
+    const encryptionKey = localStorage.getItem(`chat_key_${matchId}`);
     if (!encryptionKey) {
-      console.log(
-        "[ChatScreen] No encryption key available, message cannot be decrypted"
-      );
+      console.warn("[ChatScreen] No encryption key available, cannot decrypt message.");
       return;
     }
 
     try {
       const key = CryptoJS.enc.Hex.parse(encryptionKey);
       const iv = CryptoJS.enc.Hex.parse(data.iv);
-      const decrypted = CryptoJS.AES.decrypt(
-        CryptoJS.enc.Hex.parse(data.encryptedData).toString(
-          CryptoJS.enc.Base64
-        ),
-        key,
-        {
-          iv,
-          mode: CryptoJS.mode.CBC,
-          padding: CryptoJS.pad.Pkcs7,
-        }
-      );
+
+      // Convert the hex-encoded encryptedData to WordArray directly
+      const encryptedWordArray = CryptoJS.enc.Hex.parse(data.encryptedData);
+      const base64Encrypted = CryptoJS.enc.Base64.stringify(encryptedWordArray);
+
+      const decrypted = CryptoJS.AES.decrypt(base64Encrypted, key, {
+        iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
 
       const message = decrypted.toString(CryptoJS.enc.Utf8);
-      if (!message) throw new Error("Decryption failed, empty message");
+
+      if (!message) throw new Error("Decryption failed: Message is empty or invalid UTF-8");
+
+      console.log("[ChatScreen] Decrypted message:", message);
 
       setMessages((prev) => {
-        // Check if message with same timestamp and sender already exists
         const isDuplicate = prev.some(
           (msg) =>
             msg.timestamp === data.timestamp && msg.sender === data.senderId
         );
+        if (isDuplicate) return prev;
 
-        if (isDuplicate) {
-          console.log("[ChatScreen] Duplicate message detected, skipping");
-          return prev;
-        }
+        const newMsg: Message = {
+          sender: data.senderId,
+          message,
+          timestamp: data.timestamp,
+        };
 
-        return [
-          ...prev,
-          { sender: data.senderId, message, timestamp: data.timestamp },
-        ];
+        return [...prev, newMsg].sort((a, b) => a.timestamp - b.timestamp);
       });
     } catch (error) {
       console.error("[ChatScreen] Error decrypting message:", error);
     }
   };
+
 
   useEffect(() => {
     if (!socket) return;
@@ -237,6 +294,12 @@ export const ExploreChatProvider = ({
       socket.off("userDisconnected", handleUserDisconnected);
     };
   }, [socket, matchId, clearMatch]);
+
+  // useEffect(() => {
+  //   if (matchId && socket) {
+
+  //   }
+  // }, [matchId, socket]);
 
   return (
     <ExploreChatContext.Provider

@@ -60,10 +60,10 @@ const ChatScreen: React.FC = () => {
   useEffect(() => {
     if (!socket || !matchId) return;
 
-    // Retrieve encryption key from sessionStorage
-    const storedKey = sessionStorage.getItem(`chat_key_${matchId}`);
+    // Retrieve encryption key from localStorage
+    const storedKey = localStorage.getItem(`chat_key_${matchId}`);
     if (storedKey) {
-      console.log("[ChatScreen] Retrieved encryption key from sessionStorage");
+      console.log("[ChatScreen] Retrieved encryption key from localStorage");
       setIsConnected(true);
     }
 
@@ -77,7 +77,7 @@ const ChatScreen: React.FC = () => {
 
       if (storedKey !== sessionKey) {
         console.log("[ChatScreen] Storing new encryption key");
-        sessionStorage.setItem(`chat_key_${matchId}`, sessionKey);
+        localStorage.setItem(`chat_key_${matchId}`, sessionKey);
         setIsConnected(true);
         socket.emit("key_exchange_response", {
           fromUserId,
@@ -94,7 +94,7 @@ const ChatScreen: React.FC = () => {
 
       if (storedKey !== sessionKey) {
         console.log("[ChatScreen] Updating encryption key");
-        sessionStorage.setItem(`chat_key_${matchId}`, sessionKey);
+        localStorage.setItem(`chat_key_${matchId}`, sessionKey);
         setIsConnected(true);
       }
     });
@@ -114,14 +114,15 @@ const ChatScreen: React.FC = () => {
   const sendMessage = () => {
     if (!socket || !newMessage.trim() || !matchId || !matchedUser) return;
 
-    const encryptionKey = sessionStorage.getItem(`chat_key_${matchId}`);
+    const encryptionKey = localStorage.getItem(`chat_key_${matchId}`);
+    console.log("matchId: ===>", matchId);
+    console.log("sessionKey: ===>", encryptionKey);
     if (!encryptionKey) {
       console.log(
         "[ChatScreen] No encryption key available, cannot send message"
       );
       return;
     }
-
     try {
       const iv = CryptoJS.lib.WordArray.random(16);
       const key = CryptoJS.enc.Hex.parse(encryptionKey);
@@ -130,14 +131,12 @@ const ChatScreen: React.FC = () => {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7,
       });
-
       socket.emit("send_message", {
         matchId,
         receiverId: matchedUser._id,
         encryptedContent: encrypted.ciphertext.toString(CryptoJS.enc.Hex),
         iv: iv.toString(CryptoJS.enc.Hex),
       });
-
       setMessages((prev) => [
         ...prev,
         { sender: userId, message: newMessage.trim(), timestamp: Date.now() },

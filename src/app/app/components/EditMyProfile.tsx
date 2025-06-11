@@ -21,6 +21,7 @@ import DateField from "./DateField";
 import { SelectField, TextAreaField, TextField } from "./InputField";
 import MultiSelectField from "./MultiSelectField";
 import VisibilityToggle from "./VisibilityToggle";
+import { queryClient } from "@/lib/queryClient";
 
 // Form validation schema
 const profileSchema = z.object({
@@ -230,6 +231,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     try {
       const response = await uploadProfilePicture(file);
       console.log("Upload success:", response);
+      queryClient.invalidateQueries({ queryKey: ["user", user?.userId] });
     } catch (error) {
       console.error("Upload error:", error instanceof Error ? error.message : error);
     }
@@ -258,8 +260,8 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         />
         <div className="flex items-center justify-start gap-3 mt-3 cursor-pointer" onClick={handleClick}>
           <div className="h-20 w-20 bg-ui-highlight rounded-full overflow-hidden">
-            {preview ? (
-              <img src={preview} alt="Preview" className="h-full w-full object-cover" />
+            {preview || user?.profilePicture ? (
+              <img src={preview || user?.profilePicture} alt="Preview" className="h-full w-full object-cover" />
             ) : (
               <div className="h-full w-full bg-gray-300 rounded-full" />
             )}

@@ -201,3 +201,14 @@ export const uploadProfilePicture = async (file: File): Promise<UploadResponse> 
     throw new Error(message);
   }
 };
+
+
+export const fetchRoomChat = async (roomId: string) => {
+  const token = Cookies.get("token");
+  const response = await axios.get(`${API_URL}/messages/${roomId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

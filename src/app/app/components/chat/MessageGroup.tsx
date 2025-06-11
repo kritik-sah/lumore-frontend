@@ -20,13 +20,13 @@ export const MessageGroup: React.FC<MessageGroupProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <DateHeader timestamp={messages[0].timestamp} />
+      <DateHeader timestamp={messages[0]?.timestamp} />
       {messages.map((message, index) => (
         <ChatMessage
           key={index}
-          message={message.message}
-          timestamp={message.timestamp}
-          isOwnMessage={message.sender === currentUserId}
+          message={message?.message}
+          timestamp={message?.timestamp}
+          isOwnMessage={message?.sender === currentUserId}
         />
       ))}
     </div>
