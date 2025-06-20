@@ -12,9 +12,9 @@ const OfflinePage = () => {
       <div className="bg-white rounded-2xl shadow-xl p-4 max-w-md w-full">
         <div className="flex flex-col items-center space-y-4">
           <AlertTriangle className="w-12 h-12 text-ui-primary" />
-          <h1 className="text-2xl font-semibold text-gray-800">You're Offline</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">You&apos;re Offline</h1>
           <p className="text-gray-600">
-            It seems you've lost your internet connection. Please check your connection and try again.
+            It seems you&apos;ve lost your internet connection. Please check your connection and try again.
           </p>
           <button
             onClick={handleRetry}
