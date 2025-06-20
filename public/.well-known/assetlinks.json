@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "xyz.lumore.www.twa",
+        "sha256_cert_fingerprints": ["20:E6:FE:F4:5E:07:9A:A9:11:99:88:99:CD:39:85:95:4D:5B:12:20:80:69:AF:91:F4:DC:C4:8E:3B:03:77:51"]
+      }
+    }]
