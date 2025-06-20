@@ -13,16 +13,17 @@ export default function Hero() {
     <section className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left">
       {/* Left Content */}
       <div className="w-full md:w-1/2">
-        <h2 className="text-3xl md:text-6xl font-bold leading-tight">
-          Find Your <span className="text-ui-accent">Match</span>,
-          <br className="hidden md:block" /> Your Way
+        <h2 className="text-3xl md:text-7xl font-bold leading-tight uppercase">
+          Meet <span className="text-ui-highlight">People</span>,
+          <br className="hidden md:block" /> Not Profiles.
         </h2>
-        <p className="text-ui-shade max-w-xl my-5 text-sm md:text-base">
-          Lumore connects you instantly with like-minded people through
-          real-time, anonymous chat, eliminating endless swiping. Our mission is
-          to make dating effortless, secure, and meaningful by matching users
-          based on interests, location, and preferences.
+        <p className="text-ui-shade max-w-md my-5 text-sm md:text-base">
+          Lumore helps you meet new people, not just swipe on
+          them. We're building a more meaningful, less awkward way to
+          socialize.
+
         </p>
+
         <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
           <Button
             size="lg"
@@ -30,7 +31,7 @@ export default function Hero() {
             onClick={install}
           >
             Install Lumore
-            <Icon name="FaApple" className="text-3xl flex-shrink-0" />
+            {/* <Icon name="FaApple" className="text-3xl flex-shrink-0" /> */}
             <Icon name="AiFillAndroid" className="text-3xl flex-shrink-0" />
           </Button>
           {/* <PopupButton id="ITzseckk">

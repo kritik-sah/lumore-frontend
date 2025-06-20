@@ -1,44 +1,4 @@
 {
-  "name": "Lumore",
-  "id": "/?source=pwa",
-  "version": "1.0.0",
-  "lang": "en-US",
-  "dir": "ltr",
-  "short_name": "Lumore",
-  "description": "Lumore connects you instantly with like-minded people through real-time, anonymous chat, eliminating endless swiping.",
-  "start_url": "/app",
-  "display": "standalone",
-  "background_color": "#F1E9DA",
-  "theme_color": "#FAFAFA",
-  "orientation": "portrait",
-  "categories": [
-    "social",
-    "lifestyle",
-    "dating"
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Home Screen"
-    },
-    {
-      "src": "/screenshots/chat.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Chat Screen"
-    },
-    {
-      "src": "/screenshots/profile.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Profile Screen"
-    }
-  ],
   "icons": [
     {
       "src": "windows11/SmallTile.scale-100.png",
@@ -488,34 +448,5 @@
       "src": "ios/1024.png",
       "sizes": "1024x1024"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "Start Exploring",
-      "short_name": "Explore",
-      "description": "Discover new connections",
-      "url": "/app",
-      "icons": [
-        {
-          "src": "/icons/chat-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "My Profile",
-      "short_name": "Profile",
-      "description": "View your profile",
-      "url": "/app/profile",
-      "icons": [
-        {
-          "src": "/icons/profile-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+  ]
 }
