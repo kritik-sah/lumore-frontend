@@ -19,7 +19,7 @@ export default function Hero() {
         </h2>
         <p className="text-ui-shade max-w-md my-5 text-sm md:text-base">
           Lumore helps you meet new people, not just swipe on
-          them. We're building a more meaningful, less awkward way to
+          them. We&apos;re building a more meaningful, less awkward way to
           socialize.
 
         </p>
