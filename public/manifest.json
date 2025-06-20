@@ -494,25 +494,13 @@
       "name": "Start Exploring",
       "short_name": "Explore",
       "description": "Discover new connections",
-      "url": "/app",
-      "icons": [
-        {
-          "src": "/icons/chat-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/app"
     },
     {
       "name": "My Profile",
       "short_name": "Profile",
       "description": "View your profile",
-      "url": "/app/profile",
-      "icons": [
-        {
-          "src": "/icons/profile-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/app/profile"
     }
   ],
   "related_applications": [],
