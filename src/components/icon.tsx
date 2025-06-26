@@ -88,6 +88,7 @@ import {
   MdVerified,
 } from "react-icons/md";
 import { RiPinDistanceLine, RiRobot2Line } from "react-icons/ri";
+import { BsSearchHeart } from "react-icons/bs";
 import {
   TbZodiacAquarius,
   TbZodiacAries,
@@ -215,7 +216,8 @@ const iconComponents: Record<string, IconType> = {
   IoSparklesSharp,
   IoRoseOutline,
   IoChevronBackOutline,
-  IoSettingsOutline
+  IoSettingsOutline,
+  BsSearchHeart
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {
