@@ -55,6 +55,8 @@ export default function RootLayout({
             gtag('config', 'G-349HPV22MR');
           `}
         </Script>
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8794679058209848"
+          crossOrigin="anonymous"></Script>
       </head>
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
         <Providers>{children}</Providers>
