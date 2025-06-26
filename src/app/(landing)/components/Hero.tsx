@@ -6,9 +6,17 @@ import { usePWA } from "@/hooks/usePWA";
 import { PopupButton } from "@typeform/embed-react";
 import Image from "next/image";
 import ProductHuntBadge from "./ProductHuntBadge";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Hero() {
   const { install } = usePWA();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/ads.txt");
+  }, [])
+
   return (
     <section className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left">
       {/* Left Content */}
