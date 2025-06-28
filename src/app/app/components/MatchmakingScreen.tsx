@@ -4,6 +4,7 @@ import Icon from "@/components/icon";
 import ChatScreen from "./ChatScreen";
 import { useExploreChat } from "../context/ExploreChatContext";
 import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 const AdBanner = dynamic(() => import("@/components/AdsBanner"), {
   ssr: false,
 });
@@ -58,12 +59,14 @@ const SearchScreen = () => {
 
       {error && <div className="text-red-500 text-sm">{error}</div>}
 
-      <AdBanner
+      {/* <AdBanner
         data-ad-slot="8827977087"
         data-full-width-responsive="true"
         data-ad-layout="display"
         data-ad-format="auto"
-      />
+      /> */}
+
+      <SqAdBanner />
 
       <Button
         variant={isMatching ? "outline" : "default"}
@@ -76,3 +79,45 @@ const SearchScreen = () => {
   );
 };
 
+
+const SqAdBanner = () => {
+  const adRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Check if container has width > 0
+    const checkVisibility = () => {
+      if (adRef.current && adRef.current.offsetWidth > 0) {
+        setIsVisible(true);
+      }
+    };
+
+    // Retry after a brief delay to ensure layout is ready
+    const timeout = setTimeout(checkVisibility, 300);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.error('AdsbyGoogle error:', e);
+      }
+    }
+  }, [isVisible]);
+
+  return (
+    <div ref={adRef}>
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-8794679058209848"
+        data-ad-slot="8827977087"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </div>
+  );
+};
