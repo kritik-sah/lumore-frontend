@@ -109,7 +109,7 @@ const SqAdBanner = () => {
   }, [isVisible]);
 
   return (
-    <div ref={adRef}>
+    <div className="w-[256px] h-[256px] rounded-lg overflow-hidden bg-ui-shade/5" ref={adRef}>
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
@@ -117,6 +117,7 @@ const SqAdBanner = () => {
         data-ad-slot="8827977087"
         data-ad-format="auto"
         data-full-width-responsive="true"
+        data-ad-layout="display"
       />
     </div>
   );
