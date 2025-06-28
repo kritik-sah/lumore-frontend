@@ -109,7 +109,7 @@ const SqAdBanner = () => {
   }, [isVisible]);
 
   return (
-    <div className="w-[256px] h-[256px] rounded-lg overflow-hidden bg-ui-shade/5" ref={adRef}>
+    <div ref={adRef}>
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
