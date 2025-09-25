@@ -229,7 +229,7 @@ export const MobileNavToggle = ({
   return isOpen ? (
     <Icon
       onClick={onClick}
-      name="FaXTwitter"
+      name="MdOutlineClose"
       className="h-6 w-6 text-black dark:text-white"
     />
   ) : (
