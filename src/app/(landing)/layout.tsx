@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Footer from "./components/Footer";
-import Navbar from "./components/Navbar";
+import NavbarUI from "./components/Navbar";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <Navbar />
+      <NavbarUI />
       {children}
       <Footer />
     </>

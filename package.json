@@ -33,6 +33,7 @@
     "framer-motion": "^12.5.0",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.474.0",
+    "motion": "^12.23.22",
     "next": "15.1.6",
     "next-pwa": "^5.6.0",
     "react": "^19.0.0",

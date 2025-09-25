@@ -12,7 +12,7 @@ const ProductHuntBadge: React.FC = () => {
         src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=943859&theme=light&t=1742398876915"
         alt="Lumore - Helps you socialize your way! | Product Hunt"
         width="250"
-        height="54"
+        height="50"
         className="w-full md:w-auto h-auto"
       />
     </a>
