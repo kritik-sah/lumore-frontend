@@ -14,12 +14,10 @@ export default function Hero() {
   const { install } = usePWA();
 
   return (
-    <section className="max-w-7xl min-h-[60vh] mx-auto flex items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left !overflow-x-hidden">
-      <div className="pt-8 flex flex-col items-center justify-center ">
-        <h1 className="text-3xl md:text-5xl text-center font-bold leading-tight uppercase">
-          <span>
-            Meet <span className="text-ui-highlight">People</span>,
-          </span>
+    <section className="max-w-7xl min-h-[70vh] mx-auto flex items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left !overflow-x-hidden">
+      <div className="pt-20 flex flex-col items-center justify-center gap-2 ">
+        <h1 className="text-3xl md:text-5xl text-center font-bold uppercase">
+          Meet <span className="text-ui-highlight">People</span>,
           <br className="hidden md:block" />
           <FlipWords
             className="text-center"
