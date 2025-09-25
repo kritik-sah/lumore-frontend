@@ -42,8 +42,11 @@ export default function Hero() {
           building a more meaningful, less awkward way to socialize.
         </h6>
 
-        <div className="flex items-center justify-center gap-4">
-          <SketchButton onClick={install} className="py-3 px-6">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+          <SketchButton
+            onClick={install}
+            className="py-3 px-6 w-full md:w-auto"
+          >
             <Icon
               name="AiFillAndroid"
               className="text-3xl flex-shrink-0 mr-2"
