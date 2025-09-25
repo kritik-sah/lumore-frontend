@@ -1,59 +1,68 @@
-// components/Hero.tsx
 "use client";
 import Icon from "@/components/icon";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
+import { FlipWords } from "@/components/ui/flip-words";
+import { Particles } from "@/components/ui/particles";
+import SketchButton from "@/components/ui/SketchButton";
 import { usePWA } from "@/hooks/usePWA";
-import { PopupButton } from "@typeform/embed-react";
-import Image from "next/image";
+// import { PopupButton } from "@typeform/embed-react";
+// import Image from "next/image";
+// import { useEffect, useState } from "react";
 import ProductHuntBadge from "./ProductHuntBadge";
 
 export default function Hero() {
   const { install } = usePWA();
 
   return (
-    <section className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left">
-      {/* Left Content */}
-      <div className="w-full md:w-1/2">
-        <h2 className="text-3xl md:text-7xl font-bold leading-tight uppercase">
-          Meet <span className="text-ui-highlight">People</span>,
-          <br className="hidden md:block" /> Not Profiles.
-        </h2>
-        <p className="text-ui-shade max-w-md my-5 text-sm md:text-base">
-          Lumore helps you meet new people, not just swipe on
-          them. We&apos;re building a more meaningful, less awkward way to
-          socialize.
+    <section className="max-w-7xl min-h-[60vh] mx-auto flex items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left !overflow-x-hidden">
+      <div className="pt-8 flex flex-col items-center justify-center ">
+        <h1 className="text-3xl md:text-5xl text-center font-bold leading-tight uppercase">
+          <span>
+            Meet <span className="text-ui-highlight">People</span>,
+          </span>
+          <br className="hidden md:block" />
+          <FlipWords
+            className="text-center"
+            words={[
+              "Not Profiles.",
+              "Not Their Best Selfie.",
+              "Not AI-Generated Prompts.",
+              "Not Job Titles in Bios.",
+              `Not "Here for a Good Time" Clichés.`,
+              "Not Catfish Filters.",
+              "Not Swipe Leftovers.",
+              `Not "Hey" Collectors.`,
+              "Not Ghost Stories.",
+              "Not Algorithm Mistakes.",
+            ]}
+          />
+        </h1>
+        <h6 className="text-ui-shade text-center max-w-xl my-5 text-base md:text-lg">
+          Lumore helps you meet new people, not just swipe on them. We&apos;re
+          building a more meaningful, less awkward way to socialize.
+        </h6>
 
-        </p>
-
-        <div className="flex flex-col lg:flex-row items-center justify-start gap-4">
-          <Button
-            size="lg"
-            className="bg-ui-primary text-ui-shade hover:bg-ui-primary/90 text-xl md:text-lg py-8 md:py-6 w-full md:w-auto rounded-xl"
-            onClick={install}
-          >
+        <div className="flex items-center justify-center gap-4">
+          <SketchButton onClick={install} className="py-3 px-6">
+            <Icon
+              name="AiFillAndroid"
+              className="text-3xl flex-shrink-0 mr-2"
+            />
             Install Lumore
-            {/* <Icon name="FaApple" className="text-3xl flex-shrink-0" /> */}
-            <Icon name="AiFillAndroid" className="text-3xl flex-shrink-0" />
-          </Button>
-          {/* <PopupButton id="ITzseckk">
-            <Button size="lg" className="text-base md:text-lg py-4 md:py-6">
-              Join Lumore Waitlist !!
-            </Button>
-          </PopupButton> */}
+          </SketchButton>
           <ProductHuntBadge />
         </div>
       </div>
 
-      {/* Right Image */}
-      <div className="w-full md:w-1/2 flex justify-center">
-        <Image
-          src="/assets/date.svg"
-          alt="Date you are looking for"
-          height={400}
-          width={400}
-          className="w-[80%] md:w-full max-w-sm md:max-w-md"
-        />
-      </div>
+      <Particles
+        className="absolute inset-0 -z-10"
+        quantity={100}
+        staticity={50}
+        ease={100}
+        color="#00000050"
+        refresh
+        vy={-0.3}
+      />
     </section>
   );
 }
