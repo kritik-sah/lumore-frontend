@@ -15,13 +15,16 @@ export default function Footer() {
   }
 
   return (
-    <footer className="py-5 bg-ui-shade text-ui-light">
-
+    <footer className="py-5 bg-ui-light text-ui-shade border-t border-ui-shade/10">
       <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-4 sm:px-6 lg:space-y-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
-            <img src="/assets/lumore-hr.svg" alt="lumore" className="h-16 w-28 invert" />
-            <p className="mt-4 max-w-xs text-ui-light/60">
+            <img
+              src="/assets/lumore-hr.svg"
+              alt="lumore"
+              className="h-16 w-28"
+            />
+            <p className="mt-4 max-w-xs text-ui-shade/60">
               Find Your Match, Your Way
             </p>
 
@@ -50,12 +53,11 @@ export default function Footer() {
                   href="https://www.instagram.com/0xlumore/"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-ui-light/60 transition hover:opacity-75"
+                  className="text-ui-shade transition opacity-95 hover:opacity-100"
                 >
                   <span className="sr-only">Instagram</span>
 
                   <Icon name="FaInstagram" className="h-6 w-6" />
-
                 </a>
               </li>
 
@@ -64,11 +66,10 @@ export default function Footer() {
                   href="https://x.com/0xlumore"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-ui-light/60 transition hover:opacity-75"
+                  className="text-ui-shade transition opacity-95 hover:opacity-100"
                 >
                   <span className="sr-only">Twitter</span>
                   <Icon name="FaXTwitter" className="h-6 w-6" />
-
                 </a>
               </li>
 
@@ -77,19 +78,18 @@ export default function Footer() {
                   href="https://github.com/lumore-xyz"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-ui-light/60 transition hover:opacity-75"
+                  className="text-ui-shade transition opacity-95 hover:opacity-100"
                 >
                   <span className="sr-only">GitHub</span>
 
                   <Icon name="FaGithub" className="h-6 w-6" />
                 </a>
               </li>
-
             </ul>
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-            <div>
+            <div className="hidden md:block">
               {/* <p className="font-medium text-ui-light/80">Services</p>
 
               <ul className="mt-6 space-y-4 text-sm">
@@ -115,7 +115,7 @@ export default function Footer() {
               </ul> */}
             </div>
 
-            <div>
+            <div className="hidden md:block">
               {/* <p className="font-medium text-ui-light/80">Company</p>
 
               <ul className="mt-6 space-y-4 text-sm">
@@ -133,7 +133,7 @@ export default function Footer() {
               </ul> */}
             </div>
 
-            <div>
+            <div className="hidden md:block">
               {/* <p className="font-medium text-ui-light/80">Helpful Links</p>
 
               <ul className="mt-6 space-y-4 text-sm">
@@ -152,32 +152,51 @@ export default function Footer() {
             </div>
 
             <div>
-              <p className="font-medium text-ui-light/80">Legal</p>
+              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+                Legal
+              </p>
 
               <ul className="mt-6 space-y-4 text-sm">
                 <li>
-                  <a href="/terms-of-use" rel="noreferrer"
-                    target="_blank" className="text-ui-light/60 transition hover:opacity-75">Terms of use</a>
+                  <a
+                    href="/terms-of-use"
+                    rel="noreferrer"
+                    target="_blank"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Terms of use
+                  </a>
                 </li>
                 <li>
-                  <a href="/privacy-policy" rel="noreferrer"
-                    target="_blank" className="text-ui-light/60 transition hover:opacity-75">Privacy policy</a>
+                  <a
+                    href="/privacy-policy"
+                    rel="noreferrer"
+                    target="_blank"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Privacy policy
+                  </a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-
-
       </div>
 
-      <div className="text-center max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4 mt-8">
-        <p>© {currentYear} Lumore.xyz. All rights reserved.</p>
-        <p>Made In India <img src="/assets/india-flag.svg" alt="India" className="h-4 w-4 inline-flex" /></p>
+      <div className="text-center border-t border-ui-shade/10 pt-4 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4 mt-8">
+        <p>© {currentYear} Lumore.xyz All rights reserved.</p>
+        <p>
+          Made In India{" "}
+          <img
+            src="/assets/india-flag.svg"
+            alt="India"
+            className="h-4 w-4 inline-flex"
+          />
+        </p>
       </div>
-      {isInstallable && (
+      {/* {isInstallable && (
         <InstallPrompt deferredPrompt={deferredPrompt} onInstall={install} />
-      )}
+      )} */}
     </footer>
   );
 }
