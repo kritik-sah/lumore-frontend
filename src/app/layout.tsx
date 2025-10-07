@@ -43,6 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head className="overflow-x-hidden">
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-7384584510187682"
+        ></meta>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-349HPV22MR"
           strategy="afterInteractive"
