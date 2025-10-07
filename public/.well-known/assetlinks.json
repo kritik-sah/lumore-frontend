@@ -1,11 +1,15 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "xyz.lumore.www.twa",
       "sha256_cert_fingerprints": [
-        "4F:B1:68:3A:DD:17:79:E0:E7:5D:D6:1F:10:C2:F3:96:EA:8F:B4:D2:F7:6F:5E:7E:89:A0:51:D1:E6:8D:F5:F9"
+        "4F:B1:68:3A:DD:17:79:E0:E7:5D:D6:1F:10:C2:F3:96:EA:8F:B4:D2:F7:6F:5E:7E:89:A0:51:D1:E6:8D:F5:F9",
+        "6F:9D:08:F0:8D:7B:34:3B:E0:01:9D:D6:82:7A:24:AD:5D:6D:6A:92:92:2F:39:81:6E:85:78:A9:DC:5E:63:12"
       ]
     }
   }
