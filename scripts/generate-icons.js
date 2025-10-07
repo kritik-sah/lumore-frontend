@@ -6,10 +6,15 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const androidSize = [48, 72, 96, 128, 144, 152, 192, 384, 512];
+const iosSizes = [
+  16, 20, 29, 32, 40, 50, 57, 58, 60, 64, 72, 76, 80, 100, 114, 120, 128, 144,
+  152, 167, 180, 192, 256, 512, 1024,
+];
+const sizes = iosSizes;
 console.log("generating icons");
 const sourceIcon = path.join(__dirname, "../public/icon-source.png");
-const outputDir = path.join(__dirname, "../public/icons");
+const outputDir = path.join(__dirname, "../public/ios");
 console.log("generating icons, outputDir");
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -18,7 +23,7 @@ if (!fs.existsSync(outputDir)) {
 
 async function generateIcons() {
   for (const size of sizes) {
-    const outputPath = path.join(outputDir, `icon-${size}x${size}.png`);
+    const outputPath = path.join(outputDir, `${size}.png`);
 
     await sharp(sourceIcon)
       .resize(size, size, {
