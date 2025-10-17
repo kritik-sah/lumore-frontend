@@ -1,5 +1,4 @@
 import React from "react";
-import { AuthProvider } from "./AuthContext";
 import { LocationProvider } from "./LocationProvider";
 import { SocketProvider } from "./SocketContext";
 
@@ -9,11 +8,9 @@ const Provider = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <AuthProvider>
-      <SocketProvider>
-        <LocationProvider>{children}</LocationProvider>
-      </SocketProvider>
-    </AuthProvider>
+    <SocketProvider>
+      <LocationProvider>{children}</LocationProvider>
+    </SocketProvider>
   );
 };
 

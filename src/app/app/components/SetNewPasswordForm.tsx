@@ -9,11 +9,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { setNewPassword } from "@/lib/apis";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useSetNewPassword } from "../hooks/useAuth";
 
 export function SetNewPasswordForm({
   className,
@@ -58,7 +59,6 @@ export function SetNewPasswordForm({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Form submitted", formData);
       mutate(
         { newPassword: formData?.newPassword },
         {
@@ -142,3 +142,15 @@ export function SetNewPasswordForm({
     </div>
   );
 }
+
+export const useSetNewPassword = () => {
+  return useMutation({
+    mutationFn: setNewPassword,
+    onSuccess: (data) => {
+      console.log("Set new password successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Set new password failed:", error);
+    },
+  });
+};

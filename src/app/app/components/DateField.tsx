@@ -24,37 +24,28 @@ const DateField = ({
   onChange,
   placeholder = "Pick a date",
 }: DateFieldProps) => {
-  console.log("DateField rendered with value:", value);
-
   const [date, setDate] = React.useState<Date | undefined>(() => {
-    console.log("Initializing date state with value:", value);
     return value ? new Date(value) : undefined;
   });
 
   // Update local state when value prop changes
   React.useEffect(() => {
-    console.log("Value prop changed:", value);
     if (value) {
       const newDate = new Date(value);
-      console.log("Setting new date:", newDate);
       setDate(newDate);
     }
   }, [value]);
 
   const handleDateSelect = React.useCallback(
     (selectedDate: Date | undefined) => {
-      console.log("handleDateSelect called with:", selectedDate);
       if (selectedDate) {
         const formattedDate = format(selectedDate, "yyyy-MM-dd");
-        console.log("Formatted date:", formattedDate);
         onChange(formattedDate);
         setDate(selectedDate);
       }
     },
     [onChange]
   );
-
-  console.log("Current date state:", date);
 
   const minAgeDate = React.useMemo(() => {
     const date = new Date();
@@ -90,11 +81,6 @@ const DateField = ({
             initialFocus
             disabled={(date) => {
               const isDisabled = date > minAgeDate;
-              console.log("Date disabled check:", {
-                date,
-                minAgeDate,
-                isDisabled,
-              });
               return isDisabled;
             }}
             defaultMonth={new Date()}

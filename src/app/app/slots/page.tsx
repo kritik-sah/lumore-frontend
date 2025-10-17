@@ -33,7 +33,6 @@ const Slots = () => {
     queryFn: fetchUserSlots,
     enabled: !!userCookie,
   });
-  console.log("user data", user);
 
   if (isLoading) {
     return (
@@ -57,11 +56,9 @@ const Slots = () => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Chats</h1>
           </div>
-          <p className=" text-center mb-4 text-red-500">
-            No active chats yet
-          </p>
+          <p className=" text-center mb-4 text-red-500">No active chats yet</p>
         </div>
-      </NavLayout >
+      </NavLayout>
     );
   }
 

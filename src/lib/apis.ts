@@ -1,78 +1,49 @@
+import { apiClient } from "@/service/api-client";
+import { getUser } from "@/service/storage";
 import axios from "axios";
 import Cookies from "js-cookie";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/* -------------------------------------------------------------------------- */
+/*                              External API Call                             */
+/* -------------------------------------------------------------------------- */
 export const getFormattedAddress = async (lat: number, lng: number) => {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
   const response = await axios.get(url, {
     headers: { "User-Agent": "Lumore/1.0" }, // Required by OSM
   });
-
   return response.data.display_name || null;
 };
 
-export const signupUser = async (data: {
-  username: string;
-  email: string;
-  password: string;
-  location: {
-    type: string;
-    coordinates: number[];
-    formattedAddress: string;
-  };
-}) => {
-  const response = await axios.post(`${API_URL}/auth/signup`, data);
-  return response.data; // Returns { _id, username, email, token }
-};
-
-export const loginUser = async (data: {
-  identifier: string;
-  password: string;
-}) => {
-  try {
-    const response = await axios.post(`${API_URL}/auth/login`, data);
-    return response.data; // Returns { _id, username, email, token }
-  } catch (error: any) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      throw new Error(error.response.data.message || "Login failed");
-    } else if (error.request) {
-      // The request was made but no response was received
-      throw new Error("No response from server. Please check your connection.");
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      throw new Error("Error setting up the request");
-    }
-  }
-};
+/* -------------------------------------------------------------------------- */
+/*                               Auth & Profile                               */
+/* -------------------------------------------------------------------------- */
+// export const signupUser = async (data: {
+//   username: string;
+//   email: string;
+//   password: string;
+//   location: {
+//     type: string;
+//     coordinates: number[];
+//     formattedAddress: string;
+//   };
+// }) => {
+//   const response = await apiClient.post("/auth/signup", data);
+//   return response.data;
+// };
 
 export const setNewPassword = async (data: { newPassword: string }) => {
-  const token = Cookies.get("token");
-  const response = await axios.post(`${API_URL}/auth/set-password`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Pass token in Authorization header
-    },
-  });
-  return response.data; // Returns { _id, username, email, token }
+  const response = await apiClient.post("/auth/set-password", data);
+  return response.data;
 };
 
 export const checkUsernameAvailability = async (username: string) => {
-  const response = await axios.get(
-    `${API_URL}/auth/check-username/${username}`
-  );
-  return response.data.isUnique; // Returns true or false
+  const response = await apiClient.get(`/auth/check-username/${username}`);
+  return response.data.isUnique;
 };
 
 export const updateUserData = async (data: any) => {
-  const token = Cookies.get("token");
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
-
-  const response = await axios.patch(`${API_URL}/profile/${userId}`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Pass token in Authorization header
-    },
-  });
+  const { _id: userId } = getUser();
+  const response = await apiClient.patch(`/profile/${userId}`, data);
   return response.data;
 };
 
@@ -81,78 +52,31 @@ export const updateFieldVisibility = async (
   field: string,
   visibility: string
 ) => {
-  const token = Cookies.get("token");
-  const response = await axios.patch(
-    `${API_URL}/profile/${userId}/visibility`,
-    { fields: { [field]: visibility } },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await apiClient.patch(`/profile/${userId}/visibility`, {
+    fields: { [field]: visibility },
+  });
   return response.data;
 };
 
 export const updateUserPreferences = async (data: any) => {
-  const token = Cookies.get("token");
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
-
-  const response = await axios.patch(
-    `${API_URL}/profile/${userId}/preferences`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+  const { _id: userId } = getUser();
+  const response = await apiClient.patch(
+    `/profile/${userId}/preferences`,
+    data
   );
   return response.data;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                                   Slots                                    */
+/* -------------------------------------------------------------------------- */
 export const fetchUserSlots = async () => {
-  const token = Cookies.get("token");
-  const response = await axios.get(`${API_URL}/slots`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get("/slots");
   return response.data.data.slots;
 };
 
-export const deleteAccount = async () => {
-  const token = Cookies.get("token");
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
-
-  const response = await axios.delete(`${API_URL}/profile/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-export const handleLogout = async (callback: () => void) => {
-  try {
-    Cookies.remove("user");
-    Cookies.remove("token");
-    callback();
-  } catch (error) {
-    console.error("Error logging out:", error);
-  }
-};
-
 export const createSlot = async () => {
-  const token = Cookies.get("token");
-  const response = await axios.post(
-    `${API_URL}/slots`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await apiClient.post("/slots", {});
   return response.data.data.slot;
 };
 
@@ -160,55 +84,48 @@ export const updateSlot = async (
   slotId: string,
   data: { profile?: string; roomId?: string }
 ) => {
-  const token = Cookies.get("token");
-  const response = await axios.patch(`${API_URL}/slots/${slotId}`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.patch(`/slots/${slotId}`, data);
   return response.data.data.slot;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                               Account Actions                              */
+/* -------------------------------------------------------------------------- */
+export const deleteAccount = async () => {
+  const { _id: userId } = getUser();
+  const response = await apiClient.delete(`/profile/${userId}`);
+  return response.data;
+};
 
+/* -------------------------------------------------------------------------- */
+/*                               File Upload                                  */
+/* -------------------------------------------------------------------------- */
 export interface UploadResponse {
   message: string;
   profilePicture: string;
 }
 
-
-/**
- * Upload a profile picture to the backend.
- * @param file - The image file to upload
- * @returns Promise with upload response
- */
-export const uploadProfilePicture = async (file: File): Promise<UploadResponse> => {
+export const uploadProfilePicture = async (
+  file: File
+): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append("profilePic", file);
-  const token = Cookies.get("token");
-  const { _id: userId } = JSON.parse(Cookies.get("user") || "");
-  console.log("[uploadProfilePicture]", token)
-  try {
-    const res = await axios.patch<UploadResponse>(`${API_URL}/profile/${userId}/update-profile-picture`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
 
-    return res.data;
-  } catch (error: any) {
-    const message = error?.response?.data?.message || "Upload failed";
-    throw new Error(message);
-  }
+  const { _id: userId } = getUser();
+
+  const res = await apiClient.patch<UploadResponse>(
+    `/profile/${userId}/update-profile-picture`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+
+  return res.data;
 };
 
-
+/* -------------------------------------------------------------------------- */
+/*                                  Messages                                  */
+/* -------------------------------------------------------------------------- */
 export const fetchRoomChat = async (roomId: string) => {
-  const token = Cookies.get("token");
-  const response = await axios.get(`${API_URL}/messages/${roomId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(`/messages/${roomId}`);
   return response.data;
 };

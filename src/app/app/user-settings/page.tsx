@@ -7,14 +7,16 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { deleteAccount, handleLogout, updateUserData } from "@/lib/apis";
+import { deleteAccount, updateUserData } from "@/lib/apis";
+import useAuth from "@/service/requests/auth";
+import { getUser } from "@/service/storage";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TextField } from "../components/InputField";
 import GeneralLayout from "../components/layout/general";
-import { useUser } from "../hooks/useUser";
 import SubPageLayout from "../components/layout/SubPageLayout";
+import { useUser } from "../hooks/useUser";
 
 interface UserSettings {
   email: string;
@@ -28,6 +30,7 @@ interface UserSettings {
 const UserSettings = () => {
   const router = useRouter();
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const { logout } = useAuth();
   const [editFieldType, setEditFieldType] = useState<keyof UserSettings | "">(
     ""
   );
@@ -42,10 +45,9 @@ const UserSettings = () => {
   // Get user data from cookies
   let userId = "";
   try {
-    const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie);
-      userId = parsedUser?._id || "";
+    const user = getUser();
+    if (user) {
+      userId = user?._id || "";
     }
   } catch (error) {
     console.error("[UserSettings] Error parsing user cookie:", error);
@@ -133,8 +135,8 @@ const UserSettings = () => {
               editFieldType === "web3Wallet"
                 ? settings.web3Wallet.addresses[0]
                 : editFieldType
-                  ? settings[editFieldType] ?? null
-                  : null
+                ? settings[editFieldType] ?? null
+                : null
             }
           />
 
@@ -178,11 +180,7 @@ const UserSettings = () => {
             <Button
               variant="outline"
               className="w-full hover:bg-ui-shade hover:text-ui-light"
-              onClick={() =>
-                handleLogout(() => {
-                  router.push("/app/login");
-                })
-              }
+              onClick={logout}
             >
               Logout
             </Button>
@@ -287,18 +285,19 @@ const FieldEditor = ({
                 fieldType === "phoneNumber"
                   ? "Phone Number"
                   : fieldType === "web3Wallet"
-                    ? "Wallet Address"
-                    : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
+                  ? "Wallet Address"
+                  : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
               }
               type={fieldType === "email" ? "email" : "text"}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={`Enter your ${fieldType === "phoneNumber"
+              placeholder={`Enter your ${
+                fieldType === "phoneNumber"
                   ? "phone number"
                   : fieldType === "web3Wallet"
-                    ? "wallet address"
-                    : fieldType
-                }`}
+                  ? "wallet address"
+                  : fieldType
+              }`}
               error={error}
             />
           </div>

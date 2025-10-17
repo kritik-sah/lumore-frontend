@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiSlider } from "@/components/ui/MultiSlider";
 import {
   Select,
   SelectContent,
@@ -9,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import { Slider } from "@/components/ui/slider";
+import React, { useState } from "react";
 
 interface TextFieldProps {
   label: string;
@@ -56,18 +58,20 @@ export const TextField: React.FC<TextFieldProps> = ({
   max,
 }) => {
   return (
-    <div className="border border-ui-shade/10 rounded-xl p-2 mt-3">
-      <Label className="text-sm text-ui-shade/60">{label}</Label>
-      <Input
-        value={value}
-        onChange={onChange}
-        name={name}
-        placeholder={placeholder}
-        className={`p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none`}
-        type={type}
-        min={min}
-        max={max}
-      />
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <Label className="text-ui-shade/80">{label}</Label>
+      <div className="my-2">
+        <Input
+          value={value}
+          onChange={onChange}
+          name={name}
+          placeholder={placeholder}
+          className={`p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none`}
+          type={type}
+          min={min}
+          max={max}
+        />
+      </div>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
@@ -83,15 +87,15 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
   rows = 4,
 }) => {
   return (
-    <div className="border border-ui-shade/10 rounded-xl p-2 mt-3">
-      <Label className="text-sm text-ui-shade/60">{label}</Label>
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <Label className=" text-ui-shade/80">{label}</Label>
       <textarea
         value={value}
         onChange={onChange}
         name={name}
         placeholder={placeholder}
         rows={rows}
-        className="w-full p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none resize-none"
+        className="w-full p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none resize-none my-2"
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
@@ -109,25 +113,107 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   defaultValue,
 }) => {
   return (
-    <div className="border border-ui-shade/10 rounded-xl p-2 mt-3">
-      <Label className="text-sm text-ui-shade/60">{label}</Label>
-      <Select
-        onValueChange={onChange}
-        value={value}
-        defaultValue={defaultValue}
-        name={name}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent className="max-h-96">
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <Label className=" text-ui-shade/80">{label}</Label>
+      <div className="my-3">
+        <Select
+          onValueChange={onChange}
+          value={value}
+          defaultValue={defaultValue}
+          name={name}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent className="max-h-96">
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  );
+};
+
+interface MultisliderFieldProps {
+  unit: string;
+  label: string;
+  value: number[];
+  name: string;
+  onChange: (e: any) => void;
+  placeholder?: string;
+  error?: string;
+  type?: string;
+  min?: number;
+  max?: number;
+}
+
+export const MultisliderField: React.FC<MultisliderFieldProps> = ({
+  unit,
+  label,
+  value,
+  onChange,
+  error,
+  min,
+  max,
+}) => {
+  return (
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <div className="flex items-center justify-between">
+        <Label className="text-ui-shade/80">{label}</Label>
+        <span>{`${value[0]}${unit} - ${value[1]}${unit}`}</span>
+      </div>
+      <div className="my-3">
+        <MultiSlider
+          value={value || [min, max]}
+          onValueChange={onChange}
+          min={min}
+          max={max}
+          step={1}
+        />
+        <div className="flex items-center justify-between text-xs mt-2">
+          <span>{min}</span>
+          <span>{max}</span>
+        </div>
+      </div>
+
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  );
+};
+export const SliderField: React.FC<MultisliderFieldProps> = ({
+  unit,
+  label,
+  value,
+  onChange,
+  error,
+  min,
+  max,
+}) => {
+  return (
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <div className="flex items-center justify-between">
+        <Label className="text-ui-shade/80">{label}</Label>
+        <span>{`${value}${unit}`}</span>
+      </div>
+      <div className="my-3">
+        <Slider
+          value={value || [10]}
+          onValueChange={(e) => onChange(e[0])}
+          min={min}
+          max={max}
+          step={1}
+        />
+        <div className="flex items-center justify-between text-xs mt-2">
+          <span>{min}</span>
+          <span>{max}</span>
+        </div>
+      </div>
+
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );

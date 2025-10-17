@@ -78,7 +78,6 @@ export function useProfileLock(profileId: string, currentUserId: string) {
   }, [profileId]);
 
   const unlockProfile = async () => {
-    console.log("unlockProfile", profileId, currentUserId);
     if (!socket) return;
 
     return new Promise((resolve, reject) => {

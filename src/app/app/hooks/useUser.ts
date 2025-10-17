@@ -1,8 +1,6 @@
+import { apiClient } from "@/service/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Cookies from "js-cookie";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface User {
   _id: string;
@@ -61,13 +59,9 @@ interface User {
 }
 
 const fetchUser = async (userId: string) => {
-  const token = Cookies.get("token");
-  const response = await axios.get(`${API_URL}/profile/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+  const { data } = await apiClient.get(`/profile/${userId}`);
+
+  return data;
 };
 
 const updateUserField = async ({
@@ -79,16 +73,9 @@ const updateUserField = async ({
   field: string;
   value: any;
 }) => {
-  const token = Cookies.get("token");
-  const response = await axios.patch(
-    `${API_URL}/profile/${userId}`,
-    { [field]: value },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await apiClient.patch(`/profile/${userId}`, {
+    [field]: value,
+  });
   return response.data;
 };
 
@@ -101,16 +88,9 @@ const updateFieldVisibility = async ({
   field: string;
   visibility: string;
 }) => {
-  const token = Cookies.get("token");
-  const response = await axios.patch(
-    `${API_URL}/profile/${userId}/visibility`,
-    { fields: { [field]: visibility } },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await apiClient.patch(`/profile/${userId}/visibility`, {
+    fields: { [field]: visibility },
+  });
   return response.data;
 };
 
