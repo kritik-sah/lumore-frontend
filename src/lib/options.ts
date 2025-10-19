@@ -13,33 +13,31 @@ export const languageOptions = allLanguages.map(
 );
 
 export const genderOptions = [
-  { label: "Women", value: "women" },
+  { label: "Woman", value: "woman" },
   { label: "Man", value: "man" },
-  { label: "Non Binary", value: "non-binary" },
+  { label: "Non-binary / Gender Diverse", value: "non-binary" },
+  { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
-export const intrestedInOptions = [
+export const interestedInOptions = [
   { label: "Women", value: "women" },
-  { label: "Man", value: "man" },
-  { label: "Non Binary", value: "non-binary" },
+  { label: "Men", value: "men" },
+  { label: "Everyone", value: "everyone" },
 ];
 
 export const goalOptions = [
-  { label: "Long-Term Relationship", value: "long-term-relationship" },
-  { label: "Casual Connection", value: "casual-connection" },
-  { label: "Marriage", value: "marriage" },
-  { label: "Friendship", value: "friendship" },
-  { label: "Still Exploring", value: "still-exploring" },
-  { label: "Serious Dating", value: "serious-dating" },
-  { label: "Open to Non-Monogamy", value: "open-to-non-monogamy" },
-  { label: "Networking / Professional", value: "networking-professional" },
+  { label: "A Serious Relationship", value: "serious-relationship" },
+  { label: "Marriage or Life Partnership", value: "marriage" },
+  { label: "Something Casual or Fun", value: "casual" },
+  { label: "Friendship & Shared Interests", value: "friendship" },
+  { label: "Open to Exploring", value: "open-to-exploring" },
+  { label: "Meaningful Emotional Bond", value: "emotional-bond" },
+  { label: "Travel or Activity Partner", value: "travel-activity" },
   {
-    label: "Exploring Identity & Sexuality",
-    value: "exploring-identity-sexuality",
+    label: "Professional or Networking Connection",
+    value: "professional-networking",
   },
-  { label: "Travel Partner", value: "travel-partner" },
-  { label: "Activity Buddy", value: "activity-buddy" },
-  { label: "Spiritual / Emotional Bond", value: "spiritual-emotional-bond" },
+  { label: "Exploring Identity & Sexuality", value: "identity-sexuality" },
 ];
 
 export const bloodTypeOptions = [
@@ -53,36 +51,30 @@ export const bloodTypeOptions = [
   { label: "O-", value: "o-" },
 ];
 
-export const intrestOptions = [
-  { label: "Technology", value: "technology" },
-  { label: "Healthcare", value: "healthcare" },
-  { label: "Finance", value: "finance" },
-  { label: "Education", value: "education" },
-  { label: "Arts", value: "arts" },
-  { label: "Science", value: "science" },
-  { label: "Engineering", value: "engineering" },
-  { label: "Business", value: "business" },
-  { label: "Law", value: "law" },
-  { label: "Other", value: "other" },
-  { label: "Reading", value: "reading" },
-  { label: "Travel", value: "travel" },
+export const interestOptions = [
+  { label: "Art & Culture", value: "art-culture" },
   { label: "Music", value: "music" },
-  { label: "Sports", value: "sports" },
-  { label: "Cooking", value: "cooking" },
-  { label: "Photography", value: "photography" },
+  { label: "Travel & Adventure", value: "travel" },
+  { label: "Reading & Literature", value: "reading" },
+  { label: "Sports & Fitness", value: "sports-fitness" },
+  { label: "Cooking & Food", value: "cooking" },
+  { label: "Technology & Innovation", value: "technology" },
+  { label: "Movies & Entertainment", value: "movies" },
+  { label: "Photography & Design", value: "photography" },
   { label: "Gaming", value: "gaming" },
-  { label: "Fitness", value: "fitness" },
+  { label: "Science & Nature", value: "science" },
+  { label: "Volunteering & Community", value: "volunteering" },
+  { label: "Mindfulness & Spirituality", value: "spirituality" },
 ];
 
 export const dietOptions = [
   { label: "Vegetarian", value: "vegetarian" },
   { label: "Vegan", value: "vegan" },
   { label: "Pescatarian", value: "pescatarian" },
-  { label: "Non-Vegetarian", value: "non-vegetarian" },
-  { label: "Gluten-Free", value: "gluten-free" },
-  { label: "Kosher", value: "kosher" },
+  { label: "No Restrictions", value: "no-restrictions" },
   { label: "Halal", value: "halal" },
-  { label: "No Specific Diet", value: "no-specific-diet" },
+  { label: "Kosher", value: "kosher" },
+  { label: "Gluten-Free", value: "gluten-free" },
 ];
 
 export const zodiacOptions = [
@@ -102,25 +94,25 @@ export const zodiacOptions = [
 
 export const drinkingOptions = [
   { label: "Never", value: "never" },
-  { label: "Rarely", value: "rarely" },
+  { label: "Occasionally", value: "occasionally" },
   { label: "Socially", value: "socially" },
-  { label: "Regular", value: "regular" },
+  { label: "Regularly", value: "regularly" },
   { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
 export const smokingOptions = [
   { label: "Never", value: "never" },
-  { label: "Rarely", value: "rarely" },
+  { label: "Occasionally", value: "occasionally" },
   { label: "Socially", value: "socially" },
-  { label: "Regular", value: "regular" },
+  { label: "Regularly", value: "regularly" },
   { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
 export const petOptions = [
-  { label: "Have Pets", value: "have-pets" },
   { label: "Love Pets", value: "love-pets" },
-  { label: "Allergic to Pets", value: "allergic-to-pets" },
-  { label: "No Pets", value: "no-pets" },
+  { label: "Have Pets", value: "have-pets" },
+  { label: "No Pets Right Now", value: "no-pets" },
+  { label: "Allergic to Pets", value: "allergic" },
   { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
@@ -129,8 +121,7 @@ export const maritalStatusOptions = [
   { label: "Divorced", value: "divorced" },
   { label: "Separated", value: "separated" },
   { label: "Widowed", value: "widowed" },
-  { label: "Married", value: "married" },
-  { label: "Prefer Not to Say", value: "prefer-not-to-say" },
+  { label: "In a Relationship", value: "in-relationship" },
 ];
 
 export const personalityTypeOptions = [
@@ -150,23 +141,23 @@ export const personalityTypeOptions = [
   { label: "ISFP", value: "isfp" },
   { label: "ESTP", value: "estp" },
   { label: "ESFP", value: "esfp" },
-  { label: "Not Sure", value: "not-sure" },
 ];
 
 export const religionOptions = [
-  { label: "Christianity", value: "christianity" },
-  { label: "Islam", value: "islam" },
-  { label: "Hinduism", value: "hinduism" },
-  { label: "Buddhism", value: "buddhism" },
-  { label: "Judaism", value: "judaism" },
-  { label: "Atheism", value: "atheism" },
+  { label: "Christian", value: "christian" },
+  { label: "Muslim", value: "muslim" },
+  { label: "Hindu", value: "hindu" },
+  { label: "Buddhist", value: "buddhist" },
+  { label: "Jewish", value: "jewish" },
+  { label: "Spiritual, Not Religious", value: "spiritual" },
+  { label: "Agnostic / Atheist", value: "agnostic-atheist" },
   { label: "Other", value: "other" },
+  { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
 export const relationshipTypeOptions = [
-  { label: "Monogamy", value: "monogamy" },
+  { label: "Monogamous", value: "monogamy" },
+  { label: "Open Relationship", value: "open-relationship" },
   { label: "Ethical Non-Monogamy", value: "ethical-non-monogamy" },
-  { label: "Polyamory", value: "polyamory" },
-  { label: "Open to Exploring", value: "open-to-exploring" },
-  { label: "Not Specified", value: "not-specified" },
+  { label: "Exploring What Feels Right", value: "exploring" },
 ];
