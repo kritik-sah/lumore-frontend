@@ -3,23 +3,25 @@ import Icon from "@/components/icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { getUser } from "@/service/storage";
 import getLastActive from "@/utils/getLastActive";
-import { calculateAge, convertHeight } from "@/utils/helpers";
+import {
+  calculateAge,
+  convertHeight,
+  distanceDisplay,
+  languageDisplay,
+} from "@/utils/helpers";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import React from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
-import { useLogout } from "../hooks/useAuth";
-import { useUser } from "../hooks/useUser";
-import Image from "next/image";
 
 const MyProfile = ({ user }: { user: any }) => {
   let userId = "";
   try {
-    const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie);
-      userId = parsedUser?._id || "";
+    const user = getUser();
+    if (user) {
+      userId = user?._id || "";
     }
   } catch (error) {
     console.error("[ChatScreen] Error parsing user cookie:", error);
@@ -44,7 +46,9 @@ const MyProfile = ({ user }: { user: any }) => {
     },
     user?.location?.formattedAddress && {
       icon: "MdOutlineLocationOn",
-      value: extractFullAddressParts(user.location.formattedAddress, ["district"]).district,
+      value: extractFullAddressParts(user.location.formattedAddress, [
+        "district",
+      ]).district,
     },
     user?.diet && {
       icon: "MdOutlineFastfood",
@@ -72,52 +76,41 @@ const MyProfile = ({ user }: { user: any }) => {
     },
   ].filter(Boolean); // remove falsy entries
 
-  console.log("user", user)
-
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto">
         <div className="my-3">
           <div className="flex items-center justify-start gap-4">
-
             {user?.profilePicture ? (
               <div className="relative h-20 w-20 aspect-square rounded-full overflow-hidden border border-ui-shade/10">
-                <img
-                  src={user.profilePicture}
-                  alt="Profile picture"
-                  className="object-cover w-full h-full"
-                  loading="lazy"
-                />
+                <picture>
+                  <img
+                    src={user.profilePicture}
+                    alt="Profile picture"
+                    className="object-cover w-full h-full"
+                  />
+                </picture>
               </div>
             ) : (
               <div className="h-20 w-20 bg-ui-background border border-ui-shade/10 aspect-square rounded-full" />
             )}
             <div className="space-y-1">
               <h3 className="text-xl font-medium flex items-center justify-start gap-1">
-                {user?.nickname ? user?.nickname : user?.username}{" "}
+                {user?.isViewerUnlockedByUser &&
+                user?.realName &&
+                user.nickname ? (
+                  <>
+                    <span>{user.realName}</span>
+                    <span className="text-ui-shade/60"> ({user.nickname})</span>
+                  </>
+                ) : (
+                  <span>{user.nickname ? user.nickname : user?.username}</span>
+                )}{" "}
                 {user?.isVerified ? (
-                  <Icon name="MdVerified" className="text-ui-accent" />
+                  <Icon name="MdVerified" className="text-ui-highlight" />
                 ) : (
                   <Icon name="MdOutlineVerified" className="text-ui-shade/10" />
                 )}
-                {/* <Badge
-                  variant={"outline"}
-                  className={`${user?.isActive
-                    ? "border-green-500 text-green-500 "
-                    : "border-ui-shade text-ui-shade"
-                    } relative`}
-                >
-                  {user?.isActive ? (
-                    <span className="absolute -top-1 -right-1">
-                      <span className="relative flex size-3">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex size-3 rounded-full bg-green-500"></span>
-                      </span>
-                    </span>
-                  ) : null}
-                  Active{" "}
-                  {!user?.isActive ? getLastActive(user?.lastActive) : null}
-                </Badge> */}
               </h3>
               <div className="flex items-center justify-start gap-2">
                 {user?.dob ? (
@@ -144,35 +137,25 @@ const MyProfile = ({ user }: { user: any }) => {
                     name="RiPinDistanceLine"
                     className="text-xl flex-shrink-0"
                   />{" "}
-                  <p>{user?.distance.toFixed(2)}km</p>
+                  <p>{distanceDisplay(user?.distance || 0)}</p>
                 </div>
               </div>
             </div>
           </div>
           <div className="my-3">
-            <p className="text-lg">{user?.bio}</p>
+            {userId === user?._id ? (
+              <Link href="/app/profile/edit">
+                <Button variant={"outline"} className="w-full items-center">
+                  Edit Profile <Icon name="FaUserPen" />
+                </Button>
+              </Link>
+            ) : null}
           </div>
-          {userId === user?._id ? (
-            <Link href="/app/profile/edit">
-              <Button variant={"outline"} className="w-full items-center">Edit Profile <Icon name="FaUserPen" /></Button>
-            </Link>
-          ) : null}
-
         </div>
 
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl p-4 pb-0 mt-3 shadow-sm">
-          <h3 className="text-lg flex items-center justify-start gap-1">
-            {user?.realName
-              ? user?.realName
-              : user?.nickname
-                ? user?.nickname
-                : user?.username}{" "}
-            {user?.isVerified ? (
-              <Icon name="MdVerified" className="text-ui-accent" />
-            ) : (
-              <Icon name="MdOutlineVerified" className="text-ui-shade/10" />
-            )}
-          </h3>
+          {user?.bio ? <p className="text-lg">{user?.bio}</p> : null}
+
           <div className="w-full py-2 border-t border-b border-ui-shade/10 overflow-x-scroll mt-2">
             <div className="flex items-center justify-start gap-3 w-full ps-2">
               {traits.map((trait, index) => (
@@ -185,30 +168,26 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
                   <Icon
                     name="MdOutlineWorkOutline"
                     className="text-xl flex-shrink-0"
                   />
                 </div>
-                {user?.work?.title} at {user?.work?.company}
+                {user?.work}
               </div>
               <Separator />
             </>
           ) : null}
-          {user?.education ? (
+          {user?.institution ? (
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
                   <Icon
                     name="LuGraduationCap"
                     className="text-xl flex-shrink-0"
                   />
                 </div>
-                {user?.education?.degree}{" "}
-                {user?.education?.field ? `(${user?.education?.field})` : null}{" "}
-                from {user?.education?.institution}
+                {user?.institution}
               </div>
               <Separator />
             </>
@@ -217,7 +196,6 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
                   <Icon
                     name="HiOutlineBookOpen"
                     className="text-xl flex-shrink-0"
@@ -233,8 +211,10 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
-                  <Icon name="HiOutlineHome" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="HiOutlineHome"
+                    className="text-xl flex-shrink-0"
+                  />
                 </div>
                 {user?.homeTown}
               </div>
@@ -246,7 +226,6 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
                   <Icon name="GiRingBox" className="text-xl flex-shrink-0" />
                 </div>
                 {user?.maritalStatus}
@@ -259,13 +238,12 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
                   <Icon
                     name="HiOutlineLanguage"
                     className="text-xl flex-shrink-0"
                   />
                 </div>
-                {user?.languages?.join(", ")}
+                {languageDisplay(user.languages)?.join(", ")}
               </div>
               <Separator />
             </>
@@ -274,8 +252,10 @@ const MyProfile = ({ user }: { user: any }) => {
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center  flex-shrink-0 aspect-square">
-
-                  <Icon name="LuVenetianMask" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="LuVenetianMask"
+                    className="text-xl flex-shrink-0"
+                  />
                 </div>
                 {user?.personalityType}
               </div>
@@ -289,8 +269,13 @@ const MyProfile = ({ user }: { user: any }) => {
 
 export default MyProfile;
 
-
-const InfoItem = ({ icon, value }: { icon: string; value: string | number }) => (
+const InfoItem = ({
+  icon,
+  value,
+}: {
+  icon: string;
+  value: string | number;
+}) => (
   <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
     <div className="h-8 w-8 flex items-center justify-center flex-shrink-0 aspect-square">
       <Icon name={icon} className="text-xl flex-shrink-0" />

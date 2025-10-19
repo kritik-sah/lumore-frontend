@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value; // Get token from cookies
+  const token = req.cookies.get("accessToken")?.value; // Get token from cookies
   const { pathname } = req.nextUrl;
 
   // Allow access to login page without authentication
-  if (pathname.startsWith("/app/login") || pathname.startsWith("/app/signup")) {
+  if (pathname.startsWith("/app/login")) {
     return NextResponse.next();
   }
 

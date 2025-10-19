@@ -1,6 +1,7 @@
 import React from "react";
-import { AuthProvider } from "./AuthContext";
 import { LocationProvider } from "./LocationProvider";
+
+import { OnboardingProvider } from "./Onboardingprovider";
 import { SocketProvider } from "./SocketContext";
 
 const Provider = ({
@@ -9,11 +10,11 @@ const Provider = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <AuthProvider>
-      <SocketProvider>
+    <SocketProvider>
+      <OnboardingProvider>
         <LocationProvider>{children}</LocationProvider>
-      </SocketProvider>
-    </AuthProvider>
+      </OnboardingProvider>
+    </SocketProvider>
   );
 };
 

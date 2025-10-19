@@ -105,18 +105,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
           position.coords.latitude,
           position.coords.longitude
         );
-        console.log(
-          "Formatted Address:",
-          extractFullAddressParts(formatted, [
-            "area",
-            "subregion",
-            "district",
-            "state",
-            "pin",
-            "country",
-          ]),
-          formatted
-        );
+
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
         setFormattedAddress(formatted);

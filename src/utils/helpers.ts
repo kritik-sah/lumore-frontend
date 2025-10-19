@@ -1,4 +1,6 @@
 // Helper function to convert height from cm to feet/inches
+import allLanguages from "@/lib/languages.json";
+
 export const convertHeight = (cm?: number) => {
   if (!cm) return "N/A";
   const inches = Math.round(cm / 2.54);
@@ -22,3 +24,39 @@ export const calculateAge = (dob?: string) => {
   }
   return age;
 };
+
+export const languageDisplay = (value: string[]) => {
+  const languageOptions = allLanguages.map(({ code, name, nativeName }) => ({
+    label: `${name}`,
+    value: code,
+  }));
+  return (
+    languageOptions
+      .filter((opt) => value.includes(opt.value))
+      .map((opt) => opt.label) || []
+  );
+};
+
+export const distanceDisplay = (value: number) => {
+  if (value < 1) {
+    return "<1km";
+  } else {
+    return `${Math.floor(value)}km`;
+  }
+};
+
+/**
+ * Returns the label corresponding to a given value from an options array.
+ *
+ * @template T - The option type extending { label: string; value: string }.
+ * @param options - Array of selectable options.
+ * @param value - The value to find the label for.
+ * @returns The matching label, or the value itself if no match is found.
+ */
+export function getLabelFromValue<T extends { label: string; value: string }>(
+  options: T[],
+  value: string
+): string {
+  const match = options.find((opt) => opt.value === value);
+  return match ? match.label : value;
+}

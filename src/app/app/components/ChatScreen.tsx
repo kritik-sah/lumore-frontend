@@ -1,11 +1,13 @@
 "use client";
 import { createSlot, updateSlot } from "@/lib/apis";
+import { getUser } from "@/service/storage";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useSocket } from "../context/SocketContext";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
@@ -32,17 +34,17 @@ interface KeyExchangeResponse {
 const ChatScreen: React.FC = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  useOnboarding();
 
   // Safely parse user from cookie with error handling
   let userId = "";
   try {
-    const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie);
-      userId = parsedUser?._id || "";
+    const user = getUser();
+    if (user) {
+      userId = user?._id || "";
     }
   } catch (error) {
-    console.error("[ChatScreen] Error parsing user cookie:", error);
+    console.error("[ChatScreen] Error parsing user:", error);
   }
 
   const { user } = useUser(userId);
@@ -63,7 +65,6 @@ const ChatScreen: React.FC = () => {
     // Retrieve encryption key from localStorage
     const storedKey = localStorage.getItem(`chat_key_${matchId}`);
     if (storedKey) {
-      console.log("[ChatScreen] Retrieved encryption key from localStorage");
       setIsConnected(true);
     }
 
@@ -72,11 +73,9 @@ const ChatScreen: React.FC = () => {
 
     // Handle key exchange requests
     socket.on("key_exchange_request", async (data: KeyExchangeRequest) => {
-      console.log("[ChatScreen] Received key exchange request:", data);
       const { fromUserId, sessionKey } = data;
 
       if (storedKey !== sessionKey) {
-        console.log("[ChatScreen] Storing new encryption key");
         localStorage.setItem(`chat_key_${matchId}`, sessionKey);
         setIsConnected(true);
         socket.emit("key_exchange_response", {
@@ -89,11 +88,9 @@ const ChatScreen: React.FC = () => {
 
     // Handle key exchange responses
     socket.on("key_exchange_response", async (data: KeyExchangeResponse) => {
-      console.log("[ChatScreen] Received key exchange response:", data);
       const { sessionKey } = data;
 
       if (storedKey !== sessionKey) {
-        console.log("[ChatScreen] Updating encryption key");
         localStorage.setItem(`chat_key_${matchId}`, sessionKey);
         setIsConnected(true);
       }
@@ -115,12 +112,7 @@ const ChatScreen: React.FC = () => {
     if (!socket || !newMessage.trim() || !matchId || !matchedUser) return;
 
     const encryptionKey = localStorage.getItem(`chat_key_${matchId}`);
-    console.log("matchId: ===>", matchId);
-    console.log("sessionKey: ===>", encryptionKey);
     if (!encryptionKey) {
-      console.log(
-        "[ChatScreen] No encryption key available, cannot send message"
-      );
       return;
     }
     try {

@@ -6,6 +6,7 @@ import Link from "next/link";
 import React from "react";
 import NavLayout from "../components/layout/NavLayout";
 import { useCookies } from "../hooks/useCookies";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 
 interface Slot {
@@ -22,6 +23,7 @@ interface Slot {
 
 const Slots = () => {
   const { getCookies, userCookie } = useCookies();
+  useOnboarding();
   const { user, isLoading: gettingUser } = useUser(userCookie?._id);
 
   const {
@@ -33,7 +35,6 @@ const Slots = () => {
     queryFn: fetchUserSlots,
     enabled: !!userCookie,
   });
-  console.log("user data", user);
 
   if (isLoading) {
     return (
@@ -57,11 +58,9 @@ const Slots = () => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Chats</h1>
           </div>
-          <p className=" text-center mb-4 text-red-500">
-            No active chats yet
-          </p>
+          <p className=" text-center mb-4 text-red-500">No active chats yet</p>
         </div>
-      </NavLayout >
+      </NavLayout>
     );
   }
 
