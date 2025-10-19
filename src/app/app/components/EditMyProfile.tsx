@@ -15,7 +15,7 @@ import {
   dietOptions,
   drinkingOptions,
   genderOptions,
-  intrestOptions,
+  interestOptions,
   languageOptions,
   maritalStatusOptions,
   personalityTypeOptions,
@@ -512,7 +512,7 @@ const FieldEditor = ({
                 <MultiSelectField
                   label="Interests"
                   max={5}
-                  options={intrestOptions}
+                  options={interestOptions}
                   value={value || []}
                   name="interests"
                   onChange={setValue}
