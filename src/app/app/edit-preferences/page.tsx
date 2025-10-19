@@ -10,6 +10,16 @@ import {
 } from "@/components/ui/sheet";
 import { updateUserPreferences } from "@/lib/apis";
 import allLanguages from "@/lib/languages.json";
+import {
+  dietOptions,
+  goalOptions,
+  intrestedInOptions,
+  intrestOptions,
+  languageOptions,
+  personalityTypeOptions,
+  relationshipTypeOptions,
+  zodiacOptions,
+} from "@/lib/options";
 import { queryClient } from "@/service/query-client";
 import { getUser } from "@/service/storage";
 import { languageDisplay } from "@/utils/helpers";
@@ -24,14 +34,13 @@ import {
 } from "../components/InputField";
 import SubPageLayout from "../components/layout/SubPageLayout";
 import MultiSelectField from "../components/MultiSelectField";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { UserPreferences, useUserPrefrence } from "../hooks/useUserPrefrence";
 
 const EditPreferences = () => {
-  const router = useRouter();
+  useOnboarding();
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
-  const [editFieldType, setEditFieldType] = useState<
-    keyof UserPreferences | ""
-  >("");
+  const [editFieldType, setEditFieldType] = useState<keyof UserPreferences>();
   const [preferences, setPreferences] = useState<UserPreferences>();
 
   // Get user data from cookies
@@ -164,9 +173,7 @@ const EditPreferences = () => {
             <Field
               label="Preferred Languages"
               field="preferredLanguages"
-              value={languageDisplay(
-                preferences?.preferredLanguages || []
-              )?.join(", ")}
+              value={languageDisplay(preferences?.languages || [])?.join(", ")}
               onEdit={handleEditField}
             />
             <Field
@@ -197,7 +204,7 @@ const EditPreferences = () => {
 interface FieldEditorProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  fieldType: keyof UserPreferences | "";
+  fieldType?: keyof UserPreferences | "";
   onUpdate: (field: keyof UserPreferences, value: any) => Promise<void>;
   currentValue: any;
   preferences: UserPreferences;
@@ -211,7 +218,7 @@ const FieldEditor = ({
   currentValue,
   preferences,
 }: FieldEditorProps) => {
-  const getDefaultValue = (field: keyof UserPreferences | "") => {
+  const getDefaultValue = (field?: keyof UserPreferences | "") => {
     switch (field) {
       case "interests":
         return [];
@@ -223,7 +230,7 @@ const FieldEditor = ({
           secondary: "",
           tertiary: "",
         };
-      case "preferredLanguages":
+      case "languages":
       case "zodiacPreference":
       case "personalityTypePreference":
       case "dietPreference":
@@ -252,11 +259,6 @@ const FieldEditor = ({
     setValue(currentValue || getDefaultValue(fieldType));
     setIsOpen(false);
   };
-
-  const languageOptions = allLanguages.map(({ code, name, nativeName }) => ({
-    label: `${name} (${nativeName})`,
-    value: code,
-  }));
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -289,12 +291,7 @@ const FieldEditor = ({
               <SelectField
                 name="interestedIn"
                 label="Interested In"
-                options={[
-                  { label: "Men", value: "Men" },
-                  { label: "Women", value: "Women" },
-                  { label: "Non-Binary", value: "Non-Binary" },
-                  { label: "Any", value: "Any" },
-                ]}
+                options={intrestedInOptions}
                 value={value}
                 onChange={setValue}
                 placeholder="Select gender preferences"
@@ -327,35 +324,7 @@ const FieldEditor = ({
                 <SelectField
                   name="goal.primary"
                   label="Primary Goal"
-                  options={[
-                    {
-                      label: "Serious Relationship",
-                      value: "Serious Relationship",
-                    },
-                    { label: "Casual Dating", value: "Casual Dating" },
-                    { label: "Marriage", value: "Marriage" },
-                    { label: "Friendship", value: "Friendship" },
-                    { label: "Quick Sex", value: "Quick Sex" },
-                    { label: "Undecided", value: "Undecided" },
-                    { label: "Long-Term Dating", value: "Long-Term Dating" },
-                    { label: "Open Relationship", value: "Open Relationship" },
-                    { label: "Networking", value: "Networking" },
-                    {
-                      label: "Exploring Sexuality",
-                      value: "Exploring Sexuality",
-                    },
-                    { label: "Travel Companion", value: "Travel Companion" },
-                    {
-                      label: "Polyamorous Relationship",
-                      value: "Polyamorous Relationship",
-                    },
-                    { label: "Activity Partner", value: "Activity Partner" },
-                    { label: "Sugar Dating", value: "Sugar Dating" },
-                    {
-                      label: "Spiritual Connection",
-                      value: "Spiritual Connection",
-                    },
-                  ]}
+                  options={goalOptions}
                   value={value?.primary || "Undecided"}
                   onChange={(e) => setValue({ ...value, primary: e })}
                   placeholder="Select primary goal"
@@ -363,35 +332,7 @@ const FieldEditor = ({
                 <SelectField
                   name="goal.secondary"
                   label="Secondary Goal"
-                  options={[
-                    {
-                      label: "Serious Relationship",
-                      value: "Serious Relationship",
-                    },
-                    { label: "Casual Dating", value: "Casual Dating" },
-                    { label: "Marriage", value: "Marriage" },
-                    { label: "Friendship", value: "Friendship" },
-                    { label: "Quick Sex", value: "Quick Sex" },
-                    { label: "Undecided", value: "Undecided" },
-                    { label: "Long-Term Dating", value: "Long-Term Dating" },
-                    { label: "Open Relationship", value: "Open Relationship" },
-                    { label: "Networking", value: "Networking" },
-                    {
-                      label: "Exploring Sexuality",
-                      value: "Exploring Sexuality",
-                    },
-                    { label: "Travel Companion", value: "Travel Companion" },
-                    {
-                      label: "Polyamorous Relationship",
-                      value: "Polyamorous Relationship",
-                    },
-                    { label: "Activity Partner", value: "Activity Partner" },
-                    { label: "Sugar Dating", value: "Sugar Dating" },
-                    {
-                      label: "Spiritual Connection",
-                      value: "Spiritual Connection",
-                    },
-                  ]}
+                  options={goalOptions}
                   value={value?.secondary || "Undecided"}
                   onChange={(e) => setValue({ ...value, secondary: e })}
                   placeholder="Select secondary goal"
@@ -399,35 +340,7 @@ const FieldEditor = ({
                 <SelectField
                   name="goal.tertiary"
                   label="Tertiary Goal"
-                  options={[
-                    {
-                      label: "Serious Relationship",
-                      value: "Serious Relationship",
-                    },
-                    { label: "Casual Dating", value: "Casual Dating" },
-                    { label: "Marriage", value: "Marriage" },
-                    { label: "Friendship", value: "Friendship" },
-                    { label: "Quick Sex", value: "Quick Sex" },
-                    { label: "Undecided", value: "Undecided" },
-                    { label: "Long-Term Dating", value: "Long-Term Dating" },
-                    { label: "Open Relationship", value: "Open Relationship" },
-                    { label: "Networking", value: "Networking" },
-                    {
-                      label: "Exploring Sexuality",
-                      value: "Exploring Sexuality",
-                    },
-                    { label: "Travel Companion", value: "Travel Companion" },
-                    {
-                      label: "Polyamorous Relationship",
-                      value: "Polyamorous Relationship",
-                    },
-                    { label: "Activity Partner", value: "Activity Partner" },
-                    { label: "Sugar Dating", value: "Sugar Dating" },
-                    {
-                      label: "Spiritual Connection",
-                      value: "Spiritual Connection",
-                    },
-                  ]}
+                  options={goalOptions}
                   value={value?.tertiary || "Undecided"}
                   onChange={(e) => setValue({ ...value, tertiary: e })}
                   placeholder="Select tertiary goal"
@@ -440,26 +353,7 @@ const FieldEditor = ({
                   name="interests"
                   label="Interests"
                   max={5}
-                  options={[
-                    { label: "Technology", value: "Technology" },
-                    { label: "Healthcare", value: "Healthcare" },
-                    { label: "Finance", value: "Finance" },
-                    { label: "Education", value: "Education" },
-                    { label: "Arts", value: "Arts" },
-                    { label: "Science", value: "Science" },
-                    { label: "Engineering", value: "Engineering" },
-                    { label: "Business", value: "Business" },
-                    { label: "Law", value: "Law" },
-                    { label: "Other", value: "Other" },
-                    { label: "Reading", value: "Reading" },
-                    { label: "Travel", value: "Travel" },
-                    { label: "Music", value: "Music" },
-                    { label: "Sports", value: "Sports" },
-                    { label: "Cooking", value: "Cooking" },
-                    { label: "Photography", value: "Photography" },
-                    { label: "Gaming", value: "Gaming" },
-                    { label: "Fitness", value: "Fitness" },
-                  ]}
+                  options={intrestOptions}
                   value={value || []}
                   onChange={setValue}
                   placeholder="What vibes are you looking for?"
@@ -470,24 +364,15 @@ const FieldEditor = ({
               <SelectField
                 name="relationshipType"
                 label="Relationship Type"
-                options={[
-                  { label: "Monogamy", value: "Monogamy" },
-                  {
-                    label: "Ethical Non-Monogamy",
-                    value: "Ethical Non-Monogamy",
-                  },
-                  { label: "Polyamory", value: "Polyamory" },
-                  { label: "Open to Exploring", value: "Open to Exploring" },
-                  { label: "Not Specified", value: "Not Specified" },
-                ]}
+                options={relationshipTypeOptions}
                 value={value || "Not Specified"}
                 onChange={setValue}
                 placeholder="Select relationship type"
               />
             ) : null}
-            {fieldType === "preferredLanguages" ? (
+            {fieldType === "languages" ? (
               <MultiSelectField
-                name="preferredLanguages"
+                name="languages"
                 label="Preferred Languages"
                 max={5}
                 options={languageOptions}
@@ -501,22 +386,8 @@ const FieldEditor = ({
                 name="zodiacPreference"
                 label="Zodiac Preferences"
                 max={5}
-                options={[
-                  { label: "Aries", value: "Aries" },
-                  { label: "Taurus", value: "Taurus" },
-                  { label: "Gemini", value: "Gemini" },
-                  { label: "Cancer", value: "Cancer" },
-                  { label: "Leo", value: "Leo" },
-                  { label: "Virgo", value: "Virgo" },
-                  { label: "Libra", value: "Libra" },
-                  { label: "Scorpio", value: "Scorpio" },
-                  { label: "Sagittarius", value: "Sagittarius" },
-                  { label: "Capricorn", value: "Capricorn" },
-                  { label: "Aquarius", value: "Aquarius" },
-                  { label: "Pisces", value: "Pisces" },
-                  { label: "Any", value: "Any" },
-                ]}
-                value={value || ["Any"]}
+                options={zodiacOptions}
+                value={value || []}
                 onChange={setValue}
                 placeholder="Select zodiac preferences"
               />
@@ -526,26 +397,8 @@ const FieldEditor = ({
                 name="personalityTypePreference"
                 label="Personality Type Preferences"
                 max={5}
-                options={[
-                  { label: "INTJ", value: "INTJ" },
-                  { label: "INTP", value: "INTP" },
-                  { label: "ENTJ", value: "ENTJ" },
-                  { label: "ENTP", value: "ENTP" },
-                  { label: "INFJ", value: "INFJ" },
-                  { label: "INFP", value: "INFP" },
-                  { label: "ENFJ", value: "ENFJ" },
-                  { label: "ENFP", value: "ENFP" },
-                  { label: "ISTJ", value: "ISTJ" },
-                  { label: "ISFJ", value: "ISFJ" },
-                  { label: "ESTJ", value: "ESTJ" },
-                  { label: "ESFJ", value: "ESFJ" },
-                  { label: "ISTP", value: "ISTP" },
-                  { label: "ISFP", value: "ISFP" },
-                  { label: "ESTP", value: "ESTP" },
-                  { label: "ESFP", value: "ESFP" },
-                  { label: "Any", value: "Any" },
-                ]}
-                value={value || ["Any"]}
+                options={personalityTypeOptions}
+                value={value || []}
                 onChange={setValue}
                 placeholder="Select personality type preferences"
               />
@@ -555,18 +408,8 @@ const FieldEditor = ({
                 name="dietPreference"
                 label="Diet Preferences"
                 max={5}
-                options={[
-                  { label: "Vegetarian", value: "Vegetarian" },
-                  { label: "Vegan", value: "Vegan" },
-                  { label: "Jain", value: "Jain" },
-                  { label: "Pescatarian", value: "Pescatarian" },
-                  { label: "Non-Vegetarian", value: "Non-Vegetarian" },
-                  { label: "Gluten-Free", value: "Gluten-Free" },
-                  { label: "Kosher", value: "Kosher" },
-                  { label: "Halal", value: "Halal" },
-                  { label: "Any", value: "Any" },
-                ]}
-                value={value || ["Any"]}
+                options={dietOptions}
+                value={value || []}
                 onChange={setValue}
                 placeholder="Select diet preferences"
               />

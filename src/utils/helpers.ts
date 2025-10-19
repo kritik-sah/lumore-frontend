@@ -44,3 +44,19 @@ export const distanceDisplay = (value: number) => {
     return `${Math.floor(value)}km`;
   }
 };
+
+/**
+ * Returns the label corresponding to a given value from an options array.
+ *
+ * @template T - The option type extending { label: string; value: string }.
+ * @param options - Array of selectable options.
+ * @param value - The value to find the label for.
+ * @returns The matching label, or the value itself if no match is found.
+ */
+export function getLabelFromValue<T extends { label: string; value: string }>(
+  options: T[],
+  value: string
+): string {
+  const match = options.find((opt) => opt.value === value);
+  return match ? match.label : value;
+}

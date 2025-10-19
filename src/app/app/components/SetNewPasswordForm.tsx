@@ -15,11 +15,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useOnboarding } from "../hooks/useOnboarding";
 
 export function SetNewPasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  useOnboarding();
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",

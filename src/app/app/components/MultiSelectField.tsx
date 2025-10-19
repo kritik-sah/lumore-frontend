@@ -1,3 +1,4 @@
+import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
@@ -23,9 +24,10 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 }) => {
   const animatedComponents = makeAnimated();
   return (
-    <div className="relative w-full">
-      <label className=" text-ui-shade/80">{label}</label>
+    <div className="relative w-full border border-ui-shade/10 rounded-xl p-2">
+      <Label className=" text-ui-shade/80">{label}</Label>
       <Select
+        className="mt-2 border-0 bg-transparent"
         isMulti
         isSearchable
         components={animatedComponents}

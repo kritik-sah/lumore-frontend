@@ -12,7 +12,7 @@ export interface UserPreferences {
   };
   interests: string[];
   relationshipType: string;
-  preferredLanguages: string[];
+  languages: string[];
   zodiacPreference: string[];
   institutions: string[];
   personalityTypePreference: string[];
@@ -21,7 +21,7 @@ export interface UserPreferences {
 
 const fetchUserPrefrence = async (userId: string) => {
   const { data } = await apiClient.get(`/profile/${userId}/preferences`);
-  return data as UserPreferences;
+  return data as any;
 };
 
 export const useUserPrefrence = (userId: string) => {

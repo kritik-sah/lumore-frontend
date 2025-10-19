@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -47,21 +48,21 @@ const DateField = ({
     [onChange]
   );
 
-  const minAgeDate = React.useMemo(() => {
-    const date = new Date();
-    date.setFullYear(date.getFullYear() - 18);
-    return date;
-  }, []);
+  // const minAgeDate = React.useMemo(() => {
+  //   const date = new Date();
+  //   date.setFullYear(date.getFullYear() - 18);
+  //   return date;
+  // }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium">{label}</label>
+    <div className="border border-ui-shade/10 rounded-xl p-2">
+      <Label className="text-ui-shade/80">{label}</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             className={cn(
-              "w-full justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal mt-3",
               !date && "text-muted-foreground"
             )}
           >
@@ -78,14 +79,11 @@ const DateField = ({
             mode="single"
             selected={date}
             onSelect={handleDateSelect}
-            initialFocus
-            disabled={(date) => {
-              const isDisabled = date > minAgeDate;
-              return isDisabled;
-            }}
+            // disabled={(date) => {
+            //   const isDisabled = date > minAgeDate;
+            //   return isDisabled;
+            // }}
             defaultMonth={new Date()}
-            fromYear={1970}
-            toYear={new Date().getFullYear() - 18}
             captionLayout="dropdown"
             // disableNavigation={true}
           />

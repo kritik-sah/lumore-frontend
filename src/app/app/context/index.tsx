@@ -1,5 +1,7 @@
 import React from "react";
 import { LocationProvider } from "./LocationProvider";
+
+import { OnboardingProvider } from "./Onboardingprovider";
 import { SocketProvider } from "./SocketContext";
 
 const Provider = ({
@@ -9,7 +11,9 @@ const Provider = ({
 }>) => {
   return (
     <SocketProvider>
-      <LocationProvider>{children}</LocationProvider>
+      <OnboardingProvider>
+        <LocationProvider>{children}</LocationProvider>
+      </OnboardingProvider>
     </SocketProvider>
   );
 };

@@ -1,4 +1,5 @@
 "use client";
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -16,6 +17,7 @@ import { useEffect, useState } from "react";
 import { TextField } from "../components/InputField";
 import GeneralLayout from "../components/layout/general";
 import SubPageLayout from "../components/layout/SubPageLayout";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 
 interface UserSettings {
@@ -216,6 +218,7 @@ const FieldEditor = ({
 }: FieldEditorProps) => {
   const [value, setValue] = useState(currentValue || "");
   const [error, setError] = useState("");
+  useOnboarding();
 
   useEffect(() => {
     setValue(currentValue || "");
@@ -269,15 +272,38 @@ const FieldEditor = ({
     }
   };
 
+  const handleCancel = () => {
+    setValue(currentValue || "");
+    setError("");
+    setIsOpen(false);
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="flex flex-col">
-        <SheetHeader>
-          <SheetTitle className="capitalize">
-            Edit {fieldType === "phoneNumber" ? "Phone Number" : fieldType}
-          </SheetTitle>
+      <SheetContent className="flex flex-col p-0">
+        <SheetHeader className="hidden">
+          <SheetTitle>Edit {fieldType}</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto">
+        <header className="flex items-center justify-between p-3 gap-4 shadow-sm">
+          <div className="flex items-center justify-start gap-2">
+            <div onClick={handleCancel} className="">
+              <Icon
+                name="MdOutlineClose"
+                className="text-xl h-6 w-6 text-ui-shade"
+              />
+            </div>
+            <div className="capitalize text-lg font-semibold">
+              Edit {fieldType}
+            </div>
+          </div>
+          <div onClick={handleSubmit} className="">
+            <Icon
+              name="HiOutlineCheck"
+              className="text-xl h-6 w-6 text-ui-highlight"
+            />
+          </div>
+        </header>
+        <div className="flex-1 overflow-y-auto p-3">
           <div className="flex flex-col gap-2">
             <TextField
               name={fieldType}
@@ -302,24 +328,6 @@ const FieldEditor = ({
             />
           </div>
         </div>
-        <SheetFooter className="flex-shrink-0 mt-4">
-          <div className="w-full flex flex-col gap-2">
-            <Button type="submit" onClick={handleSubmit} disabled={!!error}>
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              className="hover:bg-ui-shade hover:text-ui-light"
-              onClick={() => {
-                setValue(currentValue || "");
-                setError("");
-                setIsOpen(false);
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

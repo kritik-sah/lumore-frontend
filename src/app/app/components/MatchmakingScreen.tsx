@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { useExploreChat } from "../context/ExploreChatContext";
+import { useOnboarding } from "../hooks/useOnboarding";
 import ChatScreen from "./ChatScreen";
 // const AdBanner = dynamic(() => import("@/components/AdsBanner"), {
 //   ssr: false,
@@ -11,6 +12,7 @@ import ChatScreen from "./ChatScreen";
 
 const MatchmakingScreen = () => {
   const { matchId, matchedUser } = useExploreChat();
+  useOnboarding();
 
   return (
     <div className="flex-1 overflow-y-auto p-2">

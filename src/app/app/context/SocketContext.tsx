@@ -1,6 +1,5 @@
 "use client";
 import { getAccessToken, getUser } from "@/service/storage";
-import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 
@@ -39,12 +38,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Get the token from cookies
     const token = getAccessToken();
-    console.log("token", token);
-
     if (!token) {
-      console.log(
-        "SocketContext: No token found, skipping socket initialization"
-      );
       return;
     }
 

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useSocket } from "../context/SocketContext";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
@@ -33,6 +34,7 @@ interface KeyExchangeResponse {
 const ChatScreen: React.FC = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  useOnboarding();
 
   // Safely parse user from cookie with error handling
   let userId = "";

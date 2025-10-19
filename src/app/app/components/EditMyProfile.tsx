@@ -10,6 +10,20 @@ import {
 } from "@/components/ui/sheet";
 import { updateFieldVisibility, uploadProfilePicture } from "@/lib/apis";
 import allLanguages from "@/lib/languages.json";
+import {
+  bloodTypeOptions,
+  dietOptions,
+  drinkingOptions,
+  genderOptions,
+  intrestOptions,
+  languageOptions,
+  maritalStatusOptions,
+  personalityTypeOptions,
+  petOptions,
+  religionOptions,
+  smokingOptions,
+  zodiacOptions,
+} from "@/lib/options";
 import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,113 +58,22 @@ const profileSchema = z.object({
         "Invalid phone number format. Please enter a valid international phone number.",
     })
     .optional(),
-  bloodGroup: z.enum([
-    "A+",
-    "A-",
-    "B+",
-    "B-",
-    "AB+",
-    "AB-",
-    "O+",
-    "O-",
-    "Prefer Not to Say",
-  ]),
-  gender: z.enum([
-    "Man",
-    "Woman",
-    "Gay",
-    "Lesbian",
-    "Non-Binary",
-    "Prefer Not to Say",
-  ]),
+  bloodGroup: z.enum(bloodTypeOptions.map((option) => option.value)),
+  gender: z.enum(genderOptions.map((option) => option.value)),
 
   hometown: z.string(),
-  diet: z.enum([
-    "Vegetarian",
-    "Vegan",
-    "Jain",
-    "Non-Vegetarian",
-    "No Specific Diet",
-  ]),
-  zodiacSign: z.enum([
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces",
-  ]),
+  diet: z.enum(dietOptions.map((option) => option.value)),
+  zodiacSign: z.enum(zodiacOptions.map((option) => option.value)),
   lifestyle: z.object({
-    drinking: z.enum([
-      "Never",
-      "Rarely",
-      "Socially",
-      "Regular",
-      "Prefer Not to Say",
-    ]),
-    smoking: z.enum([
-      "Never",
-      "Occasionally",
-      "Regularly",
-      "Trying to Quit",
-      "Prefer Not to Say",
-    ]),
-    pets: z.enum([
-      "Have Pets",
-      "Love Pets",
-      "Allergic to Pets",
-      "No Pets",
-      "Prefer Not to Say",
-    ]),
+    drinking: z.enum(drinkingOptions.map((option) => option.value)),
+    smoking: z.enum(smokingOptions.map((option) => option.value)),
+    pets: z.enum(petOptions.map((option) => option.value)),
   }),
 
-  maritalStatus: z.enum([
-    "Single",
-    "Divorced",
-    "Separated",
-    "Widowed",
-    "Married",
-    "Prefer Not to Say",
-  ]),
+  maritalStatus: z.enum(maritalStatusOptions.map((option) => option.value)),
 
-  personalityType: z.enum([
-    "INTJ",
-    "INTP",
-    "ENTJ",
-    "ENTP",
-    "INFJ",
-    "INFP",
-    "ENFJ",
-    "ENFP",
-    "ISTJ",
-    "ISFJ",
-    "ESTJ",
-    "ESFJ",
-    "ISTP",
-    "ISFP",
-    "ESTP",
-    "ESFP",
-    "Not Sure",
-  ]),
-  religion: z.enum([
-    "Christianity",
-    "Islam",
-    "Hinduism",
-    "Buddhism",
-    "Judaism",
-    "Sikhism",
-    "Atheism",
-    "Agnostic",
-    "Spiritual",
-    "Other",
-    "Prefer Not to Say",
-  ]),
+  personalityType: z.enum(personalityTypeOptions.map((option) => option.value)),
+  religion: z.enum(religionOptions.map((option) => option.value)),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -170,30 +93,28 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: user?.username || "",
-      nickname: user?.nickname || "",
-      realName: user?.realName || "",
-      phoneNumber: user?.phoneNumber || "",
-      bloodGroup: user?.bloodGroup || "Prefer Not to Say",
-      interests: user?.interests || [],
-      bio: user?.bio || "",
-      gender: user?.gender || "Prefer Not to Say",
-      religion: user?.religion || "Prefer Not to Say",
-      dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
-      height: user?.height || "170",
-      hometown: user?.hometown || "",
-      diet: user?.diet || "No Specific Diet",
-      zodiacSign: user?.zodiacSign || "Aries",
-      lifestyle: user?.lifestyle || {
-        drinking: "Prefer Not to Say",
-        smoking: "Prefer Not to Say",
-        pets: "Prefer Not to Say",
-      },
-      work: user?.work || "",
-      institution: user?.institution || "",
-      maritalStatus: user?.maritalStatus || "Prefer Not to Say",
-      languages: user?.languages || [],
-      personalityType: user?.personalityType || "Not Sure",
+      username: user?.username,
+      nickname: user?.nickname,
+      realName: user?.realName,
+      phoneNumber: user?.phoneNumber,
+      bloodGroup: user?.bloodGroup,
+      interests: user?.interests,
+      bio: user?.bio,
+      gender: user?.gender,
+      religion: user?.religion,
+      dob: user?.dob
+        ? new Date(user.dob).toISOString().split("T")[0]
+        : undefined,
+      height: user?.height,
+      hometown: user?.hometown,
+      diet: user?.diet,
+      zodiacSign: user?.zodiacSign,
+      lifestyle: user?.lifestyle,
+      work: user?.work,
+      institution: user?.institution,
+      maritalStatus: user?.maritalStatus,
+      languages: user?.languages,
+      personalityType: user?.personalityType,
     },
   });
 
@@ -454,12 +375,6 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
 
 export default EditMyProfile;
 
-const genders = [
-  { label: "Man", value: "Man" },
-  { label: "Woman", value: "Woman" },
-  { label: "Non-Binary", value: "Non-Binary" },
-];
-
 const FieldEditor = ({
   isOpen,
   setIsOpen,
@@ -478,10 +393,6 @@ const FieldEditor = ({
   form: any;
 }) => {
   const [value, setValue] = useState(currentValue);
-  const languageOptions = allLanguages.map(({ code, name, nativeName }) => ({
-    label: `${name} (${nativeName})`,
-    value: code,
-  }));
 
   // Update value when currentValue changes
   React.useEffect(() => {
@@ -589,16 +500,7 @@ const FieldEditor = ({
             {fieldType === "bloodGroup" ? (
               <SelectField
                 label="Blood Group"
-                options={[
-                  { label: "A+", value: "A+" },
-                  { label: "A-", value: "A-" },
-                  { label: "B+", value: "B+" },
-                  { label: "B-", value: "B-" },
-                  { label: "AB+", value: "AB+" },
-                  { label: "AB-", value: "AB-" },
-                  { label: "O+", value: "O+" },
-                  { label: "O-", value: "O-" },
-                ]}
+                options={bloodTypeOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -608,28 +510,9 @@ const FieldEditor = ({
             {fieldType === "interests" ? (
               <>
                 <MultiSelectField
-                  label="Professional Interests"
+                  label="Interests"
                   max={5}
-                  options={[
-                    { label: "Technology", value: "Technology" },
-                    { label: "Healthcare", value: "Healthcare" },
-                    { label: "Finance", value: "Finance" },
-                    { label: "Education", value: "Education" },
-                    { label: "Arts", value: "Arts" },
-                    { label: "Science", value: "Science" },
-                    { label: "Engineering", value: "Engineering" },
-                    { label: "Business", value: "Business" },
-                    { label: "Law", value: "Law" },
-                    { label: "Other", value: "Other" },
-                    { label: "Reading", value: "Reading" },
-                    { label: "Travel", value: "Travel" },
-                    { label: "Music", value: "Music" },
-                    { label: "Sports", value: "Sports" },
-                    { label: "Cooking", value: "Cooking" },
-                    { label: "Photography", value: "Photography" },
-                    { label: "Gaming", value: "Gaming" },
-                    { label: "Fitness", value: "Fitness" },
-                  ]}
+                  options={intrestOptions}
                   value={value || []}
                   name="interests"
                   onChange={setValue}
@@ -649,7 +532,7 @@ const FieldEditor = ({
             {fieldType === "gender" ? (
               <SelectField
                 label="Gender"
-                options={genders}
+                options={genderOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -680,16 +563,7 @@ const FieldEditor = ({
             {fieldType === "diet" ? (
               <SelectField
                 label="Diet"
-                options={[
-                  { label: "Vegetarian", value: "Vegetarian" },
-                  { label: "Vegan", value: "Vegan" },
-                  { label: "Pescatarian", value: "Pescatarian" },
-                  { label: "Non-Vegetarian", value: "Non-Vegetarian" },
-                  { label: "Gluten-Free", value: "Gluten-Free" },
-                  { label: "Kosher", value: "Kosher" },
-                  { label: "Halal", value: "Halal" },
-                  { label: "No Specific Diet", value: "No Specific Diet" },
-                ]}
+                options={dietOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -699,20 +573,7 @@ const FieldEditor = ({
             {fieldType === "zodiacSign" ? (
               <SelectField
                 label="Zodiac Sign"
-                options={[
-                  { label: "Aries", value: "Aries" },
-                  { label: "Taurus", value: "Taurus" },
-                  { label: "Gemini", value: "Gemini" },
-                  { label: "Cancer", value: "Cancer" },
-                  { label: "Leo", value: "Leo" },
-                  { label: "Virgo", value: "Virgo" },
-                  { label: "Libra", value: "Libra" },
-                  { label: "Scorpio", value: "Scorpio" },
-                  { label: "Sagittarius", value: "Sagittarius" },
-                  { label: "Capricorn", value: "Capricorn" },
-                  { label: "Aquarius", value: "Aquarius" },
-                  { label: "Pisces", value: "Pisces" },
-                ]}
+                options={zodiacOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -723,13 +584,7 @@ const FieldEditor = ({
               <>
                 <SelectField
                   label="Drinking Habit"
-                  options={[
-                    { label: "Never", value: "Never" },
-                    { label: "Rarely", value: "Rarely" },
-                    { label: "Socially", value: "Socially" },
-                    { label: "Regular", value: "Regular" },
-                    { label: "Prefer Not to Say", value: "Prefer Not to Say" },
-                  ]}
+                  options={drinkingOptions}
                   value={value?.drinking}
                   name={"lifestyle.drinking"}
                   onChange={(e) => setValue({ ...value, drinking: e })}
@@ -737,13 +592,7 @@ const FieldEditor = ({
                 />
                 <SelectField
                   label="Smoking Habit"
-                  options={[
-                    { label: "Never", value: "Never" },
-                    { label: "Occasionally", value: "Occasionally" },
-                    { label: "Regularly", value: "Regularly" },
-                    { label: "Trying to Quit", value: "Trying to Quit" },
-                    { label: "Prefer Not to Say", value: "Prefer Not to Say" },
-                  ]}
+                  options={smokingOptions}
                   value={value?.smoking}
                   name={"lifestyle.smoking"}
                   onChange={(e) => setValue({ ...value, smoking: e })}
@@ -751,13 +600,7 @@ const FieldEditor = ({
                 />
                 <SelectField
                   label="Pets"
-                  options={[
-                    { label: "Have Pets", value: "Have Pets" },
-                    { label: "Love Pets", value: "Love Pets" },
-                    { label: "Allergic to Pets", value: "Allergic to Pets" },
-                    { label: "No Pets", value: "No Pets" },
-                    { label: "Prefer Not to Say", value: "Prefer Not to Say" },
-                  ]}
+                  options={petOptions}
                   value={value?.pets}
                   name={"lifestyle.pets"}
                   onChange={(e) => setValue({ ...value, pets: e })}
@@ -793,14 +636,7 @@ const FieldEditor = ({
             {fieldType === "maritalStatus" ? (
               <SelectField
                 label="Marital Status"
-                options={[
-                  { label: "Single", value: "Single" },
-                  { label: "Divorced", value: "Divorced" },
-                  { label: "Separated", value: "Separated" },
-                  { label: "Widowed", value: "Widowed" },
-                  { label: "Married", value: "Married" },
-                  { label: "Prefer Not to Say", value: "Prefer Not to Say" },
-                ]}
+                options={maritalStatusOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -821,25 +657,7 @@ const FieldEditor = ({
             {fieldType === "personalityType" ? (
               <SelectField
                 label="Personality Type"
-                options={[
-                  { label: "INTJ", value: "INTJ" },
-                  { label: "INTP", value: "INTP" },
-                  { label: "ENTJ", value: "ENTJ" },
-                  { label: "ENTP", value: "ENTP" },
-                  { label: "INFJ", value: "INFJ" },
-                  { label: "INFP", value: "INFP" },
-                  { label: "ENFJ", value: "ENFJ" },
-                  { label: "ENFP", value: "ENFP" },
-                  { label: "ISTJ", value: "ISTJ" },
-                  { label: "ISFJ", value: "ISFJ" },
-                  { label: "ESTJ", value: "ESTJ" },
-                  { label: "ESFJ", value: "ESFJ" },
-                  { label: "ISTP", value: "ISTP" },
-                  { label: "ISFP", value: "ISFP" },
-                  { label: "ESTP", value: "ESTP" },
-                  { label: "ESFP", value: "ESFP" },
-                  { label: "Not Sure", value: "Not Sure" },
-                ]}
+                options={personalityTypeOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}
@@ -849,15 +667,7 @@ const FieldEditor = ({
             {fieldType === "religion" ? (
               <SelectField
                 label="Religion"
-                options={[
-                  { label: "Christianity", value: "Christianity" },
-                  { label: "Islam", value: "Islam" },
-                  { label: "Hinduism", value: "Hinduism" },
-                  { label: "Buddhism", value: "Buddhism" },
-                  { label: "Judaism", value: "Judaism" },
-                  { label: "Atheism", value: "Atheism" },
-                  { label: "Other", value: "Other" },
-                ]}
+                options={religionOptions}
                 value={value}
                 name={fieldType}
                 onChange={(e) => setValue(e)}

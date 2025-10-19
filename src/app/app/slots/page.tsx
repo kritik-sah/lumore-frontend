@@ -6,6 +6,7 @@ import Link from "next/link";
 import React from "react";
 import NavLayout from "../components/layout/NavLayout";
 import { useCookies } from "../hooks/useCookies";
+import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 
 interface Slot {
@@ -22,6 +23,7 @@ interface Slot {
 
 const Slots = () => {
   const { getCookies, userCookie } = useCookies();
+  useOnboarding();
   const { user, isLoading: gettingUser } = useUser(userCookie?._id);
 
   const {
