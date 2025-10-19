@@ -18,7 +18,7 @@ import {
 import {
   genderOptions,
   goalOptions,
-  intrestedInOptions,
+  interestedInOptions,
   languageOptions,
   religionOptions,
   SelectOption,
@@ -147,7 +147,7 @@ const onboardingScreens: Screen[] = [
         place: "prefrence",
         name: "interestedIn",
         label: "Looking for",
-        options: intrestedInOptions,
+        options: interestedInOptions,
         placeholder: "Select a gender.",
         helperText: "Who would you like to meet?",
         errorText: "Please pick a gender to continue",

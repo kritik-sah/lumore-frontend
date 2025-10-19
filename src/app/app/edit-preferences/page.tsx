@@ -13,8 +13,8 @@ import allLanguages from "@/lib/languages.json";
 import {
   dietOptions,
   goalOptions,
-  intrestedInOptions,
-  intrestOptions,
+  interestedInOptions,
+  interestOptions,
   languageOptions,
   personalityTypeOptions,
   relationshipTypeOptions,
@@ -291,7 +291,7 @@ const FieldEditor = ({
               <SelectField
                 name="interestedIn"
                 label="Interested In"
-                options={intrestedInOptions}
+                options={interestedInOptions}
                 value={value}
                 onChange={setValue}
                 placeholder="Select gender preferences"
@@ -353,7 +353,7 @@ const FieldEditor = ({
                   name="interests"
                   label="Interests"
                   max={5}
-                  options={intrestOptions}
+                  options={interestOptions}
                   value={value || []}
                   onChange={setValue}
                   placeholder="What vibes are you looking for?"
