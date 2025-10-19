@@ -1,14 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* @tailwind base; */
+/* @tailwind components; */
+/* @tailwind utilities; */
+@import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@plugin "tailwindcss-animate";
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+@theme {
+  --color-ui-light: #fafafa;
+  --color-ui-shade: #0a0a09;
+  --color-ui-background: #f1e9da;
+  --color-ui-foreground: #2e294e;
+  --color-ui-primary: #ffd400;
+  --color-ui-accent: #d90368;
+  --color-ui-highlight: #541388;
+  --color-ui-dark-background: #1a1a2e;
+  --color-ui-dark-foreground: #eaeaea;
+  --color-ui-dark-primary: #ffdd33;
+  --color-ui-dark-accent: #ff4f7b;
+  --color-ui-dark-highlight: #6a28a5;
+
+  --font-dmSans: var(--font-dm-sans);
+  --font-workSans: var(--font-work-sans);
+}
 
 html,
 body {
@@ -16,7 +29,9 @@ body {
 }
 
 body {
-  @apply bg-ui-light text-ui-shade dark:bg-ui-dark-background dark:bg-ui-dark-foreground !font-workSans;
+  background-color: #fafafa;
+  color: #0a0a09;
+  font-family: var(--font-work-sans);
 }
 
 @layer base {
@@ -30,7 +45,7 @@ body {
   h4,
   h5,
   h6 {
-    @apply font-dmSans;
+    font-family: var(--font-dm-sans);
   }
 }
 

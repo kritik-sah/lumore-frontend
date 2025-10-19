@@ -41,16 +41,20 @@ export default function Hero() {
         </h6>
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <SketchButton
-            onClick={install}
-            className="py-3 px-6 w-full md:w-auto"
+          <a
+            className="w-full md:w-auto"
+            href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Icon
-              name="AiFillAndroid"
-              className="text-3xl flex-shrink-0 mr-2"
-            />
-            Install Lumore
-          </SketchButton>
+            <SketchButton className="py-3 px-6 w-full md:w-auto">
+              <Icon
+                name="AiFillAndroid"
+                className="text-3xl flex-shrink-0 mr-2"
+              />
+              Install Lumore
+            </SketchButton>
+          </a>
           <ProductHuntBadge />
         </div>
       </div>

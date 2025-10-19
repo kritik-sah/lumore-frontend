@@ -1,16 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import Icon from "@/components/icon";
-import ChatScreen from "./ChatScreen";
-import { useExploreChat } from "../context/ExploreChatContext";
+import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-const AdBanner = dynamic(() => import("@/components/AdsBanner"), {
-  ssr: false,
-});
+import { useExploreChat } from "../context/ExploreChatContext";
+import { useOnboarding } from "../hooks/useOnboarding";
+import ChatScreen from "./ChatScreen";
+// const AdBanner = dynamic(() => import("@/components/AdsBanner"), {
+//   ssr: false,
+// });
 
 const MatchmakingScreen = () => {
   const { matchId, matchedUser } = useExploreChat();
+  useOnboarding();
 
   return (
     <div className="flex-1 overflow-y-auto p-2">
@@ -27,14 +29,9 @@ const MatchmakingScreen = () => {
 
 export default MatchmakingScreen;
 
-
 const SearchScreen = () => {
-  const {
-    isMatching,
-    error,
-    startMatchmaking,
-    stopMatchmaking,
-  } = useExploreChat();
+  const { isMatching, error, startMatchmaking, stopMatchmaking } =
+    useExploreChat();
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
@@ -66,7 +63,7 @@ const SearchScreen = () => {
         data-ad-format="auto"
       /> */}
 
-      <SqAdBanner />
+      {/* <SqAdBanner /> */}
 
       <Button
         variant={isMatching ? "outline" : "default"}
@@ -79,46 +76,45 @@ const SearchScreen = () => {
   );
 };
 
+// const SqAdBanner = () => {
+//   const adRef = useRef<HTMLDivElement>(null);
+//   const [isVisible, setIsVisible] = useState(false);
 
-const SqAdBanner = () => {
-  const adRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+//   useEffect(() => {
+//     // Check if container has width > 0
+//     const checkVisibility = () => {
+//       if (adRef.current && adRef.current.offsetWidth > 0) {
+//         setIsVisible(true);
+//       }
+//     };
 
-  useEffect(() => {
-    // Check if container has width > 0
-    const checkVisibility = () => {
-      if (adRef.current && adRef.current.offsetWidth > 0) {
-        setIsVisible(true);
-      }
-    };
+//     // Retry after a brief delay to ensure layout is ready
+//     const timeout = setTimeout(checkVisibility, 300);
 
-    // Retry after a brief delay to ensure layout is ready
-    const timeout = setTimeout(checkVisibility, 300);
+//     return () => clearTimeout(timeout);
+//   }, []);
 
-    return () => clearTimeout(timeout);
-  }, []);
+//   useEffect(() => {
+//     if (isVisible) {
+//       try {
+//         (window.adsbygoogle = window.adsbygoogle || []).push({});
+//       } catch (e) {
+//         console.error("AdsbyGoogle error:", e);
+//       }
+//     }
+//   }, [isVisible]);
 
-  useEffect(() => {
-    if (isVisible) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        console.error('AdsbyGoogle error:', e);
-      }
-    }
-  }, [isVisible]);
-
-  return (
-    <div ref={adRef}>
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client="ca-pub-8794679058209848"
-        data-ad-slot="8827977087"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-        data-ad-layout="display"
-      />
-    </div>
-  );
-};
+//   return (
+//     <div ref={adRef}>
+//       <ins
+//         className="adsbygoogle"
+//         style={{ display: "block" }}
+//         data-ad-client="ca-pub-8794679058209848"
+//         data-ad-slot="8827977087"
+//         data-ad-format="auto"
+//         data-full-width-responsive="true"
+//         data-ad-layout="display"
+//       />
+//     </div>
+//   );
+// };

@@ -64,6 +64,7 @@ import {
   HiMiniExclamationTriangle,
   HiOutlineBookOpen,
   HiOutlineCake,
+  HiOutlineCheck,
   HiOutlineCheckBadge,
   HiOutlineDocumentText,
   HiOutlineHeart,
@@ -73,6 +74,7 @@ import {
   HiOutlineLockClosed,
   HiOutlineLockOpen,
   HiOutlinePlusCircle,
+  HiOutlinePuzzlePiece,
   HiOutlineUser,
 } from "react-icons/hi2";
 import { ImSpinner6 } from "react-icons/im";
@@ -150,6 +152,7 @@ const iconComponents: Record<string, IconType> = {
   FaTelegramPlane,
   HiOutlinePlusCircle,
   HiOutlineCheckBadge,
+  HiOutlineCheck,
   HiChevronDoubleLeft,
   HiChevronDoubleRight,
   HiOutlineInformationCircle,
@@ -230,6 +233,7 @@ const iconComponents: Record<string, IconType> = {
   IoSettingsOutline,
   BsSearchHeart,
   MdOutlineClose,
+  HiOutlinePuzzlePiece,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

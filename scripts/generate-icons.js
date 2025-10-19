@@ -12,10 +12,10 @@ const iosSizes = [
   152, 167, 180, 192, 256, 512, 1024,
 ];
 const sizes = iosSizes;
-console.log("generating icons");
+
 const sourceIcon = path.join(__dirname, "../public/icon-source.png");
 const outputDir = path.join(__dirname, "../public/ios");
-console.log("generating icons, outputDir");
+
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });

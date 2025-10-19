@@ -1,8 +1,6 @@
 import Provider from "@/app/app/context/index";
 import type { Metadata } from "next";
-import GeneralHeader from "./components/headers/General";
 import LumoreSplash from "./components/LumoreSplash";
-import MobileNav from "./components/MobileNav";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
 
 export const metadata: Metadata = {

@@ -1,4 +1,5 @@
 "use client";
+import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -7,14 +8,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { deleteAccount, handleLogout, updateUserData } from "@/lib/apis";
+import { deleteAccount, updateUserData } from "@/lib/apis";
+import useAuth from "@/service/requests/auth";
+import { getUser } from "@/service/storage";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TextField } from "../components/InputField";
 import GeneralLayout from "../components/layout/general";
-import { useUser } from "../hooks/useUser";
 import SubPageLayout from "../components/layout/SubPageLayout";
+import { useOnboarding } from "../hooks/useOnboarding";
+import { useUser } from "../hooks/useUser";
 
 interface UserSettings {
   email: string;
@@ -28,6 +32,7 @@ interface UserSettings {
 const UserSettings = () => {
   const router = useRouter();
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const { logout } = useAuth();
   const [editFieldType, setEditFieldType] = useState<keyof UserSettings | "">(
     ""
   );
@@ -42,10 +47,9 @@ const UserSettings = () => {
   // Get user data from cookies
   let userId = "";
   try {
-    const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie);
-      userId = parsedUser?._id || "";
+    const user = getUser();
+    if (user) {
+      userId = user?._id || "";
     }
   } catch (error) {
     console.error("[UserSettings] Error parsing user cookie:", error);
@@ -133,8 +137,8 @@ const UserSettings = () => {
               editFieldType === "web3Wallet"
                 ? settings.web3Wallet.addresses[0]
                 : editFieldType
-                  ? settings[editFieldType] ?? null
-                  : null
+                ? settings[editFieldType] ?? null
+                : null
             }
           />
 
@@ -178,11 +182,7 @@ const UserSettings = () => {
             <Button
               variant="outline"
               className="w-full hover:bg-ui-shade hover:text-ui-light"
-              onClick={() =>
-                handleLogout(() => {
-                  router.push("/app/login");
-                })
-              }
+              onClick={logout}
             >
               Logout
             </Button>
@@ -218,6 +218,7 @@ const FieldEditor = ({
 }: FieldEditorProps) => {
   const [value, setValue] = useState(currentValue || "");
   const [error, setError] = useState("");
+  useOnboarding();
 
   useEffect(() => {
     setValue(currentValue || "");
@@ -271,15 +272,38 @@ const FieldEditor = ({
     }
   };
 
+  const handleCancel = () => {
+    setValue(currentValue || "");
+    setError("");
+    setIsOpen(false);
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="flex flex-col">
-        <SheetHeader>
-          <SheetTitle className="capitalize">
-            Edit {fieldType === "phoneNumber" ? "Phone Number" : fieldType}
-          </SheetTitle>
+      <SheetContent className="flex flex-col p-0">
+        <SheetHeader className="hidden">
+          <SheetTitle>Edit {fieldType}</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto">
+        <header className="flex items-center justify-between p-3 gap-4 shadow-sm">
+          <div className="flex items-center justify-start gap-2">
+            <div onClick={handleCancel} className="">
+              <Icon
+                name="MdOutlineClose"
+                className="text-xl h-6 w-6 text-ui-shade"
+              />
+            </div>
+            <div className="capitalize text-lg font-semibold">
+              Edit {fieldType}
+            </div>
+          </div>
+          <div onClick={handleSubmit} className="">
+            <Icon
+              name="HiOutlineCheck"
+              className="text-xl h-6 w-6 text-ui-highlight"
+            />
+          </div>
+        </header>
+        <div className="flex-1 overflow-y-auto p-3">
           <div className="flex flex-col gap-2">
             <TextField
               name={fieldType}
@@ -287,40 +311,23 @@ const FieldEditor = ({
                 fieldType === "phoneNumber"
                   ? "Phone Number"
                   : fieldType === "web3Wallet"
-                    ? "Wallet Address"
-                    : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
+                  ? "Wallet Address"
+                  : fieldType?.charAt(0).toUpperCase() + fieldType?.slice(1)
               }
               type={fieldType === "email" ? "email" : "text"}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={`Enter your ${fieldType === "phoneNumber"
+              placeholder={`Enter your ${
+                fieldType === "phoneNumber"
                   ? "phone number"
                   : fieldType === "web3Wallet"
-                    ? "wallet address"
-                    : fieldType
-                }`}
+                  ? "wallet address"
+                  : fieldType
+              }`}
               error={error}
             />
           </div>
         </div>
-        <SheetFooter className="flex-shrink-0 mt-4">
-          <div className="w-full flex flex-col gap-2">
-            <Button type="submit" onClick={handleSubmit} disabled={!!error}>
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              className="hover:bg-ui-shade hover:text-ui-light"
-              onClick={() => {
-                setValue(currentValue || "");
-                setError("");
-                setIsOpen(false);
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

@@ -40,13 +40,19 @@ export function NavbarUI() {
         <NavbarLogo />
         <NavItems items={navItems} />
         <div className="flex items-center gap-4">
-          <SketchButton onClick={install} className="z-10">
-            <Icon
-              name="AiFillAndroid"
-              className="text-3xl flex-shrink-0 mr-2"
-            />
-            Install Lumore
-          </SketchButton>
+          <a
+            href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <SketchButton className="z-10">
+              <Icon
+                name="AiFillAndroid"
+                className="text-3xl flex-shrink-0 mr-2"
+              />
+              Install Lumore
+            </SketchButton>
+          </a>
         </div>
       </NavBody>
 
@@ -75,13 +81,20 @@ export function NavbarUI() {
             </a>
           ))}
           <div className="flex w-full flex-col gap-4">
-            <SketchButton onClick={install}>
-              <Icon
-                name="AiFillAndroid"
-                className="text-3xl flex-shrink-0 mr-2"
-              />
-              Install Lumore
-            </SketchButton>
+            <a
+              className="flex w-full flex-col gap-4"
+              href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <SketchButton className="z-10">
+                <Icon
+                  name="AiFillAndroid"
+                  className="text-3xl flex-shrink-0 mr-2"
+                />
+                Install Lumore
+              </SketchButton>
+            </a>
           </div>
         </MobileNavMenu>
       </MobileNav>
