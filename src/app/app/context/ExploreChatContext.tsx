@@ -118,18 +118,32 @@ export const ExploreChatProvider = ({
     if (!socket || !user || isMatching) return;
     setIsMatching(true);
     setError(null);
+
+    trackAnalytic({
+      activity: "started_matchmaking",
+      label: "Started Matchmaking",
+    });
+
     socket.emit("startMatchmaking");
   };
 
   const stopMatchmaking = () => {
     if (!socket || !_user?._id || !isMatching) return;
     setIsMatching(false);
+    trackAnalytic({
+      activity: "stoped_matchmaking",
+      label: "Stoped Matchmaking",
+    });
     socket.emit("stopMatchmaking", { userId: _user?._id });
   };
 
   const cancelChat = (matchId: string) => {
     if (!socket) return;
-
+    trackAnalytic({
+      activity: "end_chat",
+      label: "end Chat",
+      value: matchId,
+    });
     socket.emit("cancelChat", { matchId });
     clearMatch(matchId);
   };
@@ -154,6 +168,11 @@ export const ExploreChatProvider = ({
 
   const lockProfile = (matchId: string, userId: string, profileId: string) => {
     if (!socket) return;
+    trackAnalytic({
+      activity: "lock_profile",
+      label: "Lock Profile",
+      value: matchId,
+    });
     socket.emit("lockProfile", { matchId, userId, profileId });
   };
   const unlockProfile = (
@@ -162,6 +181,11 @@ export const ExploreChatProvider = ({
     profileId: string
   ) => {
     if (!socket) return;
+    trackAnalytic({
+      activity: "unlock_profile",
+      label: "Unlock Profile",
+      value: matchId,
+    });
     socket.emit("unlockProfile", { matchId, userId, profileId });
   };
 
