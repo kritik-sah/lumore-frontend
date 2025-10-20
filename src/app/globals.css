@@ -5,6 +5,8 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme {
   --color-ui-light: #fafafa;
   --color-ui-shade: #0a0a09;

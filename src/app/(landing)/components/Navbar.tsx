@@ -11,11 +11,9 @@ import {
   NavItems,
 } from "@/components/ui/resizable-navbar";
 import SketchButton from "@/components/ui/SketchButton";
-import { usePWA } from "@/hooks/usePWA";
 import { useState } from "react";
 
 export function NavbarUI() {
-  const { install } = usePWA();
   const navItems = [
     {
       name: "Features",
