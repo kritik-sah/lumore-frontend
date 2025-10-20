@@ -1,18 +1,11 @@
 "use client";
 import Icon from "@/components/icon";
-// import { Button } from "@/components/ui/button";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Particles } from "@/components/ui/particles";
 import SketchButton from "@/components/ui/SketchButton";
-import { usePWA } from "@/hooks/usePWA";
-// import { PopupButton } from "@typeform/embed-react";
-// import Image from "next/image";
-// import { useEffect, useState } from "react";
 import ProductHuntBadge from "./ProductHuntBadge";
 
 export default function Hero() {
-  const { install } = usePWA();
-
   return (
     <section className="max-w-7xl min-h-[70vh] mx-auto flex items-center justify-center gap-10 py-4 lg:py-14 px-5 text-center md:text-left !overflow-x-hidden">
       <div className="pt-20 flex flex-col items-center justify-center gap-2 ">
@@ -46,6 +39,12 @@ export default function Hero() {
             href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackAnalytic({
+                activity: "android_install",
+                label: "Android Install",
+              })
+            }
           >
             <SketchButton className="py-3 px-6 w-full md:w-auto">
               <Icon

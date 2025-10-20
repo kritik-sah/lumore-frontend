@@ -123,6 +123,11 @@ const ChatScreen: React.FC = () => {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7,
       });
+      trackAnalytic({
+        activity: "message_sent",
+        label: "Message Sent",
+        value: matchId,
+      });
       socket.emit("send_message", {
         matchId,
         receiverId: matchedUser._id,

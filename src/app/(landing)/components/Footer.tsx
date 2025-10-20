@@ -54,6 +54,12 @@ export default function Footer() {
                   rel="noreferrer"
                   target="_blank"
                   className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  onClick={() =>
+                    trackAnalytic({
+                      activity: "instagram_click",
+                      label: "Instagram Click",
+                    })
+                  }
                 >
                   <span className="sr-only">Instagram</span>
 
@@ -67,6 +73,12 @@ export default function Footer() {
                   rel="noreferrer"
                   target="_blank"
                   className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  onClick={() =>
+                    trackAnalytic({
+                      activity: "twitter_click",
+                      label: "Twitter Click",
+                    })
+                  }
                 >
                   <span className="sr-only">Twitter</span>
                   <Icon name="FaXTwitter" className="h-6 w-6" />
@@ -79,6 +91,12 @@ export default function Footer() {
                   rel="noreferrer"
                   target="_blank"
                   className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  onClick={() =>
+                    trackAnalytic({
+                      activity: "github_click",
+                      label: "Github Click",
+                    })
+                  }
                 >
                   <span className="sr-only">GitHub</span>
 

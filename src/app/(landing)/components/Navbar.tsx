@@ -42,6 +42,12 @@ export function NavbarUI() {
             href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackAnalytic({
+                activity: "android_install",
+                label: "Android Install",
+              })
+            }
           >
             <SketchButton className="z-10">
               <Icon
@@ -84,6 +90,12 @@ export function NavbarUI() {
               href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackAnalytic({
+                  activity: "android_install",
+                  label: "Android Install",
+                })
+              }
             >
               <SketchButton className="z-10">
                 <Icon
