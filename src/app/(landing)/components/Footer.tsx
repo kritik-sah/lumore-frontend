@@ -3,6 +3,7 @@ import Icon from "@/components/icon";
 // components/Footer.tsx
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { usePWA } from "@/hooks/usePWA";
+import Link from "next/link";
 
 export default function Footer() {
   const { deferredPrompt, isInstallable, install } = usePWA();
@@ -108,32 +109,6 @@ export default function Footer() {
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
             <div className="hidden md:block">
-              {/* <p className="font-medium text-ui-light/80">Services</p>
-
-              <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> 1on1 Coaching </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Company Review </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Accounts Review </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> HR Consulting </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> SEO Optimisation </a>
-                </li>
-              </ul> */}
-            </div>
-
-            <div className="hidden md:block">
               {/* <p className="font-medium text-ui-light/80">Company</p>
 
               <ul className="mt-6 space-y-4 text-sm">
@@ -168,7 +143,22 @@ export default function Footer() {
                 </li>
               </ul> */}
             </div>
+            <div>
+              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+                Lumore
+              </p>
 
+              <ul className="mt-6 space-y-4 text-sm">
+                <li>
+                  <Link
+                    href="/blog"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Blog
+                  </Link>
+                </li>
+              </ul>
+            </div>
             <div>
               <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
                 Legal
