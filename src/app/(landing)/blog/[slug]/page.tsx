@@ -25,10 +25,15 @@ const POST_QUERY = `*[_type == "blog" && slug.current == $slug][0]{
 const options = { next: { revalidate: 30 } };
 
 export async function generateMetadata(
-  { params }: { params: { slug: string } },
+  { params }: { params: Promise<{ slug: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const post = await client.fetch<SanityDocument>(POST_QUERY, params, options);
+  const { slug } = await params; // 👈 unwrap params if it's a Promise
+  const post = await client.fetch<SanityDocument>(
+    POST_QUERY,
+    { slug },
+    options
+  );
   if (!post) {
     return {
       title: "Post not found | Lumore Blog",
