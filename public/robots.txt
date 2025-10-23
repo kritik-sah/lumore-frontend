@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /app
-Disallow: /login/
-Disallow: /set-password
-
-Allow: /
