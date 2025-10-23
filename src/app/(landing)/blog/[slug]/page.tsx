@@ -1,5 +1,6 @@
 import { LinkPreview } from "@/components/ui/link-preview";
 import { client, imageUrl } from "@/sanity/client";
+import type { Metadata, ResolvingMetadata } from "next";
 import { PortableText, type SanityDocument } from "next-sanity";
 import Link from "next/link";
 
@@ -22,6 +23,58 @@ const POST_QUERY = `*[_type == "blog" && slug.current == $slug][0]{
 }`;
 
 const options = { next: { revalidate: 30 } };
+
+export async function generateMetadata(
+  { params }: { params: { slug: string } },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const post = await client.fetch<SanityDocument>(POST_QUERY, params, options);
+  if (!post) {
+    return {
+      title: "Post not found | Lumore Blog",
+      description: "This post could not be found.",
+    };
+  }
+
+  const postUrl = `https://www.lumore.xyz/blog/${post.slug.current}`;
+  const postImageUrl = post.featuredImage
+    ? imageUrl(post.featuredImage)
+    : "https://www.lumore.xyz/"; // fallback OG image
+
+  const description =
+    post.summary || post.excerpt || "Read this insightful article on Lumore.";
+
+  return {
+    title: `${post.title} | Lumore Blog`,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      url: postUrl,
+      type: "article",
+      publishedTime: post.publishedAt,
+      images: [
+        {
+          url: postImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: [postImageUrl],
+      creator: "@lumoreapp", // change to your handle
+    },
+    alternates: {
+      canonical: postUrl,
+    },
+  };
+}
+
 export default async function PostPage({
   params,
 }: {
@@ -32,6 +85,14 @@ export default async function PostPage({
     await params,
     options
   );
+
+  if (!post) {
+    return (
+      <main className="container mx-auto min-h-screen flex items-center justify-center">
+        <p>Post not found</p>
+      </main>
+    );
+  }
 
   const postImageUrl = imageUrl(post.featuredImage);
 
@@ -44,27 +105,24 @@ export default async function PostPage({
       <section className="py-6">
         <div className="max-w-[1030px] mx-auto px-4 sm:px-8 xl:px-0">
           <div className="max-w-[770px] mx-auto text-center">
-            {post.category.map((cat: any) => (
+            {post.category?.map((cat: any) => (
               <span
-                key={cat.slug.current}
+                key={cat.slug?.current}
                 className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-sm py-1 px-3 rounded-full"
               >
                 {cat.title}
               </span>
             ))}
+
             <h1 className="font-bold text-2xl sm:text-4xl lg:text-custom-2 text-dark my-5">
               {post.title}
             </h1>
             <p className="text-body">{post.summary}</p>
 
             <div className="flex items-center justify-center gap-4 mt-7.5">
-              <div className="text-left">
-                <div className="flex items-center gap-1.5">
-                  <p>
-                    Published: {new Date(post.publishedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
+              <p>
+                Published: {new Date(post.publishedAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
 
