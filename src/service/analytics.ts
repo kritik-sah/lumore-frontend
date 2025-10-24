@@ -4,7 +4,7 @@ interface TrackAnalyticProps {
   category?: string;
   value?: any;
 }
-const trackAnalytic = ({
+export const trackAnalytic = ({
   activity,
   category = "engagement",
   label,
