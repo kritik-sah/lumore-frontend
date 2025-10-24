@@ -3,6 +3,7 @@ import Icon from "@/components/icon";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Particles } from "@/components/ui/particles";
 import SketchButton from "@/components/ui/SketchButton";
+import { trackAnalytic } from "@/service/analytics";
 import ProductHuntBadge from "./ProductHuntBadge";
 
 export default function Hero() {

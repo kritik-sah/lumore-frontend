@@ -1,5 +1,6 @@
 "use client";
 import { fetchRoomChat } from "@/lib/apis";
+import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";

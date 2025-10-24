@@ -1,5 +1,6 @@
 "use client";
 import { createSlot, updateSlot } from "@/lib/apis";
+import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
