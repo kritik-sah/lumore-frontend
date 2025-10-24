@@ -11,6 +11,7 @@ import {
   NavItems,
 } from "@/components/ui/resizable-navbar";
 import SketchButton from "@/components/ui/SketchButton";
+import { trackAnalytic } from "@/service/analytics";
 import Link from "next/link";
 import { useState } from "react";
 

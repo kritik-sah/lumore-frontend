@@ -1,14 +1,10 @@
 "use client";
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import createAdHandler from "monetag-tg-sdk";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useOnboarding } from "../hooks/useOnboarding";
 import ChatScreen from "./ChatScreen";
-// const AdBanner = dynamic(() => import("@/components/AdsBanner"), {
-//   ssr: false,
-// });
 
 const MatchmakingScreen = () => {
   const { matchId, matchedUser } = useExploreChat();
@@ -32,6 +28,12 @@ export default MatchmakingScreen;
 const SearchScreen = () => {
   const { isMatching, error, startMatchmaking, stopMatchmaking } =
     useExploreChat();
+
+  const handleStartMatchmaking = () => {
+    const adHandler = createAdHandler(10088448);
+    adHandler();
+    startMatchmaking();
+  };
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
@@ -67,7 +69,7 @@ const SearchScreen = () => {
 
       <Button
         variant={isMatching ? "outline" : "default"}
-        onClick={isMatching ? stopMatchmaking : startMatchmaking}
+        onClick={isMatching ? stopMatchmaking : handleStartMatchmaking}
         className="rounded-lg py-6 px-8"
       >
         {isMatching ? "Stop Matchmaking" : "Start Matchmaking"}
