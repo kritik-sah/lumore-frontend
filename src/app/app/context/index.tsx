@@ -3,6 +3,7 @@ import { LocationProvider } from "./LocationProvider";
 
 import { OnboardingProvider } from "./Onboardingprovider";
 import { SocketProvider } from "./SocketContext";
+import TelegramProvider from "./TelegramProvider";
 
 const Provider = ({
   children,
@@ -10,11 +11,13 @@ const Provider = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <SocketProvider>
-      <OnboardingProvider>
-        <LocationProvider>{children}</LocationProvider>
-      </OnboardingProvider>
-    </SocketProvider>
+    <TelegramProvider>
+      <SocketProvider>
+        <OnboardingProvider>
+          <LocationProvider>{children}</LocationProvider>
+        </OnboardingProvider>
+      </SocketProvider>
+    </TelegramProvider>
   );
 };
 
