@@ -33,7 +33,7 @@ export function LoginForm({
     googleLogin();
   };
   const handleTMALogin = () => {
-    loginTma(initData);
+    loginTma(launchParams?.tgWebAppData);
   };
 
   return (

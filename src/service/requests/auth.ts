@@ -52,7 +52,7 @@ export default function useAuth() {
     return data?.user;
   }, []);
 
-  const loginTma = useCallback(async (initData: string): Promise<User> => {
+  const loginTma = useCallback(async (initData: any): Promise<User> => {
     const { data } = await apiClient.post("/auth/tma-login", {
       initData: initData,
     });
