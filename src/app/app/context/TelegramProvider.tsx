@@ -72,13 +72,13 @@ const TMAProvider = ({
       await viewport.mount();
       if (viewport.isMounted()) {
         viewport.expand();
-        await viewport.requestFullscreen();
-        viewport.safeAreaInsets();
-        viewport.contentSafeAreaInsets();
-        viewport.safeAreaInsetTop();
-        viewport.safeAreaInsetBottom();
-        viewport.contentSafeAreaInsetTop();
-        viewport.contentSafeAreaInsetBottom();
+        // await viewport.requestFullscreen();
+        // viewport.safeAreaInsets();
+        // viewport.contentSafeAreaInsets();
+        // viewport.safeAreaInsetTop();
+        // viewport.safeAreaInsetBottom();
+        // viewport.contentSafeAreaInsetTop();
+        // viewport.contentSafeAreaInsetBottom();
       }
     };
     if (typeof window !== "undefined") {
