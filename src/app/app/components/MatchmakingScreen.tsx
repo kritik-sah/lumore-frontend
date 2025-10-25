@@ -2,7 +2,9 @@
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import createAdHandler from "monetag-tg-sdk";
+import toast from "react-hot-toast";
 import { useExploreChat } from "../context/ExploreChatContext";
+import { useTelegram } from "../context/TelegramProvider";
 import { useOnboarding } from "../hooks/useOnboarding";
 import ChatScreen from "./ChatScreen";
 
@@ -28,11 +30,22 @@ export default MatchmakingScreen;
 const SearchScreen = () => {
   const { isMatching, error, startMatchmaking, stopMatchmaking } =
     useExploreChat();
+  const { IsTMA } = useTelegram();
 
   const handleStartMatchmaking = () => {
-    const adHandler = createAdHandler(10088448);
-    adHandler();
-    startMatchmaking();
+    const adHandler = createAdHandler(IsTMA ? 10089907 : 10088448);
+    if (IsTMA) {
+      adHandler()
+        .then(() => {
+          startMatchmaking();
+        })
+        .catch(() => {
+          toast.error("Failed to load ad. Please try again later.");
+        });
+    } else {
+      adHandler();
+      startMatchmaking();
+    }
   };
 
   return (
