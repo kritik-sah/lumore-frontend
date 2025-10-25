@@ -32,8 +32,12 @@ export function LoginForm({
   const handleGoogleLogin = () => {
     googleLogin();
   };
-  const handleTMALogin = () => {
-    loginTma(launchParams?.tgWebAppData);
+  const handleTMALogin = async () => {
+    const login = await loginTma(launchParams?.tgWebAppData);
+    if (login) {
+      console.log("TMA login sucessfull");
+      router.push("/app");
+    }
   };
 
   return (
