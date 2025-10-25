@@ -96,7 +96,7 @@ const onboardingScreens: Screen[] = [
     ],
   },
   {
-    title: "Tell us more about you...",
+    title: "Let's keep your account secure.",
     fields: [
       {
         type: "number",
@@ -108,14 +108,13 @@ const onboardingScreens: Screen[] = [
         errorText: "Please enter a valid phone number",
       },
       {
-        type: "select",
+        type: "email",
         place: "user",
-        name: "religion",
-        label: "Religion",
-        options: religionOptions,
-        placeholder: "What's your religion?",
-        helperText: "Please choose your religion? we may verify it later",
-        errorText: "you must select a religion to continue.",
+        name: "email",
+        label: "Email Address",
+        placeholder: "Enter your email",
+        helperText: "Please provide a valid email address.",
+        errorText: "Please enter a valid email address to continue",
       },
       // {
       //   type: "password",
