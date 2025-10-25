@@ -4,6 +4,7 @@ import {
   isTMA,
   useLaunchParams,
   useRawInitData,
+  viewport,
 } from "@tma.js/sdk-react";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -66,11 +67,16 @@ const TMAProvider = ({
   const lp = useLaunchParams();
   const init_data = useRawInitData();
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Initialize the package.
+    const initialize = async () => {
       init();
-      console.log("Launch Params:", lp);
-      console.log("initData:", init_data);
+      await viewport.mount();
+      if (viewport.isMounted()) {
+        viewport.expand();
+        await viewport.requestFullscreen();
+      }
+    };
+    if (typeof window !== "undefined") {
+      initialize();
     }
   }, []);
 
