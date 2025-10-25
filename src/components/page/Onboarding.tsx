@@ -292,6 +292,7 @@ const Onboarding = ({ screens = onboardingScreens }) => {
       // Basic validation (you can expand this logic as needed)
       if (
         (field.type === "text" ||
+          field.type === "email" ||
           field.type === "select" ||
           field.type === "date") &&
         (!value || value === "")

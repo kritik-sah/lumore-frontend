@@ -75,6 +75,10 @@ const TMAProvider = ({
         await viewport.requestFullscreen();
         viewport.safeAreaInsets();
         viewport.contentSafeAreaInsets();
+        viewport.safeAreaInsetTop();
+        viewport.safeAreaInsetBottom();
+        viewport.contentSafeAreaInsetTop();
+        viewport.contentSafeAreaInsetBottom();
       }
     };
     if (typeof window !== "undefined") {
