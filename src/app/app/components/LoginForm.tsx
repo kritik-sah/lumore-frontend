@@ -51,7 +51,8 @@ export function LoginForm({
         >
           <Icon name="FaTelegramPlane" className="!text-2xl !h-6 !w-6" />
           Login as{" @"}
-          {launchParams?.user?.username || launchParams?.user?.first_name}
+          {launchParams?.tgWebAppData?.user?.username ||
+            launchParams?.tgWebAppData?.user?.first_name}
         </Button>
       ) : (
         <Button
