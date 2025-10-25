@@ -73,6 +73,8 @@ const TMAProvider = ({
       if (viewport.isMounted()) {
         viewport.expand();
         await viewport.requestFullscreen();
+        viewport.safeAreaInsets();
+        viewport.contentSafeAreaInsets();
       }
     };
     if (typeof window !== "undefined") {
