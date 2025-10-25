@@ -52,6 +52,31 @@ export default function useAuth() {
     return data?.user;
   }, []);
 
+  const loginTma = useCallback(async (initData: string): Promise<User> => {
+    const { data } = await apiClient.post("/auth/tma-login", {
+      initData: initData,
+    });
+
+    if (data?.accessToken) {
+      setAccessToken(data.accessToken);
+      Cookies.set("accessToken", JSON.stringify(data.accessToken), {
+        expires: 1,
+      });
+    }
+    if (data?.refreshToken) {
+      setRefreshToken(data.refreshToken);
+      Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
+        expires: 10,
+      });
+    }
+    if (data?.user) {
+      setUser(data.user);
+      Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
+    }
+
+    return data?.user;
+  }, []);
+
   /**
    * 🔹 Normal email/password login handler
    */
@@ -131,6 +156,7 @@ export default function useAuth() {
 
   return {
     loginWithGoogle,
+    loginTma,
     loginUser,
     logout,
     refreshTokens,
