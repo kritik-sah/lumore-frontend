@@ -27,7 +27,7 @@ const ReelShowcase = () => {
           </div>
           <div className="relative z-10 flex-1 h-full shrink-0 flex-grow pt-8">
             <div className="flex flex-col items-start justify-center gap-6 ">
-              <h2 className="text-6xl font-bold text-ui-highlight">
+              <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-ui-highlight">
                 Feeling exhausted after using dating app.
               </h2>
               <p className="text-lg italic">
