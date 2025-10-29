@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/app/",
     },
-    sitemap: "https://www.lumore.xyz/sitemap.xml",
+    sitemap: "https://www.lumore.xyz/sitemap/sitemap.xml",
   };
 }

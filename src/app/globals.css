@@ -25,6 +25,23 @@
   --font-workSans: var(--font-work-sans);
 }
 
+@theme inline {
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
+    var(--delay, 0ms);
+
+  @keyframes cell-ripple {
+    0% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0.4;
+    }
+  }
+}
+
 html,
 body {
   scroll-behavior: smooth;
@@ -34,6 +51,7 @@ body {
   background-color: #fafafa;
   color: #0a0a09;
   font-family: var(--font-work-sans);
+  overflow-x: hidden;
 }
 
 @layer base {
