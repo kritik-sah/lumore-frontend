@@ -2,7 +2,8 @@
 const features = [
   {
     title: "Real-Time Anonymous Chat",
-    description: "Instantly connect with matches without swiping.",
+    description:
+      "Instantly connect with matches without swiping, in real-time.",
     status: "live",
   },
   {
@@ -16,18 +17,20 @@ const features = [
     status: "live",
   },
   {
-    title: "Limited Chat Slots",
+    title: "Limited Daily Matches",
     description: "Prioritizing quality conversations over quantity.",
     status: "live",
   },
   {
     title: "Secure & Private",
-    description: "All chats will be deleted in 24h, and end-to-end encrypted",
+    description:
+      "All chats will be deleted in 24h, and end-to-end encrypted, complete profile control, we will never show your profile to anyone without your consent.",
     status: "live",
   },
   {
-    title: "Gender & Location Filters",
-    description: "Control who you connect with. Not so random chats",
+    title: "Feedback & Reporting system",
+    description:
+      "Your safety is our priority. Report inappropriate behavior easily. along with feedback to improve matching algorithms.",
     status: "live",
   },
   {
@@ -68,24 +71,18 @@ export default function Features() {
           {features.map((service, index) => (
             <div
               key={index}
-              className={`group relative block before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-dashed before:border-ui-shade min-h-32`}
+              className={`relative px-6 py-6 flex flex-col items-start justify-start gap-2 rounded-xl border border-black text-left
+                ${index % 2 === 0 ? "bg-white text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0)] " : "bg-black text-white hover:shadow-[6px_6px_0px_0px_rgba(255,212,0)] "}
+               transition duration-200`}
             >
-              <div
-                className={`min-h-32 p-6 rounded-xl border-2 border-gray-900 transition group-hover:-translate-y-2 group-hover:-translate-x-2 overflow-hidden
-        ${
-          index % 2 === 0
-            ? "bg-ui-light text-ui-shade"
-            : "bg-ui-shade text-ui-light"
-        }`}
-              >
-                {service.status === "pending" && (
-                  <div className="absolute top-0 right-0 bg-ui-primary text-black text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                    Upcoming
-                  </div>
-                )}
-                <h4 className="font-semibold">{service.title}</h4>
-                <p className="text-sm opacity-75">{service.description}</p>
-              </div>
+              {service.status === "pending" && (
+                <span className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                  Upcoming
+                </span>
+              )}
+
+              <h4 className="font-semibold text-lg">{service.title}</h4>
+              <p className="text-sm opacity-75">{service.description}</p>
             </div>
           ))}
         </div>

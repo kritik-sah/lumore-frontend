@@ -48,6 +48,7 @@ import {
 } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { GiRingBox } from "react-icons/gi";
+import { GoMute, GoUnmute } from "react-icons/go";
 import { HiAdjustments, HiOutlineLogout } from "react-icons/hi";
 import {
   HiAdjustmentsHorizontal,
@@ -234,6 +235,8 @@ const iconComponents: Record<string, IconType> = {
   BsSearchHeart,
   MdOutlineClose,
   HiOutlinePuzzlePiece,
+  GoMute,
+  GoUnmute,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {
