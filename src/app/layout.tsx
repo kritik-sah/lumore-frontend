@@ -47,7 +47,6 @@ export default function RootLayout({
           name="google-adsense-account"
           content="ca-pub-7384584510187682"
         ></meta>
-        <meta name="monetag" content="9b82365a244f789ab861e2cd2c251e88" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-349HPV22MR"
           strategy="afterInteractive"
