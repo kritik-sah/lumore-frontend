@@ -1,4 +1,6 @@
+import Newsletter from "@/components/NewsLetter";
 import { LinkPreview } from "@/components/ui/link-preview";
+import { Separator } from "@/components/ui/separator";
 import { client, imageUrl } from "@/sanity/client";
 import type { Metadata, ResolvingMetadata } from "next";
 import { PortableText, type SanityDocument } from "next-sanity";
@@ -170,6 +172,8 @@ export default async function PostPage({
                 />
               )}
             </article>
+            <Separator className="mt-8 lg:mt-24" />
+            <Newsletter />
           </div>
         </div>
       </section>
