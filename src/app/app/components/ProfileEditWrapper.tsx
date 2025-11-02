@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 import EditMyProfile from "./EditMyProfile";
 
@@ -10,7 +9,6 @@ interface ProfileEditWrapperProps {
 
 const ProfileEditWrapper = ({ userId }: ProfileEditWrapperProps) => {
   const { user, isLoading } = useUser(userId);
-  useOnboarding();
 
   if (isLoading) {
     return <div>Loading...</div>;
