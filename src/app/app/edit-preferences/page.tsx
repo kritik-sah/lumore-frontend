@@ -34,11 +34,9 @@ import {
 } from "../components/InputField";
 import SubPageLayout from "../components/layout/SubPageLayout";
 import MultiSelectField from "../components/MultiSelectField";
-import { useOnboarding } from "../hooks/useOnboarding";
 import { UserPreferences, useUserPrefrence } from "../hooks/useUserPrefrence";
 
 const EditPreferences = () => {
-  useOnboarding();
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [editFieldType, setEditFieldType] = useState<keyof UserPreferences>();
   const [preferences, setPreferences] = useState<UserPreferences>();
@@ -172,7 +170,7 @@ const EditPreferences = () => {
             />
             <Field
               label="Preferred Languages"
-              field="preferredLanguages"
+              field="languages"
               value={languageDisplay(preferences?.languages || [])?.join(", ")}
               onEdit={handleEditField}
             />
