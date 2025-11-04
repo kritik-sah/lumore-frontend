@@ -2,9 +2,8 @@
 import { fetchRoomChat } from "@/lib/apis";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";
-import Cookies from "js-cookie";
 import {
   createContext,
   Dispatch,
@@ -30,6 +29,7 @@ interface ExploreChatContextType {
   cancelChat: (matchId: string) => void;
   lockProfile: (matchId: string, userId: string, profileId: string) => void;
   unlockProfile: (matchId: string, userId: string, profileId: string) => void;
+  revalidateUser: () => void;
 }
 
 const ExploreChatContext = createContext<ExploreChatContextType | undefined>(
@@ -41,16 +41,24 @@ export const ExploreChatProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const _user = getUser();
-  const { user } = useUser(_user?._id);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { user } = useUser(userId as string);
+  const { socket, revalidateSocket } = useSocket();
   const [matchId, setMatchId] = useState<string | null>(null);
   const [matchedUser, setMatchedUser] = useState<any | null>(null);
   const [isMatching, setIsMatching] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { socket } = useSocket();
+
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
+
+  const revalidateUser = () => {
+    if (userId) return;
+    const _user = getUser();
+    revalidateSocket();
+    setUserId(_user?._id || null);
+  };
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -116,6 +124,11 @@ export const ExploreChatProvider = ({
   }, [matchId]);
 
   const startMatchmaking = () => {
+    console.log("start matching", {
+      socket,
+      user,
+      isMatching,
+    });
     if (!socket || !user || isMatching) return;
     setIsMatching(true);
     setError(null);
@@ -129,13 +142,13 @@ export const ExploreChatProvider = ({
   };
 
   const stopMatchmaking = () => {
-    if (!socket || !_user?._id || !isMatching) return;
+    if (!socket || !userId || !isMatching) return;
     setIsMatching(false);
     trackAnalytic({
       activity: "stoped_matchmaking",
       label: "Stoped Matchmaking",
     });
-    socket.emit("stopMatchmaking", { userId: _user?._id });
+    socket.emit("stopMatchmaking", { userId: userId });
   };
 
   const cancelChat = (matchId: string) => {
@@ -325,6 +338,7 @@ export const ExploreChatProvider = ({
         cancelChat,
         lockProfile,
         unlockProfile,
+        revalidateUser,
       }}
     >
       {children}
