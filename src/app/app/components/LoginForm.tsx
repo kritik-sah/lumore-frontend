@@ -15,7 +15,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  const { IsTMA, initData, launchParams } = useTelegram();
+  const { IsTMA, launchParams } = useTelegram();
   const { loginWithGoogle, loginTma, isLoading } = useAuth();
 
   const googleLogin = useGoogleLogin({
