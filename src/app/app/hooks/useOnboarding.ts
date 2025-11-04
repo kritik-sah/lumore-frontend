@@ -26,9 +26,9 @@ export const useOnboarding = () => {
     if (storedUser && storedToken) {
       const onboarded = getIsOnboarded(storedUser._id);
 
-      if (!onboarded) {
-        router.replace("/app/onboarding");
-      }
+      // if (!onboarded) {
+      //   router.replace("/app/onboarding");
+      // }
     }
 
     setLoading(false);
