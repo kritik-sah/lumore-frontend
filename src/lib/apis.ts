@@ -129,3 +129,11 @@ export const fetchRoomChat = async (roomId: string) => {
   const response = await apiClient.get(`/messages/${roomId}`);
   return response.data;
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                  App Status                                */
+/* -------------------------------------------------------------------------- */
+export const fetchAppStatus = async () => {
+  const response = await apiClient.get(`/status/app-status`);
+  return response.data;
+};

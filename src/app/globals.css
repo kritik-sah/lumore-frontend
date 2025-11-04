@@ -26,6 +26,8 @@
 
   --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
     var(--delay, 0ms);
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-revolve: revolve 2s ease-in-out infinite;
 }
 
 html,
@@ -108,7 +110,79 @@ body {
     }
   }
 
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  @keyframes revolve {
+    0% {
+      transform: translate(0, -10px); /* top */
+    }
+    25% {
+      transform: translate(10px, 0); /* right */
+    }
+    50% {
+      transform: translate(0, 10px); /* bottom */
+    }
+    75% {
+      transform: translate(-10px, 0); /* left */
+    }
+    100% {
+      transform: translate(0, -10px); /* back to top */
+    }
+  }
+
   .animate-progress {
     animation: progress 2s ease-in-out infinite;
   }
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+}
+
+.glass::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8),
+    transparent,
+    rgba(255, 255, 255, 0.3)
+  );
 }
