@@ -14,6 +14,7 @@ import {
 import { calculateAge } from "@/utils/helpers";
 import { Lock, Unlock } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useExploreChat } from "../../context/ExploreChatContext";
 
@@ -34,14 +35,19 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const { matchId, matchedUser, cancelChat, lockProfile, unlockProfile } =
     useExploreChat();
+  const [isUnlocked, setisUnlocked] = useState(
+    user?.isViewerUnlockedUser || false
+  );
 
   const handleUnlockProfile = async () => {
     if (!matchId || !currentUserId || !matchedUser) return;
+    setisUnlocked(true);
     await unlockProfile(matchId, currentUserId, matchedUser);
   };
 
   const handleLockProfile = async () => {
     if (!matchId || !currentUserId || !matchedUser) return;
+    setisUnlocked(false);
     await lockProfile(matchId, currentUserId, matchedUser);
   };
 
@@ -51,9 +57,14 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <div className="relative">
           <div className="w-10 h-10 rounded-full bg-ui-highlight">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user.profilePicture} alt={user.realName || user.nickname || user.username} />
+              <AvatarImage
+                src={user.profilePicture}
+                alt={user.realName || user.nickname || user.username}
+              />
               <AvatarFallback>
-                {`${user.realName || user.nickname || user.username}`.charAt(0).toUpperCase()}
+                {`${user.realName || user.nickname || user.username}`
+                  .charAt(0)
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -96,12 +107,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={
-            user?.isViewerUnlockedUser ? handleLockProfile : handleUnlockProfile
-          }
+          onClick={isUnlocked ? handleLockProfile : handleUnlockProfile}
           className="hover:bg-gray-100"
         >
-          {user?.isViewerUnlockedUser ? (
+          {isUnlocked ? (
             <Icon name="HiLockOpen" className="h-5 w-5 text-gray-500" />
           ) : (
             <Icon name="HiLockClosed" className="h-5 w-5 text-gray-500" />

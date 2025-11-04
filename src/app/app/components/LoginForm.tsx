@@ -16,7 +16,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
   const { IsTMA, initData, launchParams } = useTelegram();
-  const { loginWithGoogle, loginTma } = useAuth();
+  const { loginWithGoogle, loginTma, isLoading } = useAuth();
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -52,6 +52,7 @@ export function LoginForm({
           onClick={handleTMALogin}
           variant="outline"
           className="w-full bg-ui-light text-ui-shade mt-2 text-lg p-6"
+          disabled={isLoading}
         >
           <Icon name="FaTelegramPlane" className="!text-2xl !h-6 !w-6" />
           Login as{" @"}
@@ -63,9 +64,16 @@ export function LoginForm({
           onClick={handleGoogleLogin}
           variant="outline"
           className="w-full bg-ui-light text-ui-shade mt-2 text-lg p-6"
+          disabled={isLoading}
         >
           <Icon name="FcGoogle" className="!text-2xl !h-6 !w-6" />
           Login with Google
+          {isLoading ? (
+            <Icon
+              name="LuLoaderCircle"
+              className="text-2xl !h-6 !w-6 animate-spin"
+            />
+          ) : null}
         </Button>
       )}
 
