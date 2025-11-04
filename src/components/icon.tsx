@@ -90,7 +90,13 @@ import {
   IoSettingsOutline,
   IoSparklesSharp,
 } from "react-icons/io5";
-import { LuDot, LuGraduationCap, LuUser, LuVenetianMask } from "react-icons/lu";
+import {
+  LuDot,
+  LuGraduationCap,
+  LuLoaderCircle,
+  LuUser,
+  LuVenetianMask,
+} from "react-icons/lu";
 import {
   MdOutlineBloodtype,
   MdOutlineClose,
@@ -237,6 +243,7 @@ const iconComponents: Record<string, IconType> = {
   HiOutlinePuzzlePiece,
   GoMute,
   GoUnmute,
+  LuLoaderCircle,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

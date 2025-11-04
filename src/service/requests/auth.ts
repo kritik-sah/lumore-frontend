@@ -2,7 +2,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { apiClient, BASE_URL } from "../api-client";
 import {
   getRefreshToken,
@@ -23,58 +23,72 @@ export type User = {
 
 export default function useAuth() {
   const router = useRouter();
+  const [isLoading, setisLoading] = useState(false);
 
   /**
    * 🔹 Google login handler
    */
-  const loginWithGoogle = useCallback(async (code: string): Promise<User> => {
-    const { data } = await apiClient.post("/auth/google-signin-web", {
-      code: code,
-    });
-
-    if (data?.accessToken) {
-      setAccessToken(data.accessToken);
-      Cookies.set("accessToken", JSON.stringify(data.accessToken), {
-        expires: 1,
+  const loginWithGoogle = useCallback(async (code: string) => {
+    try {
+      setisLoading(true);
+      const { data } = await apiClient.post("/auth/google-signin-web", {
+        code: code,
       });
-    }
-    if (data?.refreshToken) {
-      setRefreshToken(data.refreshToken);
-      Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
-        expires: 10,
-      });
-    }
-    if (data?.user) {
-      setUser(data.user);
-      Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
-    }
 
-    return data?.user;
+      if (data?.accessToken) {
+        setAccessToken(data.accessToken);
+        Cookies.set("accessToken", JSON.stringify(data.accessToken), {
+          expires: 1,
+        });
+      }
+      if (data?.refreshToken) {
+        setRefreshToken(data.refreshToken);
+        Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
+          expires: 10,
+        });
+      }
+      if (data?.user) {
+        setUser(data.user);
+        Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
+      }
+
+      return data?.user;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setisLoading(false);
+    }
   }, []);
 
-  const loginTma = useCallback(async (initData: any): Promise<User> => {
-    const { data } = await apiClient.post("/auth/tma-login", {
-      initData: initData,
-    });
-
-    if (data?.accessToken) {
-      setAccessToken(data.accessToken);
-      Cookies.set("accessToken", JSON.stringify(data.accessToken), {
-        expires: 1,
+  const loginTma = useCallback(async (initData: any) => {
+    try {
+      setisLoading(true);
+      const { data } = await apiClient.post("/auth/tma-login", {
+        initData: initData,
       });
-    }
-    if (data?.refreshToken) {
-      setRefreshToken(data.refreshToken);
-      Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
-        expires: 10,
-      });
-    }
-    if (data?.user) {
-      setUser(data.user);
-      Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
-    }
 
-    return data?.user;
+      if (data?.accessToken) {
+        setAccessToken(data.accessToken);
+        Cookies.set("accessToken", JSON.stringify(data.accessToken), {
+          expires: 1,
+        });
+      }
+      if (data?.refreshToken) {
+        setRefreshToken(data.refreshToken);
+        Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
+          expires: 10,
+        });
+      }
+      if (data?.user) {
+        setUser(data.user);
+        Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
+      }
+      return data?.user;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setisLoading(false);
+    }
   }, []);
 
   /**
@@ -82,6 +96,7 @@ export default function useAuth() {
    */
   const loginUser = async (data: { identifier: string; password: string }) => {
     try {
+      setisLoading(true);
       const { data: res } = await apiClient.post("/auth/login", data);
 
       if (res?.accessToken) {
@@ -112,6 +127,8 @@ export default function useAuth() {
       } else {
         throw new Error("Error setting up the request");
       }
+    } finally {
+      setisLoading(false);
     }
   };
 
@@ -134,6 +151,7 @@ export default function useAuth() {
    */
   const refreshTokens = useCallback(async (): Promise<boolean> => {
     try {
+      setisLoading(true);
       const refreshToken = getRefreshToken();
       if (!refreshToken) throw new Error("No refresh token found");
 
@@ -151,6 +169,8 @@ export default function useAuth() {
       console.error("Token refresh failed", error);
       logout();
       return false;
+    } finally {
+      setisLoading(false);
     }
   }, [logout]);
 
@@ -160,5 +180,6 @@ export default function useAuth() {
     loginUser,
     logout,
     refreshTokens,
+    isLoading,
   };
 }

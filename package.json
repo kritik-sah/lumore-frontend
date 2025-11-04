@@ -2,6 +2,11 @@
   "name": "lumorefe",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "email": "kritiksahco@gmail.com",
+    "name": "Kritik - Founder",
+    "url": "https://cryptolancer.in"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
