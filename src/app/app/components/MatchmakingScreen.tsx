@@ -1,16 +1,17 @@
 "use client";
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
-
-import toast from "react-hot-toast";
+import { useEffect } from "react";
 import { useExploreChat } from "../context/ExploreChatContext";
 import { useTelegram } from "../context/TelegramProvider";
-import { useOnboarding } from "../hooks/useOnboarding";
 import ChatScreen from "./ChatScreen";
 
 const MatchmakingScreen = () => {
-  const { matchId, matchedUser } = useExploreChat();
-  useOnboarding();
+  const { matchId, matchedUser, revalidateUser } = useExploreChat();
+
+  useEffect(() => {
+    return revalidateUser();
+  }, []);
 
   return (
     <div className="flex-1 overflow-y-auto p-2">

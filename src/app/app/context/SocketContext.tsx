@@ -9,24 +9,32 @@ interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
   isActive: boolean;
+  revalidateSocket: () => void;
 }
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
   isActive: false,
+  revalidateSocket: () => {},
 });
 
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const [userId, setUserId] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const user: any = getUser();
+
+  const revalidateSocket = () => {
+    if (userId) return;
+    const _user = getUser();
+    setUserId(_user?._id || null);
+  };
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       if (socket) {
         socket.close();
         setSocket(null);
@@ -111,10 +119,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       clearInterval(pingInterval);
       newSocket.close();
     };
-  }, [user?._id]);
+  }, [userId]);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected, isActive }}>
+    <SocketContext.Provider
+      value={{ socket, isConnected, isActive, revalidateSocket }}
+    >
       {children}
     </SocketContext.Provider>
   );
