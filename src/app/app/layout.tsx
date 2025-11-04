@@ -18,7 +18,7 @@ export default function RootLayout({
     <Provider>
       <ExploreChatProvider>
         <LumoreSplash />
-        <div className="h-screen">
+        <div className="h-[100svh]">
           <main className="flex flex-col h-full">{children}</main>
         </div>
       </ExploreChatProvider>

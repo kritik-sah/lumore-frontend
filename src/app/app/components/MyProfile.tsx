@@ -142,6 +142,7 @@ const MyProfile = ({ user }: { user: any }) => {
               </div>
             </div>
           </div>
+          {user?.bio ? <p className="text-lg my-2">{user?.bio}</p> : null}
           <div className="my-3">
             {userId === user?._id ? (
               <Link href="/app/profile/edit">
@@ -153,10 +154,8 @@ const MyProfile = ({ user }: { user: any }) => {
           </div>
         </div>
 
-        <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl p-4 pb-0 mt-3 shadow-sm">
-          {user?.bio ? <p className="text-lg">{user?.bio}</p> : null}
-
-          <div className="w-full py-2 border-t border-b border-ui-shade/10 overflow-x-scroll mt-2">
+        <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl px-4 pb-0 shadow-sm">
+          <div className="w-full py-2 border-b border-ui-shade/10 overflow-x-scroll">
             <div className="flex items-center justify-start gap-3 w-full ps-2">
               {traits.map((trait, index) => (
                 <InfoItem key={index} icon={trait.icon} value={trait.value} />

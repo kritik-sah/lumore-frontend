@@ -40,9 +40,9 @@ const ChatScreen: React.FC = () => {
   // Safely parse user from cookie with error handling
   let userId = "";
   try {
-    const user = getUser();
-    if (user) {
-      userId = user?._id || "";
+    const _user = getUser();
+    if (_user) {
+      userId = _user?._id || "";
     }
   } catch (error) {
     console.error("[ChatScreen] Error parsing user:", error);
