@@ -1,6 +1,10 @@
 "use client";
 
-import { getFormattedAddress, updateUserData } from "@/lib/apis";
+import {
+  getFormattedAddress,
+  updateUserData,
+  updateUserLocation,
+} from "@/lib/apis";
 import { useMutation } from "@tanstack/react-query";
 import {
   createContext,
@@ -84,12 +88,10 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
   const mutation = useMutation({
     mutationFn: (locationData: { latitude: number; longitude: number }) =>
-      updateUserData({
-        location: {
-          type: "Point",
-          coordinates: [locationData.longitude, locationData.latitude],
-          formattedAddress: formattedAddress,
-        },
+      updateUserLocation({
+        latitude: locationData.longitude,
+        longitude: locationData.latitude,
+        formattedAddress: formattedAddress,
       }),
   });
 

@@ -158,12 +158,12 @@ export const ExploreChatProvider = ({
       label: "end Chat",
       value: matchId,
     });
-    socket.emit("cancelChat", { matchId });
+    socket.emit("cancelChat", { roomId: matchId });
     clearMatch(matchId);
   };
 
-  const clearMatch = (data: any) => {
-    const matchIdToClear = typeof data === "string" ? data : data?.matchId;
+  const clearMatch = (roomId: any) => {
+    const matchIdToClear = roomId;
     if (matchIdToClear === matchId) {
       setMatchId(null);
       setMatchedUser(null);
@@ -171,7 +171,7 @@ export const ExploreChatProvider = ({
       setMessages([]);
       setIsMatching(false);
     } else {
-      console.log(
+      console.error(
         "[ExploreChatContext] Ignoring clearMatch for different matchId:",
         matchIdToClear,
         "current:",
@@ -259,67 +259,95 @@ export const ExploreChatProvider = ({
   useEffect(() => {
     if (!socket) return;
 
-    const handleMatchFound = (data: { matchId: string; matchedUser: any }) => {
-      setMatchId(data.matchId);
-      setMatchedUser(data.matchedUser);
+    console.log("%c[SOCKET LISTENERS READY]", "color:#00FFFF");
+
+    // ✅ Matchmaking status update
+    socket.on("matchmaking_status", (data) => {
+      console.log("[Socket] matchmaking_status:", data);
+
+      if (data.status === "searching") setIsMatching(true);
+      if (data.status === "idle") setIsMatching(false);
+    });
+
+    // ✅ When match is found
+    socket.on("matchFound", ({ roomId, matchedUser }) => {
+      console.log("[Socket] Match found:", roomId, matchedUser);
+      setMatchId(roomId);
+      setMatchedUser(matchedUser);
       setIsMatching(false);
-    };
+    });
 
-    const handleError = (error: { message: string }) => {
-      setError(error.message);
+    // ✅ Handle reconnection event (RESTORES MATCH + CHAT SESSION)
+    socket.on("reconnected", ({ roomId, matchedUserId }) => {
+      setMatchId(roomId);
+      setMatchedUser(matchedUserId);
       setIsMatching(false);
-    };
+      setError(null);
+    });
 
-    const handleChatCancelled = (data: any) => {
-      if (Array.isArray(data)) {
-        const matchId = data[1]?.matchId;
-        if (matchId) {
-          clearMatch(matchId);
-        }
-      } else if (data?.matchId) {
-        clearMatch(data);
-      } else {
-        console.log("[ExploreChatContext] Invalid chatCancelled data:", data);
-      }
-    };
+    // ✅ Error while matching
+    socket.on("matchmakingError", ({ message }) => {
+      console.error("[Socket] matchmakingError:", message);
+      setError(message);
+      setIsMatching(false);
+    });
 
-    const handleUserDisconnected = (data: any) => {
-      // if (Array.isArray(data)) {
-      //   const matchId = data[1]?.matchId;
-      //   if (matchId) {
-      //     clearMatch(matchId);
-      //   }
-      // } else if (data?.matchId) {
-      //   clearMatch(data);
-      // } else {
-      //   console.log(
-      //     "[ExploreChatContext] Invalid userDisconnected data:",
-      //     data
-      //   );
-      // }
-    };
+    // ✅ When match is found
+    socket.on("chatCancelled", ({ roomId }) => {
+      console.log("[chatCancelled] :", roomId);
+      clearMatch(roomId);
+    });
 
-    const handleProfileLocked = (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
-    };
+    // ✅ Partner disconnected unexpectedly
+    socket.on("userDisconnected", ({ userId }) => {
+      console.log("[Socket] Partner disconnected:", userId);
+      clearMatch(matchId);
+    });
 
-    const handleProfileUnlocked = (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
-    };
-
-    socket.on("matchFound", handleMatchFound);
+    // ✅ NEW MESSAGE RECEIVED (encrypted)
     socket.on("new_message", handleNewMessage);
-    socket.on("matchmakingError", handleError);
-    socket.on("chatCancelled", handleChatCancelled);
-    socket.on("userDisconnected", handleUserDisconnected);
-    socket.on("profileLocked", handleProfileLocked);
-    socket.on("profileUnlocked", handleProfileUnlocked);
 
+    // ✅ Partner typing
+    socket.on("typing", ({ userId, isTyping }) => {
+      console.log("[Socket] typing:", { userId, isTyping });
+    });
+
+    // ✅ PUBLIC KEY received → store & reply
+    socket.on("public_key_received", async ({ fromUserId, key }) => {
+      console.log("[Socket] public_key_received from", fromUserId);
+
+      /// TODO: store key, generate AES key, encrypt, emit "exchange_key"
+    });
+
+    socket.on("key_exchange_success", () => {
+      console.log("[Socket] Key exchange complete ✅");
+    });
+
+    // ✅ Profile lock/unlock (invalidate react-query)
+    socket.on("profileLocked", () => {
+      console.log("[Socket] profileLocked");
+      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
+    });
+
+    socket.on("profileUnlocked", () => {
+      console.log("[Socket] profileUnlocked");
+      queryClient.invalidateQueries({ queryKey: ["user", matchedUser] });
+    });
+
+    // 🔥 Cleanup: avoids duplicate listeners
     return () => {
-      // socket.off("matchFound", handleMatchFound);
-      // socket.off("matchmakingError", handleError);
-      // socket.off("chatCancelled", handleChatCancelled);
-      socket.off("userDisconnected", handleUserDisconnected);
+      socket.off("matchmaking_status");
+      socket.off("matchFound");
+      socket.off("reconnected");
+      socket.off("matchmakingError");
+      socket.off("chatCancelled");
+      socket.off("userDisconnected");
+      socket.off("new_message");
+      socket.off("typing");
+      socket.off("public_key_received");
+      socket.off("key_exchange_success");
+      socket.off("profileLocked");
+      socket.off("profileUnlocked");
     };
   }, [socket, matchId, clearMatch]);
 

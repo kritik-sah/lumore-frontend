@@ -20,8 +20,8 @@ export const genderOptions = [
 ];
 
 export const interestedInOptions = [
-  { label: "Women", value: "women" },
-  { label: "Men", value: "men" },
+  { label: "Women", value: "woman" },
+  { label: "Men", value: "man" },
   { label: "Everyone", value: "everyone" },
 ];
 
