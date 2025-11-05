@@ -46,6 +46,19 @@ export const updateUserData = async (data: any) => {
   const response = await apiClient.patch(`/profile/${userId}`, data);
   return response.data;
 };
+export const updateUserLocation = async (data: any) => {
+  const { _id: userId } = getUser();
+  const response = await apiClient.post(
+    `/profile/${userId}/update-location`,
+    data
+  );
+  return response.data;
+};
+export const findNearbyUsers = async () => {
+  const { _id: userId } = getUser();
+  const response = await apiClient.get(`/profile/${userId}/nearby`);
+  return response.data;
+};
 
 export const updateFieldVisibility = async (
   userId: string,

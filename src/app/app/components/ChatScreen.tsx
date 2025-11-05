@@ -70,13 +70,14 @@ const ChatScreen: React.FC = () => {
     }
 
     // Join the chat room
+    console.log("joinchat", matchId);
     socket.emit("joinChat", { matchId });
 
     // Handle key exchange requests
     socket.on("key_exchange_request", async (data: KeyExchangeRequest) => {
       const { fromUserId, sessionKey } = data;
 
-      if (storedKey !== sessionKey) {
+      if (matchId && storedKey !== sessionKey) {
         localStorage.setItem(`chat_key_${matchId}`, sessionKey);
         setIsConnected(true);
         socket.emit("key_exchange_response", {
@@ -107,7 +108,7 @@ const ChatScreen: React.FC = () => {
       socket.off("new_message");
       socket.off("chatCancelled");
     };
-  }, [socket, matchId, userId, matchedUser?._id]);
+  }, [socket, matchId, userId, matchedUser]);
 
   const sendMessage = () => {
     if (!socket || !newMessage.trim() || !matchId || !matchedUser) return;
