@@ -14,6 +14,7 @@ import ChatScreen from "./ChatScreen";
 
 const MatchmakingScreen = () => {
   const { matchId, matchedUser, revalidateUser } = useExploreChat();
+  console.log("MatchmakingScreen", { matchId, matchedUser });
 
   useEffect(() => {
     return revalidateUser();

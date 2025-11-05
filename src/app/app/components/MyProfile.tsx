@@ -3,6 +3,7 @@ import Icon from "@/components/icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { findNearbyUsers } from "@/lib/apis";
 import { getUser } from "@/service/storage";
 import getLastActive from "@/utils/getLastActive";
 import {
@@ -11,9 +12,8 @@ import {
   distanceDisplay,
   languageDisplay,
 } from "@/utils/helpers";
-import Cookies from "js-cookie";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 
 const MyProfile = ({ user }: { user: any }) => {
@@ -26,6 +26,13 @@ const MyProfile = ({ user }: { user: any }) => {
   } catch (error) {
     console.error("[ChatScreen] Error parsing user cookie:", error);
   }
+
+  // useEffect(() => {
+  //   (async function () {
+  //     const nearbyUsers = await findNearbyUsers();
+  //     console.log("nearby users", nearbyUsers);
+  //   })();
+  // }, [userId]);
 
   const traits = [
     user?.dob && {
