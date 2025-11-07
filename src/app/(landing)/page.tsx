@@ -1,5 +1,6 @@
 // import CaseStudy from "./components/CaseStudy";
 import CTA from "./components/CTA";
+import Events from "./components/Events";
 import Features from "./components/Features";
 import Hero from "./components/Hero";
 import ProductPortfolio from "./components/ProducyPortfolio";
@@ -12,6 +13,7 @@ export default function Home() {
       <ProductPortfolio />
       <Features />
       <CTA />
+      <Events />
       <ReelShowcase />
       {/* <CaseStudy /> */}
     </div>
