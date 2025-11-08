@@ -10,12 +10,6 @@ export default function Footer() {
   const { deferredPrompt, isInstallable, install } = usePWA();
   const currentYear = new Date().getFullYear();
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js");
-    });
-  }
-
   return (
     <footer className="py-5 bg-ui-light text-ui-shade border-t border-ui-shade/10">
       <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-4 sm:px-6 lg:space-y-16 lg:px-8">

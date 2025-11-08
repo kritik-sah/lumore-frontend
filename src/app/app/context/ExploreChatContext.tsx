@@ -1,4 +1,5 @@
 "use client";
+import { usePushNotification } from "@/app/provider/PushNotificationProvider";
 import { fetchRoomChat } from "@/lib/apis";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
@@ -52,12 +53,29 @@ export const ExploreChatProvider = ({
 
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
+  const { isSupported, isSubscribed, permissionState, subscribeToPush } =
+    usePushNotification();
 
   const revalidateUser = () => {
     if (userId) return;
     const _user = getUser();
     revalidateSocket();
     setUserId(_user?._id || null);
+  };
+
+  useEffect(() => {
+    console.log({ userId, isSupported });
+    if (userId && isSupported) {
+      handleEnable();
+    }
+  }, [userId, isSupported]);
+
+  const handleEnable = async () => {
+    try {
+      await subscribeToPush(userId as string); // This will trigger browser permission prompt
+    } catch (error) {
+      console.error("Failed to enable notifications:", error);
+    }
   };
 
   useEffect(() => {
