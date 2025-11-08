@@ -15,7 +15,7 @@ const pwaConfig = withPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  // disable: process.env.NODE_ENV === "development", // Disable PWA in dev mode
+  disable: process.env.NODE_ENV === "development", // Disable PWA in dev mode
 });
 
 // ✅ Export final merged config

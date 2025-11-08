@@ -150,3 +150,19 @@ export const fetchAppStatus = async () => {
   const response = await apiClient.get(`/status/app-status`);
   return response.data;
 };
+
+/* -------------------------------------------------------------------------- */
+/*                           Push Notification                                */
+/* -------------------------------------------------------------------------- */
+export const subscribePushService = async (subscription: PushSubscription) => {
+  const response = await apiClient.post(`/push/subscribe`, {
+    subscription: subscription.toJSON(),
+  });
+  return response.data;
+};
+export const unsubscribePushService = async (endpoint: string) => {
+  const response = await apiClient.post(`/push/unsubscribe`, {
+    endpoint,
+  });
+  return response.data;
+};
