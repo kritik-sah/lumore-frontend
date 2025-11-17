@@ -9,6 +9,7 @@ import {
   createContext,
   Dispatch,
   SetStateAction,
+  use,
   useContext,
   useEffect,
   useState,
@@ -44,17 +45,29 @@ export const ExploreChatProvider = ({
 }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const { user } = useUser(userId as string);
+  const [isMatching, setIsMatching] = useState(user?.isMatching || false);
   const { socket, revalidateSocket } = useSocket();
   const [matchId, setMatchId] = useState<string | null>(null);
   const [matchedUser, setMatchedUser] = useState<any | null>(null);
-  const [isMatching, setIsMatching] = useState(false);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const { user: matchedUserData } = useUser(matchedUser || "");
   const queryClient = useQueryClient();
-  const { isSupported, isSubscribed, permissionState, subscribeToPush } =
-    usePushNotification();
+  const {
+    isSupported,
+    isSubscribed,
+    permissionState,
+    subscribeToPush,
+    requestPermission,
+  } = usePushNotification();
+
+  useEffect(() => {
+    if (user) {
+      setIsMatching(user.isMatching || false);
+    }
+  }, [user]);
 
   const revalidateUser = () => {
     if (userId) return;
@@ -72,6 +85,7 @@ export const ExploreChatProvider = ({
 
   const handleEnable = async () => {
     try {
+      await requestPermission();
       await subscribeToPush(userId as string); // This will trigger browser permission prompt
     } catch (error) {
       console.error("Failed to enable notifications:", error);
@@ -147,7 +161,11 @@ export const ExploreChatProvider = ({
       user,
       isMatching,
     });
+
     if (!socket || !user || isMatching) return;
+    if (userId && isSupported) {
+      handleEnable();
+    }
     setIsMatching(true);
     setError(null);
 

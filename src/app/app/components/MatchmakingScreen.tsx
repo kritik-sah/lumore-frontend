@@ -42,6 +42,7 @@ const SearchScreen = () => {
   interface APP_STATUS {
     totalUsers: number;
     activeUsers: number;
+    isMatching: number;
     inactiveUsers: number;
     genderDistribution: { women: number; men: number; others: number };
   }
@@ -83,7 +84,7 @@ const SearchScreen = () => {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex size-2 rounded-full bg-green-500"></span>
           </span>
-          <span>{formatNumber(appStatus?.activeUsers || 0)} Users</span>
+          <span>{formatNumber(appStatus?.isMatching || 0)} Users</span>
         </Badge>
       </div>
       <div className="z-10 relative w-full flex flex-col items-center justify-center gap-4">

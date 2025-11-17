@@ -1,5 +1,3 @@
-"use strict";
-
 self.addEventListener("push", function (event) {
   console.log("push event", event);
   const data = JSON.parse(event.data.text());
@@ -30,13 +28,3 @@ self.addEventListener("notificationclick", function (event) {
       })
   );
 });
-
-// self.addEventListener('pushsubscriptionchange', function(event) {
-//   event.waitUntil(
-//       Promise.all([
-//           Promise.resolve(event.oldSubscription ? deleteSubscription(event.oldSubscription) : true),
-//           Promise.resolve(event.newSubscription ? event.newSubscription : subscribePush(registration))
-//               .then(function(sub) { return saveSubscription(sub) })
-//       ])
-//   )
-// })

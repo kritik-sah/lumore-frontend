@@ -9,6 +9,7 @@ export default function CTA() {
   interface APP_STATUS {
     totalUsers: number;
     activeUsers: number;
+    isMatching: number;
     inactiveUsers: number;
     genderDistribution: { women: number; men: number; others: number };
   }
@@ -47,7 +48,7 @@ export default function CTA() {
             </PopupButton>
           </div>
         </div>
-        <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+        <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 mt-6">
           <div className="">
             <p className="text-3xl">
               {formatNumber(appStatus?.totalUsers || 0)}
@@ -59,8 +60,15 @@ export default function CTA() {
             <p className="text-3xl">
               {formatNumber(appStatus?.activeUsers || 0)}
             </p>
-            <h4 className="text-lg font-medium">Active Users</h4>
-            <p className="text-sm text-gray-600">Connecting right now</p>
+            <h4 className="text-lg font-medium">Online Users</h4>
+            <p className="text-sm text-gray-600">Online right now</p>
+          </div>
+          <div className="">
+            <p className="text-3xl">
+              {formatNumber(appStatus?.isMatching || 0)}
+            </p>
+            <h4 className="text-lg font-medium">Avilable Users</h4>
+            <p className="text-sm text-gray-600">Looking for match</p>
           </div>
           <div className="">
             <p className="text-3xl">
