@@ -43,12 +43,14 @@ export const PushNotificationProvider = ({
 
   async function registerServiceWorker() {
     try {
-      const registration = await navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-        updateViaCache: "none",
+      window.addEventListener("load", async () => {
+        const registration = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+          updateViaCache: "none",
+        });
+        const sub = await registration.pushManager.getSubscription();
+        setSubscription(sub);
       });
-      const sub = await registration.pushManager.getSubscription();
-      setSubscription(sub);
     } catch (error) {
       console.error("Service worker registration failed:", error);
     }
