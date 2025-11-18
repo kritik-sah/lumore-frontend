@@ -1,3 +1,4 @@
+import ServiceWorker from "@/components/ServiceWorker";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Work_Sans } from "next/font/google";
 import Script from "next/script";
@@ -68,6 +69,7 @@ export default function RootLayout({
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
         <Providers>{children}</Providers>
         <Toaster position="top-right" />
+        <ServiceWorker />
       </body>
     </html>
   );
