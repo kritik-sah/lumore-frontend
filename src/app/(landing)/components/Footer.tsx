@@ -1,13 +1,10 @@
 "use client";
 import Icon from "@/components/icon";
 // components/Footer.tsx
-import { InstallPrompt } from "@/components/InstallPrompt";
-import { usePWA } from "@/hooks/usePWA";
 import { trackAnalytic } from "@/service/analytics";
 import Link from "next/link";
 
 export default function Footer() {
-  const { deferredPrompt, isInstallable, install } = usePWA();
   const currentYear = new Date().getFullYear();
 
   return (

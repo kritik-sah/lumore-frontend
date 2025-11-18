@@ -80,7 +80,7 @@ export const PushNotificationProvider = ({
 
       setSubscription(sub);
       setPermissionState(Notification.permission);
-
+      console.log("sub", sub);
       // Save to database with userId
       const result = await subscribePushService(sub);
       console.log("Subscribed:", result);
