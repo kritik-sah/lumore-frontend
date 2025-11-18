@@ -125,10 +125,6 @@
       "sizes": "80x80"
     },
     {
-      "src": "ios/87.png",
-      "sizes": "87x87"
-    },
-    {
       "src": "ios/100.png",
       "sizes": "100x100"
     },
@@ -175,20 +171,6 @@
     {
       "src": "ios/1024.png",
       "sizes": "1024x1024"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Start Exploring",
-      "short_name": "Explore",
-      "description": "Discover new connections",
-      "url": "/app"
-    },
-    {
-      "name": "My Profile",
-      "short_name": "Profile",
-      "description": "View your profile",
-      "url": "/app/profile"
     }
   ],
   "related_applications": [],
