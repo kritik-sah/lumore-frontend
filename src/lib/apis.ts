@@ -155,8 +155,9 @@ export const fetchAppStatus = async () => {
 /*                           Push Notification                                */
 /* -------------------------------------------------------------------------- */
 export const subscribePushService = async (subscription: PushSubscription) => {
+  console.log("subscribePushService", subscription);
   const response = await apiClient.post(`/push/subscribe`, {
-    subscription: subscription.toJSON(),
+    subscription: JSON.parse(JSON.stringify(subscription)),
   });
   return response.data;
 };

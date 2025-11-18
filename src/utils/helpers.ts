@@ -92,3 +92,13 @@ export function formatNumber(num: number, decimals: number = 1): string {
   // For numbers less than 1000, return as is
   return num.toString();
 }
+
+export async function registerServiceWorker() {
+  const registration = await navigator.serviceWorker.register("/sw.js", {
+    scope: "/",
+    updateViaCache: "none",
+  });
+  const sub = await registration.pushManager.getSubscription();
+  // setSubscription(sub)
+  return sub;
+}

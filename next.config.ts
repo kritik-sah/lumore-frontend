@@ -11,11 +11,11 @@ const nextConfig: NextConfig = {
 };
 
 // ✅ Wrap with PWA configuration
-const pwaConfig = withPWA({
-  dest: "public",
-  register: true,
-  disable: process.env.NODE_ENV === "development",
-});
+// const pwaConfig = withPWA({
+//   dest: "public",
+//   register: true,
+//   disable: process.env.NODE_ENV === "development",
+// });
 
 // ✅ Export final merged config
-export default pwaConfig(nextConfig as any);
+export default nextConfig;
