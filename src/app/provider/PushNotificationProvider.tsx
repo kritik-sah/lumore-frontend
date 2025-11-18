@@ -37,7 +37,7 @@ export const PushNotificationProvider = ({
     if ("serviceWorker" in navigator && "PushManager" in window) {
       setIsSupported(true);
       setPermissionState(Notification.permission);
-      registerServiceWorker();
+      // registerServiceWorker();
     }
   }, []);
 
