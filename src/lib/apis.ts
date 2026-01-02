@@ -100,6 +100,17 @@ export const updateSlot = async (
   const response = await apiClient.patch(`/slots/${slotId}`, data);
   return response.data.data.slot;
 };
+/* -------------------------------------------------------------------------- */
+/*                                   Inbox                                    */
+/* -------------------------------------------------------------------------- */
+export const fetchIbox = async () => {
+  const response = await apiClient.get("/inbox");
+  return response.data;
+};
+export const fetchRoomData = async (roomId: string) => {
+  const response = await apiClient.get(`/inbox/${roomId}`);
+  return response.data;
+};
 
 /* -------------------------------------------------------------------------- */
 /*                               Account Actions                              */

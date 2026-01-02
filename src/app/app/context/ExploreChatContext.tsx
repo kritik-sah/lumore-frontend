@@ -187,15 +187,15 @@ export const ExploreChatProvider = ({
     socket.emit("stopMatchmaking", { userId: userId });
   };
 
-  const cancelChat = (matchId: string) => {
+  const cancelChat = (roomId: string) => {
     if (!socket) return;
     trackAnalytic({
       activity: "end_chat",
       label: "end Chat",
-      value: matchId,
+      value: roomId,
     });
-    socket.emit("cancelChat", { roomId: matchId });
-    clearMatch(matchId);
+    socket.emit("cancelChat", { roomId: roomId });
+    clearMatch(roomId);
   };
 
   const clearMatch = (roomId: any) => {
