@@ -16,7 +16,7 @@ export default function MobileNav() {
         </li>
         <li className="w-full px-3 ">
           <Link
-            href="/app/slots"
+            href="/app/chat"
             className="text-gray-700 hover:text-black flex flex-col items-center justify-center"
           >
             <Icon name="IoChatbubbleOutline" className="h-6 w-6" />

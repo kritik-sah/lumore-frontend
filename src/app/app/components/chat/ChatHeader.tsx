@@ -16,13 +16,14 @@ import { Lock, Unlock } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useChat } from "../../context/ChatContext";
 import { useExploreChat } from "../../context/ExploreChatContext";
 
 interface ChatHeaderProps {
   user: any;
   isConnected: boolean;
   onEndChat: () => void;
-  onSaveChat: () => void;
+
   currentUserId: string;
 }
 
@@ -30,39 +31,39 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   user,
   isConnected,
   onEndChat,
-  onSaveChat,
+
   currentUserId,
 }) => {
-  const { matchId, matchedUser, cancelChat, lockProfile, unlockProfile } =
-    useExploreChat();
+  const { roomId, matchedUser, lockProfile, unlockProfile } = useChat();
+
   const [isUnlocked, setisUnlocked] = useState(
     user?.isViewerUnlockedUser || false
   );
 
   const handleUnlockProfile = async () => {
-    if (!matchId || !currentUserId || !matchedUser) return;
+    if (!roomId || !currentUserId || !matchedUser) return;
     setisUnlocked(true);
-    await unlockProfile(matchId, currentUserId, matchedUser);
+    await unlockProfile(matchedUser?._id);
   };
 
   const handleLockProfile = async () => {
-    if (!matchId || !currentUserId || !matchedUser) return;
+    if (!roomId || !currentUserId || !matchedUser) return;
     setisUnlocked(false);
-    await lockProfile(matchId, currentUserId, matchedUser);
+    await lockProfile(matchedUser?._id);
   };
 
   return (
-    <div className="flex items-center justify-between p-2 pt-0 border-b border-ui-shade/10">
+    <div className="flex items-center justify-between p-2 pt-0 border-b border-ui-shade/10 bg-ui-light">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="w-10 h-10 rounded-full bg-ui-highlight">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={user.profilePicture}
-                alt={user.realName || user.nickname || user.username}
+                src={user?.profilePicture}
+                alt={user?.realName || user?.nickname || user?.username}
               />
               <AvatarFallback>
-                {`${user.realName || user.nickname || user.username}`
+                {`${user?.realName || user?.nickname || user?.username}`
                   .charAt(0)
                   .toUpperCase()}
               </AvatarFallback>
@@ -78,8 +79,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
         <div>
           <h2 className="font-medium">
-            <Link href={`/app/profile/${user._id}`}>
-              {user.realName || user.nickname || user.username}
+            <Link href={`/app/profile/${user?._id}`}>
+              {user?.realName || user?.nickname || user?.username}
             </Link>
           </h2>
           <div className="flex items-center justify-start gap-2 mt-1 text-sm">
@@ -122,7 +123,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               <Icon name="HiMiniEllipsisVertical" className="text-xl" />
             </MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onClick={onSaveChat}>Save Chat</MenubarItem>
               <MenubarSeparator />
               <MenubarItem
                 className="!text-red-500 focus:text-red-500"

@@ -1,14 +1,12 @@
 import React from "react";
 import ChatScreen from "../../components/ChatScreen";
-import NavLayout from "../../components/layout/NavLayout";
+import { ChatProvider } from "../../context/ChatContext";
 
-const Chats = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params;
+const Chats = () => {
   return (
-    <NavLayout>
-      <p>Chat room id : {id}</p>
-      {/* <ChatScreen roomId={id} /> */}
-    </NavLayout>
+    <ChatProvider>
+      <ChatScreen />
+    </ChatProvider>
   );
 };
 
