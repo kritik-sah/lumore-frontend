@@ -72,6 +72,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           <div className="w-8 h-8 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
             <Avatar className="h-8 w-8">
               <AvatarImage
+                className={user?.isViewerUnlockedByUser ? "" : "blur-xs"}
                 src={user?.profilePicture}
                 alt={user?.realName || user?.nickname || user?.username}
               />
