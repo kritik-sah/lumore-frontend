@@ -2,6 +2,7 @@
 import { usePushNotification } from "@/app/provider/PushNotificationProvider";
 import { fetchRoomChat } from "@/lib/apis";
 import { trackAnalytic } from "@/service/analytics";
+import { queryClient } from "@/service/query-client";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";
@@ -138,9 +139,23 @@ export const ExploreChatProvider = ({
       setIsMatching(false);
     });
 
+    socket.on("profileLocked", ({ lockedBy }) =>
+      queryClient.invalidateQueries({
+        queryKey: ["user", lockedBy],
+      })
+    );
+
+    socket.on("profileUnlocked", ({ unlockedBy }) =>
+      queryClient.invalidateQueries({
+        queryKey: ["user", unlockedBy],
+      })
+    );
+
     // 🔥 Cleanup: avoids duplicate listeners
     return () => {
       socket.off("matchFound");
+      socket.off("profileLocked");
+      socket.off("profileUnlocked");
       socket.off("matchmakingError");
     };
   }, [socket, matchId]);

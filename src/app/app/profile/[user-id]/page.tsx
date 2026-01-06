@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import React from "react";
 import GeneralLayout from "../../components/layout/general";
+import SubPageLayout from "../../components/layout/SubPageLayout";
 import ProfileWrapper from "../../components/ProfileWrapper";
 
 const UserProfile = async ({
@@ -22,9 +23,9 @@ const UserProfile = async ({
   }
 
   return (
-    <GeneralLayout>
+    <SubPageLayout title="Go Back">
       <ProfileWrapper userId={userId || ""} />
-    </GeneralLayout>
+    </SubPageLayout>
   );
 };
 

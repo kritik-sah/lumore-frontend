@@ -103,8 +103,8 @@ export const updateSlot = async (
 /* -------------------------------------------------------------------------- */
 /*                                   Inbox                                    */
 /* -------------------------------------------------------------------------- */
-export const fetchIbox = async () => {
-  const response = await apiClient.get("/inbox");
+export const fetchIbox = async (status = "active") => {
+  const response = await apiClient.get(`/inbox?status=${status}`);
   return response.data;
 };
 export const fetchRoomData = async (roomId: string) => {

@@ -14,6 +14,7 @@ import {
 import { calculateAge } from "@/utils/helpers";
 import { Lock, Unlock } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useChat } from "../../context/ChatContext";
@@ -35,6 +36,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   currentUserId,
 }) => {
   const { roomId, matchedUser, lockProfile, unlockProfile } = useChat();
+  const router = useRouter();
 
   const [isUnlocked, setisUnlocked] = useState(
     user?.isViewerUnlockedUser || false
@@ -43,21 +45,32 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const handleUnlockProfile = async () => {
     if (!roomId || !currentUserId || !matchedUser) return;
     setisUnlocked(true);
-    await unlockProfile(matchedUser?._id);
+    unlockProfile(matchedUser?._id);
   };
 
   const handleLockProfile = async () => {
     if (!roomId || !currentUserId || !matchedUser) return;
     setisUnlocked(false);
-    await lockProfile(matchedUser?._id);
+    lockProfile(matchedUser?._id);
+  };
+
+  const navigateToInbox = () => {
+    router.push("/app/chat");
   };
 
   return (
     <div className="flex items-center justify-between p-2 pt-0 border-b border-ui-shade/10 bg-ui-light">
       <div className="flex items-center gap-2">
+        <div className="w-8 flex items-center justify-center">
+          <Icon
+            name="HiArrowLeft"
+            className="h-6 w-6 cursor-pointer"
+            onClick={navigateToInbox}
+          />
+        </div>
         <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-ui-highlight">
-            <Avatar className="h-10 w-10">
+          <div className="w-8 h-8 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
+            <Avatar className="h-8 w-8">
               <AvatarImage
                 src={user?.profilePicture}
                 alt={user?.realName || user?.nickname || user?.username}
@@ -69,11 +82,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               </AvatarFallback>
             </Avatar>
           </div>
-          <div className="absolute bottom-0 right-0 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
+          <div className="absolute -bottom-0.5 -right-0.5 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
             {user?.isViewerUnlockedByUser ? (
-              <Icon name="HiLockOpen" className="h-2 w-2 text-ui-shade" />
+              <Icon name="HiLockOpen" className="h-3 w-3 text-ui-shade" />
             ) : (
-              <Icon name="HiLockClosed" className="h-2 w-2 text-ui-shade" />
+              <Icon name="HiLockClosed" className="h-3 w-3 text-ui-shade" />
             )}
           </div>
         </div>
@@ -83,7 +96,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               {user?.realName || user?.nickname || user?.username}
             </Link>
           </h2>
-          <div className="flex items-center justify-start gap-2 mt-1 text-sm">
+          <div className="flex items-center justify-start gap-2 text-sm">
             {user?.dob ? (
               <div className="flex items-center justify-center gap-1 flex-shrink-0">
                 <Icon name="HiOutlineCake" className="flex-shrink-0" />{" "}

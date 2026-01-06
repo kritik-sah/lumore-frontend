@@ -8,6 +8,7 @@ interface ChatInputProps {
   onKeyPress: (e: React.KeyboardEvent) => void;
   onSend: () => void;
   isConnected: boolean;
+  isActive: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -16,6 +17,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onKeyPress,
   onSend,
   isConnected,
+  isActive,
 }) => {
   return (
     <div className="p-2 bg-ui-light border border-ui-shade/10 rounded-full mx-2">
@@ -25,13 +27,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           onChange={onChange}
           onKeyPress={onKeyPress}
           placeholder="Say Hi 👋"
-          disabled={!isConnected}
+          disabled={!isConnected || !isActive}
           className="border-0 focus-visible:ring-0 focus-visible:outline-none flex-grow shadow-none"
         />
         <Button
           size={"icon"}
           onClick={onSend}
-          disabled={!isConnected}
+          disabled={!isConnected || !isActive || value.trim() === ""}
           className="border-0 aspect-square rounded-full"
         >
           <Icon name="IoPaperPlane" />

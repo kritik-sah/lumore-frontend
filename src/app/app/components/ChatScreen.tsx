@@ -46,8 +46,15 @@ const ChatScreen = () => {
     console.error("[ChatScreen] Error parsing user:", error);
   }
   const { socket } = useSocket();
-  const { roomId, matchedUser, cancelChat, messages, setMessages, isLoading } =
-    useChat();
+  const {
+    roomId,
+    matchedUser,
+    cancelChat,
+    messages,
+    setMessages,
+    isLoading,
+    isActive,
+  } = useChat();
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -59,7 +66,6 @@ const ChatScreen = () => {
     }
 
     // Join the chat room
-    console.log("joinchat", roomId);
     socket.emit("joinChat", { roomId });
 
     // Handle key exchange requests
@@ -94,8 +100,6 @@ const ChatScreen = () => {
     return () => {
       socket.off("key_exchange_request");
       socket.off("key_exchange_response");
-      socket.off("new_message");
-      socket.off("chatCancelled");
     };
   }, [socket, roomId, userId, matchedUser]);
 
@@ -159,6 +163,7 @@ const ChatScreen = () => {
         onKeyPress={handleKeyPress}
         onSend={sendMessage}
         isConnected={isConnected}
+        isActive={isActive}
       />
     </div>
   );

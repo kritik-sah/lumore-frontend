@@ -32,6 +32,7 @@ interface ChatContextType {
   revalidateUser: () => void;
   error: string | null;
   isLoading: boolean;
+  isActive: boolean;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -78,6 +79,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [matchedUserId, setMatchedUserId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState<boolean>(false);
 
   const { user } = useUser(userId ?? "");
   const { user: matchedUser, isLoading } = useUser(matchedUserId ?? "");
@@ -112,6 +114,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!roomData || !user?._id) return;
     const other = roomData.participants.find((p: any) => p._id !== user._id);
     setMatchedUserId(other?._id ?? null);
+    if (roomData.status === "active") {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
   }, [roomData, user]);
 
   /* -------------------------------------------------------
@@ -188,27 +195,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     socket.on("new_message", onNewMessage);
 
-    socket.on("profileLocked", () =>
-      queryClient.invalidateQueries({
-        queryKey: ["user", matchedUserId],
-      })
-    );
-
-    socket.on("profileUnlocked", () =>
-      queryClient.invalidateQueries({
-        queryKey: ["user", matchedUserId],
-      })
-    );
-
-    socket.on("chatCancelled", () => {
-      console.log("[Chat] Chat cancelled");
+    socket.on("chatEnded", () => {
+      console.log("[Chat] Chat ended");
+      queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
+      setIsActive(false);
     });
 
     return () => {
       socket.off("new_message", onNewMessage);
-      socket.off("profileLocked");
-      socket.off("profileUnlocked");
-      socket.off("chatCancelled");
+      socket.off("chatEnded");
     };
   }, [socket, roomId, matchedUserId, queryClient]);
 
@@ -223,7 +219,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       label: "end Chat",
       value: roomId,
     });
-    socket.emit("cancelChat", { roomId });
+    socket.emit("endChat", { roomId });
   }, [socket, roomId]);
 
   const lockProfile = useCallback(
@@ -268,6 +264,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       revalidateUser,
       error,
       isLoading,
+      isActive,
     }),
     [
       roomId,
@@ -279,6 +276,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       revalidateUser,
       error,
       isLoading,
+      isActive,
     ]
   );
 
