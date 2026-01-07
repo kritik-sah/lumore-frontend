@@ -23,17 +23,20 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   }, [messages]);
 
   // Group messages by date
-  const groupedMessages = messages.reduce((groups, message) => {
-    const date = new Date(message?.timestamp).toLocaleDateString();
-    if (!groups[date]) {
-      groups[date] = {
-        messages: [],
-        timestamp: message?.timestamp,
-      };
-    }
-    groups[date].messages.push(message);
-    return groups;
-  }, {} as Record<string, { messages: Message[]; timestamp: number }>);
+  const groupedMessages = messages.reduce(
+    (groups, message) => {
+      const date = new Date(message?.timestamp).toLocaleDateString();
+      if (!groups[date]) {
+        groups[date] = {
+          messages: [],
+          timestamp: message?.timestamp,
+        };
+      }
+      groups[date].messages.push(message);
+      return groups;
+    },
+    {} as Record<string, { messages: Message[]; timestamp: number }>
+  );
 
   // Sort dates in ascending order
   const sortedDates = Object.keys(groupedMessages).sort(

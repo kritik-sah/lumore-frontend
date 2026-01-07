@@ -52,6 +52,7 @@ import { GoMute, GoUnmute } from "react-icons/go";
 import { HiAdjustments, HiOutlineLogout } from "react-icons/hi";
 import {
   HiAdjustmentsHorizontal,
+  HiArrowLeft,
   HiArrowLongRight,
   HiArrowTopRightOnSquare,
   HiChevronDoubleLeft,
@@ -169,6 +170,7 @@ const iconComponents: Record<string, IconType> = {
   FaChevronDown,
   HiEllipsisVertical,
   LuDot,
+  HiArrowLeft,
   HiArrowLongRight,
   HiOutlineDocumentText,
   FaRegFaceMeh,

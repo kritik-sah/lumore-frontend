@@ -94,7 +94,7 @@ const MyProfile = ({ user }: { user: any }) => {
                   <img
                     src={user.profilePicture}
                     alt="Profile picture"
-                    className="object-cover w-full h-full"
+                    className={`${user?.isViewerUnlockedByUser ? "" : "blur-xs"} object-cover w-full h-full`}
                   />
                 </picture>
               </div>
