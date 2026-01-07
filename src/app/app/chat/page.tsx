@@ -1,7 +1,9 @@
 "use client";
+import Icon from "@/components/icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchIbox, fetchUserSlots } from "@/lib/apis";
+import { calculateAge } from "@/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -108,44 +110,7 @@ const Inbox = ({ user, rooms, isLoading, error }: any) => {
             );
 
             return (
-              <li key={room._id}>
-                <Link
-                  href={`/app/chat/${room._id}`}
-                  className="flex items-center space-x-4 hover:bg-gray-100 p-2 border-b border-ui-shade/10 "
-                >
-                  <Avatar>
-                    <AvatarImage
-                      src={
-                        matchedUser?.profilePicture ||
-                        `https://i.pravatar.cc/150?u=${room._id}`
-                      }
-                      alt={matchedUser?.nickname || matchedUser?.username}
-                    />
-                    <AvatarFallback>
-                      {(matchedUser?.nickname || matchedUser?.username || "U")
-                        .split(" ")
-                        .map((n: string) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h2 className="font-semibold">
-                      {matchedUser.nickname ||
-                        matchedUser.username ||
-                        "Unknown User"}
-                    </h2>
-                    {/* {slot.unReadMessageCount > 0 && (
-                        <p className="text-sm text-blue-500">
-                          {slot.unReadMessageCount} new message
-                          {slot.unReadMessageCount > 1 ? "s" : ""}
-                        </p>
-                      )} */}
-                  </div>
-                  <span className="text-xs text-gray-400">
-                    {new Date(room.lastMessageAt).toLocaleDateString()}
-                  </span>
-                </Link>
-              </li>
+              <UserChat key={room._id} room={room} matchedUser={matchedUser} />
             );
           })}
         </ul>
@@ -155,3 +120,72 @@ const Inbox = ({ user, rooms, isLoading, error }: any) => {
 };
 
 export default ChatInbox;
+
+const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
+  const { user, isLoading } = useUser(matchedUser?._id ?? "");
+  return (
+    <li key={room._id}>
+      <Link
+        href={`/app/chat/${room._id}`}
+        className="flex items-center space-x-4 hover:bg-gray-100 p-2 border-b border-ui-shade/10 "
+      >
+        <div className="relative">
+          <div className="w-10 h-10 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                className={user?.isViewerUnlockedByUser ? "" : "blur-xs"}
+                src={user?.profilePicture}
+                alt={user?.realName || user?.nickname || user?.username}
+              />
+              <AvatarFallback>
+                {`${user?.realName || user?.nickname || user?.username}`
+                  .charAt(0)
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="absolute -bottom-0.5 -right-0.5 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
+            {user?.isViewerUnlockedByUser ? (
+              <Icon name="HiLockOpen" className="h-3 w-3 text-ui-shade" />
+            ) : (
+              <Icon name="HiLockClosed" className="h-3 w-3 text-ui-shade" />
+            )}
+          </div>
+        </div>
+        <div className="flex-1">
+          <h2 className="font-semibold">
+            {user?.realName || user?.nickname || user?.username}
+          </h2>
+          <div className="flex items-center justify-start gap-2 text-sm">
+            {user?.dob ? (
+              <div className="flex items-center justify-center gap-1 flex-shrink-0">
+                <Icon name="HiOutlineCake" className="flex-shrink-0" />{" "}
+                <p>{calculateAge(user?.dob)}</p>
+              </div>
+            ) : null}
+
+            {user?.gender ? (
+              <div className="flex items-center justify-center gap-1 flex-shrink-0">
+                <Icon name="HiOutlineUser" className="lex-shrink-0" />{" "}
+                <p>{user?.gender}</p>
+              </div>
+            ) : null}
+            <div className="flex items-center justify-center gap-1 flex-shrink-0">
+              <Icon name="RiPinDistanceLine" className="flex-shrink-0" />{" "}
+              <p>{user?.distance.toFixed(2)}km</p>
+            </div>
+          </div>
+          {/* {slot.unReadMessageCount > 0 && (
+                        <p className="text-sm text-blue-500">
+                          {slot.unReadMessageCount} new message
+                          {slot.unReadMessageCount > 1 ? "s" : ""}
+                        </p>
+                      )} */}
+        </div>
+        <span className="text-xs text-gray-400">
+          {new Date(room.lastMessageAt).toLocaleDateString()}
+        </span>
+      </Link>
+    </li>
+  );
+};

@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { Message } from "../components/ChatScreen";
+import { useConfettiSideCannons } from "../hooks/useConfettiSideCannons";
 import { useUser } from "../hooks/useUser";
 import { useSocket } from "./SocketContext";
 
@@ -44,6 +45,7 @@ export const ExploreChatProvider = ({
   const { socket, revalidateSocket } = useSocket();
   const [matchId, setMatchId] = useState<string | null>(null);
   const router = useRouter();
+  const fireConfetti = useConfettiSideCannons();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -120,6 +122,13 @@ export const ExploreChatProvider = ({
     console.log("[Socket] Match found:", roomId, matchedUser);
     setMatchId(roomId);
     setIsMatching(false);
+    fireConfetti();
+    trackAnalytic({
+      activity: "match_found",
+      label: "Match Found",
+    });
+    queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+    queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
     router.push("/app/chat/" + roomId);
   };
 
@@ -151,12 +160,20 @@ export const ExploreChatProvider = ({
       })
     );
 
+    socket.on("chatEnded", () => {
+      console.log("[Chat] Chat ended");
+      queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
+      // setIsActive(false);
+    });
+
     // 🔥 Cleanup: avoids duplicate listeners
     return () => {
       socket.off("matchFound");
       socket.off("profileLocked");
       socket.off("profileUnlocked");
       socket.off("matchmakingError");
+      socket.off("chatEnded");
     };
   }, [socket, matchId]);
 

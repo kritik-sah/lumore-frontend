@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -23,6 +23,7 @@ import { useSocket } from "./SocketContext";
 
 interface ChatContextType {
   roomId: string | null;
+  roomData: any | null;
   matchedUser: any | null;
   messages: Message[];
   setMessages: Dispatch<SetStateAction<Message[]>>;
@@ -80,7 +81,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
-
+  const router = useRouter();
   const { user } = useUser(userId ?? "");
   const { user: matchedUser, isLoading } = useUser(matchedUserId ?? "");
 
@@ -196,15 +197,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     socket.on("new_message", onNewMessage);
 
     socket.on("chatEnded", () => {
-      console.log("[Chat] Chat ended");
-      queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
-      queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
       setIsActive(false);
     });
 
     return () => {
       socket.off("new_message", onNewMessage);
-      socket.off("chatEnded");
     };
   }, [socket, roomId, matchedUserId, queryClient]);
 
@@ -220,6 +217,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       value: roomId,
     });
     socket.emit("endChat", { roomId });
+    queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+    queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
+    setIsActive(false);
+    router.push("/app/chat/");
   }, [socket, roomId]);
 
   const lockProfile = useCallback(
@@ -255,6 +256,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const value = useMemo(
     () => ({
       roomId,
+      roomData,
       matchedUser,
       messages,
       setMessages,
@@ -268,6 +270,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }),
     [
       roomId,
+      roomData,
       matchedUser,
       messages,
       cancelChat,

@@ -34,7 +34,6 @@ interface KeyExchangeResponse {
 const ChatScreen = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
-  const [matchedUserId, setMatchedUserId] = useState("");
   // Safely parse user from cookie with error handling
   let userId = "";
   try {
@@ -48,6 +47,7 @@ const ChatScreen = () => {
   const { socket } = useSocket();
   const {
     roomId,
+    roomData,
     matchedUser,
     cancelChat,
     messages,
@@ -164,6 +164,8 @@ const ChatScreen = () => {
         onSend={sendMessage}
         isConnected={isConnected}
         isActive={isActive}
+        roomData={roomData}
+        userId={userId}
       />
     </div>
   );

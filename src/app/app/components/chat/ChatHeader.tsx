@@ -24,7 +24,6 @@ interface ChatHeaderProps {
   user: any;
   isConnected: boolean;
   onEndChat: () => void;
-
   currentUserId: string;
 }
 
@@ -35,7 +34,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   currentUserId,
 }) => {
-  const { roomId, matchedUser, lockProfile, unlockProfile } = useChat();
+  const { roomId, matchedUser, lockProfile, unlockProfile, isActive } =
+    useChat();
   const router = useRouter();
 
   const [isUnlocked, setisUnlocked] = useState(
@@ -131,22 +131,24 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <Icon name="HiLockClosed" className="h-5 w-5 text-gray-500" />
           )}
         </Button>
-        <Menubar className="border-0 bg-transparent shadow-none">
-          <MenubarMenu>
-            <MenubarTrigger>
-              <Icon name="HiMiniEllipsisVertical" className="text-xl" />
-            </MenubarTrigger>
-            <MenubarContent>
-              <MenubarSeparator />
-              <MenubarItem
-                className="!text-red-500 focus:text-red-500"
-                onClick={onEndChat}
-              >
-                End Chat
-              </MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </Menubar>
+        {isActive && (
+          <Menubar className="border-0 bg-transparent shadow-none">
+            <MenubarMenu>
+              <MenubarTrigger>
+                <Icon name="HiMiniEllipsisVertical" className="text-xl" />
+              </MenubarTrigger>
+              <MenubarContent>
+                <MenubarSeparator />
+                <MenubarItem
+                  className="!text-red-500 focus:text-red-500"
+                  onClick={onEndChat}
+                >
+                  End Chat
+                </MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+        )}
       </div>
     </div>
   );

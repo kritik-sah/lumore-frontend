@@ -9,6 +9,8 @@ interface ChatInputProps {
   onSend: () => void;
   isConnected: boolean;
   isActive: boolean;
+  roomData: any;
+  userId: string;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -18,7 +20,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onSend,
   isConnected,
   isActive,
+  roomData,
+  userId,
 }) => {
+  if (!isActive) {
+    return (
+      <div className="p-4 text-center text-sm text-ui-shade">
+        The chat has ended by{" "}
+        {roomData?.endedBy === userId ? "you" : "the other user"}. You can no
+        longer send messages.
+      </div>
+    );
+  }
+
   return (
     <div className="p-2 bg-ui-light border border-ui-shade/10 rounded-full mx-2">
       <div className="flex gap-2">
