@@ -10,11 +10,9 @@ import { formatNumber } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useExploreChat } from "../context/ExploreChatContext";
-import ChatScreen from "./ChatScreen";
 
 const MatchmakingScreen = () => {
-  const { matchId, matchedUser, revalidateUser } = useExploreChat();
-  console.log("MatchmakingScreen", { matchId, matchedUser });
+  const { revalidateUser } = useExploreChat();
 
   useEffect(() => {
     return revalidateUser();
@@ -22,13 +20,7 @@ const MatchmakingScreen = () => {
 
   return (
     <div className="flex-1 overflow-y-auto p-2">
-      {matchId && matchedUser ? (
-        <div className="flex h-full flex-col items-center justify-center gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
-          <ChatScreen />
-        </div>
-      ) : (
-        <SearchScreen />
-      )}
+      <SearchScreen />
     </div>
   );
 };
@@ -116,15 +108,6 @@ const SearchScreen = () => {
         </div>
 
         {error && <div className="text-red-500 text-sm">{error}</div>}
-
-        {/* <AdBanner
-        data-ad-slot="8827977087"
-        data-full-width-responsive="true"
-        data-ad-layout="display"
-        data-ad-format="auto"
-      /> */}
-
-        {/* <SqAdBanner /> */}
 
         <Button
           variant={isMatching ? "outline" : "default"}

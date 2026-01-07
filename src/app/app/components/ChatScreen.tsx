@@ -1,18 +1,17 @@
 "use client";
-import { createSlot, updateSlot } from "@/lib/apis";
+import { createSlot, fetchRoomData, updateSlot } from "@/lib/apis";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
+import { useQuery } from "@tanstack/react-query";
 import CryptoJS from "crypto-js";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { useExploreChat } from "../context/ExploreChatContext";
+import { useChat } from "../context/ChatContext";
 import { useSocket } from "../context/SocketContext";
-import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
 import { ChatMessages } from "./chat/ChatMessages";
+import LumoreSplash from "./LumoreSplash";
 
 export interface Message {
   sender: string;
@@ -32,11 +31,9 @@ interface KeyExchangeResponse {
   timestamp: number;
 }
 
-const ChatScreen: React.FC = () => {
+const ChatScreen = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
-  useOnboarding();
-
   // Safely parse user from cookie with error handling
   let userId = "";
   try {
@@ -47,38 +44,36 @@ const ChatScreen: React.FC = () => {
   } catch (error) {
     console.error("[ChatScreen] Error parsing user:", error);
   }
-
-  const { user } = useUser(userId);
   const { socket } = useSocket();
   const {
-    matchId,
+    roomId,
+    roomData,
     matchedUser,
     cancelChat,
-    lockProfile,
-    unlockProfile,
     messages,
     setMessages,
-  } = useExploreChat();
+    isLoading,
+    isActive,
+  } = useChat();
 
   useEffect(() => {
-    if (!socket || !matchId) return;
+    if (!socket || !roomId) return;
 
     // Retrieve encryption key from localStorage
-    const storedKey = localStorage.getItem(`chat_key_${matchId}`);
+    const storedKey = localStorage.getItem(`chat_key_${roomId}`);
     if (storedKey) {
       setIsConnected(true);
     }
 
     // Join the chat room
-    console.log("joinchat", matchId);
-    socket.emit("joinChat", { matchId });
+    socket.emit("joinChat", { roomId });
 
     // Handle key exchange requests
     socket.on("key_exchange_request", async (data: KeyExchangeRequest) => {
       const { fromUserId, sessionKey } = data;
 
-      if (matchId && storedKey !== sessionKey) {
-        localStorage.setItem(`chat_key_${matchId}`, sessionKey);
+      if (roomId && storedKey !== sessionKey) {
+        localStorage.setItem(`chat_key_${roomId}`, sessionKey);
         setIsConnected(true);
         socket.emit("key_exchange_response", {
           fromUserId,
@@ -93,27 +88,25 @@ const ChatScreen: React.FC = () => {
       const { sessionKey } = data;
 
       if (storedKey !== sessionKey) {
-        localStorage.setItem(`chat_key_${matchId}`, sessionKey);
+        localStorage.setItem(`chat_key_${roomId}`, sessionKey);
         setIsConnected(true);
       }
     });
 
     // Initiate key exchange
-    socket.emit("init_key_exchange", { matchId });
+    socket.emit("init_key_exchange", { roomId });
 
     // Cleanup on unmount
     return () => {
       socket.off("key_exchange_request");
       socket.off("key_exchange_response");
-      socket.off("new_message");
-      socket.off("chatCancelled");
     };
-  }, [socket, matchId, userId, matchedUser]);
+  }, [socket, roomId, userId, matchedUser]);
 
   const sendMessage = () => {
-    if (!socket || !newMessage.trim() || !matchId || !matchedUser) return;
+    if (!socket || !newMessage.trim() || !roomId || !matchedUser) return;
 
-    const encryptionKey = localStorage.getItem(`chat_key_${matchId}`);
+    const encryptionKey = localStorage.getItem(`chat_key_${roomId}`);
     if (!encryptionKey) {
       return;
     }
@@ -128,10 +121,10 @@ const ChatScreen: React.FC = () => {
       trackAnalytic({
         activity: "message_sent",
         label: "Message Sent",
-        value: matchId,
+        value: roomId,
       });
       socket.emit("send_message", {
-        matchId,
+        roomId,
         receiverId: matchedUser._id,
         encryptedContent: encrypted.ciphertext.toString(CryptoJS.enc.Hex),
         iv: iv.toString(CryptoJS.enc.Hex),
@@ -153,40 +146,14 @@ const ChatScreen: React.FC = () => {
     }
   };
 
-  const saveChat = async () => {
-    if (!matchId || !matchedUser) {
-      toast.error("Missing required information to save chat");
-      return;
-    }
-
-    try {
-      // First create a new slot
-      const newSlot = await createSlot();
-
-      // Then update the slot with the chat room and profile information
-      await updateSlot(newSlot._id, {
-        profile: matchedUser._id,
-        roomId: matchId,
-      });
-
-      toast.success("Chat saved successfully!");
-    } catch (error: any) {
-      console.error("Error saving chat:", error);
-      const errorMessage =
-        error.response?.data?.message || "Failed to save chat";
-      toast.error(errorMessage);
-    }
-  };
-
-  if (!matchedUser) return <div>Loading...</div>;
+  if (!matchedUser || isLoading) return <LumoreSplash />;
 
   return (
     <div className="flex flex-col w-full h-full py-2">
       <ChatHeader
         user={matchedUser}
         isConnected={isConnected}
-        onEndChat={() => cancelChat(matchId || "")}
-        onSaveChat={() => saveChat()}
+        onEndChat={cancelChat}
         currentUserId={userId}
       />
       <ChatMessages messages={messages} currentUserId={userId} />
@@ -196,6 +163,9 @@ const ChatScreen: React.FC = () => {
         onKeyPress={handleKeyPress}
         onSend={sendMessage}
         isConnected={isConnected}
+        isActive={isActive}
+        roomData={roomData}
+        userId={userId}
       />
     </div>
   );

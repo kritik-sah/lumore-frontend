@@ -1,13 +1,8 @@
 import React from "react";
 import ChatScreen from "../../components/ChatScreen";
-import NavLayout from "../../components/layout/NavLayout";
 
 const Chats = () => {
-  return (
-    <NavLayout>
-      <ChatScreen />
-    </NavLayout>
-  );
+  return <ChatScreen />;
 };
 
 export default Chats;
