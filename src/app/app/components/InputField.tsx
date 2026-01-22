@@ -33,6 +33,8 @@ interface TextAreaFieldProps {
   placeholder?: string;
   error?: string;
   rows?: number;
+  className?: string;
+  labelStyles?: string;
 }
 
 interface SelectFieldProps {
@@ -85,17 +87,19 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
   placeholder = "",
   error,
   rows = 4,
+  className,
+  labelStyles,
 }) => {
   return (
-    <div className="border border-ui-shade/10 rounded-xl p-2">
-      <Label className=" text-ui-shade/80">{label}</Label>
+    <div className={`border border-ui-shade/10 rounded-xl p-2 ${className}`}>
+      <Label className={`text-ui-shade/80 ${labelStyles}`}>{label}</Label>
       <textarea
         value={value}
         onChange={onChange}
         name={name}
         placeholder={placeholder}
         rows={rows}
-        className="w-full p-2 focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none resize-none my-2"
+        className="w-full focus-visible:outline-none focus-visible:ring-0 border-0 shadow-none resize-none my-2"
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

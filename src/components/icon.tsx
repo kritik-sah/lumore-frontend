@@ -111,6 +111,7 @@ import {
 } from "react-icons/md";
 import { RiPinDistanceLine, RiRobot2Line } from "react-icons/ri";
 import {
+  TbLibraryPlus,
   TbZodiacAquarius,
   TbZodiacAries,
   TbZodiacCancer,
@@ -246,6 +247,7 @@ const iconComponents: Record<string, IconType> = {
   GoMute,
   GoUnmute,
   LuLoaderCircle,
+  TbLibraryPlus,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

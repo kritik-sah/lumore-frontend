@@ -12,11 +12,12 @@ import {
   distanceDisplay,
   languageDisplay,
 } from "@/utils/helpers";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 
-const MyProfile = ({ user }: { user: any }) => {
+const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
   let userId = "";
   try {
     const user = getUser();
@@ -26,13 +27,6 @@ const MyProfile = ({ user }: { user: any }) => {
   } catch (error) {
     console.error("[ChatScreen] Error parsing user cookie:", error);
   }
-
-  // useEffect(() => {
-  //   (async function () {
-  //     const nearbyUsers = await findNearbyUsers();
-  //     console.log("nearby users", nearbyUsers);
-  //   })();
-  // }, [userId]);
 
   const traits = [
     user?.dob && {
@@ -82,7 +76,7 @@ const MyProfile = ({ user }: { user: any }) => {
       value: user.bloodGroup,
     },
   ].filter(Boolean); // remove falsy entries
-
+  console.log("posts", posts);
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto">
@@ -160,7 +154,6 @@ const MyProfile = ({ user }: { user: any }) => {
             ) : null}
           </div>
         </div>
-
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl px-4 pb-0 shadow-sm">
           <div className="w-full py-2 border-b border-ui-shade/10 overflow-x-scroll">
             <div className="flex items-center justify-start gap-3 w-full ps-2">
@@ -267,6 +260,28 @@ const MyProfile = ({ user }: { user: any }) => {
               </div>
             </>
           ) : null}
+        </div>
+        <div className="flex flex-col gap-2 mt-3">
+          {posts?.map((post: any) => (
+            <div
+              key={post._id}
+              className="relative flex items-center justify-center min-h-[200px] bg-ui-highlight/5 border border-ui-highlight/10 rounded-xl px-4 pb-0 shadow-sm"
+            >
+              <div className="p-3">
+                <h3 className="">{post.content.promptId.text}</h3>
+                <p className="text-ui-shade font-semibold text-lg mt-2">
+                  {post.content.promptAnswer}
+                </p>
+              </div>
+              <Image
+                height="64"
+                width="64"
+                src={"/assets/quote.svg"}
+                alt="quote"
+                className="absolute top-2 right-2 h-16 w-16 opacity-10"
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

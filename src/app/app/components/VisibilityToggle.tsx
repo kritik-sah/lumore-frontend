@@ -12,6 +12,7 @@ interface VisibilityToggleProps {
   currentVisibility: string;
   onVisibilityChange: (field: string, visibility: string) => void;
   onClick?: (e: React.MouseEvent) => void;
+  width?: string;
 }
 
 const VisibilityToggle = ({
@@ -19,6 +20,7 @@ const VisibilityToggle = ({
   currentVisibility,
   onVisibilityChange,
   onClick,
+  width,
 }: VisibilityToggleProps) => {
   return (
     <div className="flex items-center gap-2" onClick={onClick}>
@@ -26,7 +28,7 @@ const VisibilityToggle = ({
         value={currentVisibility}
         onValueChange={(value) => onVisibilityChange(field, value)}
       >
-        <SelectTrigger className="w-[120px]">
+        <SelectTrigger className={`w-[120px] ${width}`}>
           <SelectValue placeholder="Select visibility" />
         </SelectTrigger>
         <SelectContent>
