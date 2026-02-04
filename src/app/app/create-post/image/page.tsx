@@ -1,24 +1,63 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createImagePost } from "@/lib/apis";
-import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { createImagePost, getPostById, updatePost } from "@/lib/apis";
+import { getUser } from "@/service/storage";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
 import VisibilityToggle from "../../components/VisibilityToggle";
 
 const CreateImagePostPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const postId = searchParams.get("postId");
+  const isEditing = Boolean(postId);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [visibility, setVisibility] = useState("public");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (!postId) return;
+    let isMounted = true;
+
+    const loadPost = async () => {
+      setIsLoading(true);
+      try {
+        const post = await getPostById(postId);
+        if (!isMounted) return;
+        if (post?.type !== "IMAGE") {
+          setError("This post cannot be edited here.");
+          return;
+        }
+        setCaption(post?.content?.caption || "");
+        setVisibility(post?.visibility || "public");
+        setExistingImageUrl(post?.content?.imageUrls || null);
+        setPreview(post?.content?.imageUrls || null);
+      } catch (err) {
+        if (isMounted) setError("Unable to load post.");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    loadPost();
+    return () => {
+      isMounted = false;
+    };
+  }, [postId]);
+
   const handlePick = () => {
+    if (isEditing) return;
     fileInputRef.current?.click();
   };
 
@@ -45,7 +84,7 @@ const CreateImagePostPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!file) {
+    if (!isEditing && !file) {
       setError("Please select an image to continue.");
       return;
     }
@@ -54,12 +93,41 @@ const CreateImagePostPage = () => {
     setError("");
 
     try {
-      await createImagePost({
-        file,
-        caption: caption.trim(),
-        visibility,
-      });
-      router.push("/app/create-post");
+      if (isEditing && postId) {
+        if (!existingImageUrl) {
+          setError("Unable to locate the original image.");
+          setIsSubmitting(false);
+          return;
+        }
+        await updatePost(postId, {
+          content: {
+            imageUrls: existingImageUrl,
+            caption: caption.trim(),
+          },
+          visibility,
+        });
+        const currentUser = getUser();
+        if (currentUser?._id) {
+          await queryClient.invalidateQueries({
+            queryKey: ["user posts", currentUser._id],
+          });
+        }
+        router.back();
+      } else {
+        file &&
+          (await createImagePost({
+            file,
+            caption: caption.trim(),
+            visibility,
+          }));
+        const currentUser = getUser();
+        if (currentUser?._id) {
+          await queryClient.invalidateQueries({
+            queryKey: ["user posts", currentUser._id],
+          });
+        }
+        router.push("/app/create-post");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";
       setError(message);
@@ -76,15 +144,21 @@ const CreateImagePostPage = () => {
             <div>
               <p className="text-sm text-ui-shade/70">Create a new post</p>
               <h1 className="text-xl font-semibold text-ui-shade">
-                Image Post
+                {isEditing ? "Edit Image" : "Image Post"}
               </h1>
             </div>
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isLoading}
               className="min-w-[96px]"
             >
-              {isSubmitting ? "Posting..." : "Post"}
+              {isSubmitting
+                ? isEditing
+                  ? "Updating..."
+                  : "Posting..."
+                : isEditing
+                  ? "Update"
+                  : "Post"}
             </Button>
           </div>
 
@@ -93,11 +167,21 @@ const CreateImagePostPage = () => {
               <p className="text-sm text-ui-shade/70">Upload image</p>
               <div className="flex items-center gap-2">
                 {file ? (
-                  <Button variant="outline" size="sm" onClick={handleClear}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClear}
+                    disabled={isEditing}
+                  >
                     Remove
                   </Button>
                 ) : null}
-                <Button variant="outline" size="sm" onClick={handlePick}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePick}
+                  disabled={isEditing}
+                >
                   Choose
                 </Button>
               </div>
@@ -112,7 +196,9 @@ const CreateImagePostPage = () => {
                 />
               ) : (
                 <div className="h-48 rounded-lg border border-dashed border-ui-shade/30 flex items-center justify-center text-sm text-ui-shade/60">
-                  Tap Choose to select an image (max 5MB)
+                  {isEditing
+                    ? "Image updates are not supported yet."
+                    : "Tap Choose to select an image (max 5MB)"}
                 </div>
               )}
             </div>

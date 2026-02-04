@@ -231,4 +231,23 @@ export const createTextPost = async (post: {
   return response.data;
 };
 
+export const getPostById = async (postId: string) => {
+  const response = await apiClient.get(`/post/${postId}`);
+  return response.data;
+};
+
+export const updatePost = async (
+  postId: string,
+  payload: { content?: any; visibility?: string },
+) => {
+  const response = await apiClient.put(`/post/${postId}`, payload);
+  return response.data;
+};
+
+export const deletePost = async (postId: string) => {
+  const response = await apiClient.delete(`/post/${postId}`);
+  return response.data;
+};
+
+
 

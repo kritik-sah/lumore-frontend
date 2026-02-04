@@ -2,8 +2,16 @@
 import Icon from "@/components/icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator";
-import { findNearbyUsers } from "@/lib/apis";
+import { deletePost } from "@/lib/apis";
 import { getUser } from "@/service/storage";
 import getLastActive from "@/utils/getLastActive";
 import {
@@ -12,12 +20,17 @@ import {
   distanceDisplay,
   languageDisplay,
 } from "@/utils/helpers";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 
 const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   let userId = "";
   try {
     const user = getUser();
@@ -76,7 +89,44 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
       value: user.bloodGroup,
     },
   ].filter(Boolean); // remove falsy entries
-  console.log("posts", posts);
+  const isOwner = userId === user?._id;
+
+  // const handleEditPost = (post: any) => {
+  //   if (!post?._id) return;
+  //   if (post?.type === "PROMPT") {
+  //     router.push(`/app/create-post/prompts?postId=${post._id}`);
+  //     return;
+  //   }
+  //   if (post?.type === "IMAGE") {
+  //     router.push(`/app/create-post/image?postId=${post._id}`);
+  //     return;
+  //   }
+  //   if (post?.type === "TEXT") {
+  //     router.push(`/app/create-post/free-text?postId=${post._id}`);
+  //     return;
+  //   }
+  // };
+
+  const handleDeletePost = async (post: any) => {
+    if (!post?._id) return;
+    const confirmDelete = window.confirm(
+      "Delete this post? This cannot be undone.",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setDeletingId(post._id);
+      await deletePost(post._id);
+      await queryClient.invalidateQueries({
+        queryKey: ["user posts", user?._id],
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto">
@@ -263,7 +313,14 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
         </div>
         <div className="flex flex-col gap-2 mt-3">
           {posts?.map((post: any) => (
-            <PostCard key={post._id} post={post} />
+            <PostCard
+              key={post._id}
+              post={post}
+              isOwner={isOwner}
+              isDeleting={deletingId === post._id}
+              // onEdit={handleEditPost}
+              onDelete={handleDeletePost}
+            />
           ))}
         </div>
       </div>
@@ -288,9 +345,43 @@ const InfoItem = ({
   </div>
 );
 
-const PostCard = ({ post }: { post: any }) => {
+const PostCard = ({
+  post,
+  isOwner,
+  isDeleting,
+  // onEdit,
+  onDelete,
+}: {
+  post: any;
+  isOwner: boolean;
+  isDeleting: boolean;
+  // onEdit: (post: any) => void;
+  onDelete: (post: any) => void;
+}) => {
   return (
     <div className="relative min-h-[200px] flex flex-col items-center justify-center bg-ui-highlight/5 border border-ui-highlight/10 rounded-xl pb-0 shadow-sm overflow-hidden">
+      {isOwner ? (
+        <div className="absolute top-2 right-2 z-10">
+          <Menubar className="border-0 bg-transparent shadow-none">
+            <MenubarMenu>
+              <MenubarTrigger className="px-2 py-1 rounded-md hover:bg-ui-highlight/10">
+                <Icon name="HiMiniEllipsisVertical" className="text-xl" />
+              </MenubarTrigger>
+              <MenubarContent align="end">
+                {/* <MenubarItem onClick={() => onEdit(post)}>Edit</MenubarItem> */}
+                <MenubarSeparator />
+                <MenubarItem
+                  className="!text-red-500 focus:text-red-500"
+                  onClick={() => onDelete(post)}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+        </div>
+      ) : null}
       {post?.type === "PROMPT" ? <PromptPost post={post} /> : null}
       {post?.type === "IMAGE" ? <ImagePost post={post} /> : null}
       {post?.type === "TEXT" ? <TextPost post={post} /> : null}

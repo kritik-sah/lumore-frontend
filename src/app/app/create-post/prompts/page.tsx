@@ -11,10 +11,14 @@ import {
   createPromptPost,
   fetchPromptCategories,
   fetchPromptsByCategories,
+  getPostById,
+  updatePost,
 } from "@/lib/apis";
 import { visibilityOptions } from "@/lib/options";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUser } from "@/service/storage";
 import { use, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
 import VisibilityToggle from "../../components/VisibilityToggle";
@@ -56,12 +60,65 @@ const CATEGORIES = [
 
 function PromptSelectPage() {
   const [active, setActive] = useState("fun");
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const editPostId = searchParams.get("postId");
+  const [isEditPromptOpen, setIsEditPromptOpen] = useState(false);
+  const [editPost, setEditPost] = useState<any>(null);
+  const [editError, setEditError] = useState("");
 
   // Fetch categories from API fetchPromptCategories()
   const { data: categoriesData = [] } = useQuery<any[]>({
     queryKey: ["categories"],
     queryFn: () => fetchPromptCategories(),
   });
+
+  useEffect(() => {
+    if (!editPostId) return;
+    let isMounted = true;
+
+    const loadEditPost = async () => {
+      try {
+        const post = await getPostById(editPostId);
+        if (!isMounted) return;
+        if (post?.type !== "PROMPT") {
+          setEditError("This post cannot be edited here.");
+          return;
+        }
+        setEditPost(post);
+        setIsEditPromptOpen(true);
+      } catch (err) {
+        if (isMounted) setEditError("Unable to load post.");
+      }
+    };
+
+    loadEditPost();
+    return () => {
+      isMounted = false;
+    };
+  }, [editPostId]);
+
+  const handlePromptUpdate = async (data: any) => {
+    if (!editPostId) return;
+    try {
+      await updatePost(editPostId, {
+        content: data.content,
+        visibility: data.visibility,
+      });
+      const currentUser = getUser();
+      if (currentUser?._id) {
+        await queryClient.invalidateQueries({
+          queryKey: ["user posts", currentUser._id],
+        });
+      }
+      setIsEditPromptOpen(false);
+      setEditPost(null);
+      router.back();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <GeneralLayout>
@@ -87,6 +144,18 @@ function PromptSelectPage() {
         {/* PROMPT LIST */}
 
         <PromptList key={active} category={active} />
+        <PromptEditor
+          key={editPost?._id}
+          isOpen={isEditPromptOpen}
+          setIsOpen={setIsEditPromptOpen}
+          prompt={editPost?.content?.promptId}
+          onUpdate={handlePromptUpdate}
+          currentValue={editPost?.content?.promptAnswer || ""}
+          initialVisibility={editPost?.visibility || "public"}
+        />
+        {editError ? (
+          <p className="text-red-500 text-sm mt-2">{editError}</p>
+        ) : null}
       </div>
     </GeneralLayout>
   );
@@ -147,6 +216,7 @@ const PromptEditor = ({
   prompt,
   onUpdate,
   currentValue,
+  initialVisibility = "",
 }: any) => {
   const getDefaultValue = (field: string) => {
     switch (field) {
@@ -171,11 +241,12 @@ const PromptEditor = ({
   };
 
   const [value, setValue] = useState(currentValue);
-  const [visibility, setVisibility] = useState("");
+  const [visibility, setVisibility] = useState(initialVisibility);
 
   useEffect(() => {
     setValue(currentValue);
-  }, [currentValue, prompt?._id]);
+    setVisibility(initialVisibility);
+  }, [currentValue, prompt?._id, initialVisibility]);
 
   const handleSubmit = async () => {
     // { type , content: {
