@@ -28,7 +28,8 @@ import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useRef, useState } from "react";
+import Cropper from "react-easy-crop";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 import * as z from "zod";
@@ -81,6 +82,13 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isCropOpen, setIsCropOpen] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const handleClick = () => {
     fileInputRef.current?.click();
   };
@@ -145,21 +153,95 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    const objectUrl = URL.createObjectURL(file);
+    setSelectedFile(file);
+    setImageSrc(objectUrl);
+    setIsCropOpen(true);
+  };
 
+  const onCropComplete = useCallback((_: any, croppedPixels: any) => {
+    setCroppedAreaPixels(croppedPixels);
+  }, []);
+
+  const createImage = (url: string) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener("load", () => resolve(image));
+      image.addEventListener("error", (error) => reject(error));
+      image.setAttribute("crossOrigin", "anonymous");
+      image.src = url;
+    });
+
+  const getCroppedImage = async (src: string, pixelCrop: any) => {
+    const image = await createImage(src);
+    const canvas = document.createElement("canvas");
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas context not available");
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error("Crop failed"));
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.92
+      );
+    });
+  };
+
+  const handleCropCancel = () => {
+    if (imageSrc) URL.revokeObjectURL(imageSrc);
+    setImageSrc(null);
+    setSelectedFile(null);
+    setIsCropOpen(false);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCropSave = async () => {
+    if (!imageSrc || !croppedAreaPixels) return;
+    setIsUploading(true);
     try {
-      const response = await uploadProfilePicture(file);
+      const croppedBlob = await getCroppedImage(imageSrc, croppedAreaPixels);
+      const croppedFile = new File(
+        [croppedBlob],
+        selectedFile?.name || "profile.jpg",
+        { type: croppedBlob.type || "image/jpeg" }
+      );
+
+      const localPreview = URL.createObjectURL(croppedBlob);
+      setPreview(localPreview);
+
+      const response = await uploadProfilePicture(croppedFile);
       console.log("Upload success:", response);
       queryClient.invalidateQueries({ queryKey: ["user", user?.userId] });
+      handleCropCancel();
     } catch (error) {
       console.error(
         "Upload error:",
         error instanceof Error ? error.message : error
       );
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -211,6 +293,61 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
             className="hidden"
           />
         </div>
+        {isCropOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            <div className="w-full max-w-md rounded-xl bg-ui-light p-4 shadow-xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-ui-shade">
+                  Crop Profile Photo
+                </h3>
+                <Button variant="ghost" size="icon" onClick={handleCropCancel}>
+                  <Icon name="MdOutlineClose" />
+                </Button>
+              </div>
+              <div className="relative mt-4 h-72 w-full overflow-hidden rounded-lg bg-black">
+                {imageSrc ? (
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                  />
+                ) : null}
+              </div>
+              <div className="mt-4">
+                <label className="text-sm text-ui-shade/70">Zoom</label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="mt-2 w-full"
+                />
+              </div>
+              <div className="mt-4 flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleCropCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="w-full"
+                  onClick={handleCropSave}
+                  disabled={isUploading}
+                >
+                  {isUploading ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <Field
           label="Username"

@@ -9,7 +9,7 @@ export const languageOptions = allLanguages.map(
   ({ code, name, nativeName }) => ({
     label: `${name} (${nativeName})`,
     value: code.toLowerCase().replace(/\s+/g, "-"),
-  })
+  }),
 );
 
 export const genderOptions = [
@@ -160,4 +160,10 @@ export const relationshipTypeOptions = [
   { label: "Open Relationship", value: "open-relationship" },
   { label: "Ethical Non-Monogamy", value: "ethical-non-monogamy" },
   { label: "Exploring What Feels Right", value: "exploring" },
+];
+
+export const visibilityOptions = [
+  { label: "Public", value: "public" },
+  { label: "Unlock (Friends)", value: "unlocked" },
+  { label: "Private", value: "private" },
 ];

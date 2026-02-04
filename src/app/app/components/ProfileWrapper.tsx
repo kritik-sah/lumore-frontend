@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
+import { useUserPosts } from "../hooks/useUserPosts";
 import MyProfile from "./MyProfile";
 
 interface ProfileWrapperProps {
@@ -10,7 +10,7 @@ interface ProfileWrapperProps {
 
 const ProfileWrapper = ({ userId }: ProfileWrapperProps) => {
   const { user, isLoading } = useUser(userId);
-  useOnboarding();
+  const { posts, isLoading: isPostsLoading } = useUserPosts(userId);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -20,7 +20,7 @@ const ProfileWrapper = ({ userId }: ProfileWrapperProps) => {
     return <div>Error loading user data</div>;
   }
 
-  return <MyProfile user={user} />;
+  return <MyProfile user={user} posts={posts} />;
 };
 
 export default ProfileWrapper;

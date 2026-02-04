@@ -50,7 +50,7 @@ export const updateUserLocation = async (data: any) => {
   const { _id: userId } = getUser();
   const response = await apiClient.post(
     `/profile/${userId}/update-location`,
-    data
+    data,
   );
   return response.data;
 };
@@ -63,7 +63,7 @@ export const findNearbyUsers = async () => {
 export const updateFieldVisibility = async (
   userId: string,
   field: string,
-  visibility: string
+  visibility: string,
 ) => {
   const response = await apiClient.patch(`/profile/${userId}/visibility`, {
     fields: { [field]: visibility },
@@ -75,7 +75,7 @@ export const updateUserPreferences = async (data: any) => {
   const { _id: userId } = getUser();
   const response = await apiClient.patch(
     `/profile/${userId}/preferences`,
-    data
+    data,
   );
   return response.data;
 };
@@ -95,7 +95,7 @@ export const createSlot = async () => {
 
 export const updateSlot = async (
   slotId: string,
-  data: { profile?: string; roomId?: string }
+  data: { profile?: string; roomId?: string },
 ) => {
   const response = await apiClient.patch(`/slots/${slotId}`, data);
   return response.data.data.slot;
@@ -130,7 +130,7 @@ export interface UploadResponse {
 }
 
 export const uploadProfilePicture = async (
-  file: File
+  file: File,
 ): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append("profilePic", file);
@@ -140,7 +140,7 @@ export const uploadProfilePicture = async (
   const res = await apiClient.patch<UploadResponse>(
     `/profile/${userId}/update-profile-picture`,
     formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
 
   return res.data;
@@ -178,3 +178,76 @@ export const unsubscribePushService = async (endpoint: string) => {
   });
   return response.data;
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                Prompt                                      */
+/* -------------------------------------------------------------------------- */
+export const fetchPromptCategories = async () => {
+  const response = await apiClient.get(`/prompt/categories`);
+  return response.data;
+};
+export const fetchPromptsByCategories = async (category: string[]) => {
+  const response = await apiClient.get(
+    `/prompt/?category=${category.join(",")}`,
+  );
+  return response.data;
+};
+/* -------------------------------------------------------------------------- */
+/*                                Posts                                       */
+/* -------------------------------------------------------------------------- */
+export const createPromptPost = async (post: any) => {
+  const response = await apiClient.post(`/post`, post);
+  return response.data;
+};
+
+export const createImagePost = async (params: {
+  file: File;
+  caption?: string;
+  visibility?: string;
+}) => {
+  const { file, caption = "", visibility = "public" } = params;
+  const formData = new FormData();
+  formData.append("type", "IMAGE");
+  formData.append("visibility", visibility);
+  formData.append("image", file);
+  formData.append("content", JSON.stringify({ caption }));
+
+  const response = await apiClient.post(`/post`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const createTextPost = async (post: {
+  text: string;
+  visibility?: string;
+}) => {
+  const payload = {
+    type: "TEXT",
+    visibility: post.visibility || "public",
+    content: { text: post.text },
+  };
+  const response = await apiClient.post(`/post`, payload);
+  return response.data;
+};
+
+export const getPostById = async (postId: string) => {
+  const response = await apiClient.get(`/post/${postId}`);
+  return response.data;
+};
+
+export const updatePost = async (
+  postId: string,
+  payload: { content?: any; visibility?: string },
+) => {
+  const response = await apiClient.put(`/post/${postId}`, payload);
+  return response.data;
+};
+
+export const deletePost = async (postId: string) => {
+  const response = await apiClient.delete(`/post/${postId}`);
+  return response.data;
+};
+
+
+
