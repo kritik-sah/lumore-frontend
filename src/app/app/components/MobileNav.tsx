@@ -25,6 +25,15 @@ export default function MobileNav() {
         </li>
         <li className="w-full px-3 ">
           <Link
+            href="/app/create-post"
+            className="text-gray-700 hover:text-black flex flex-col items-center justify-center"
+          >
+            <Icon name="TbLibraryPlus" className="h-6 w-6" />
+            <span className="text-xs">Create</span>
+          </Link>
+        </li>
+        <li className="w-full px-3 ">
+          <Link
             href="/app/profile"
             className="text-gray-700 hover:text-black flex flex-col items-center justify-center"
           >

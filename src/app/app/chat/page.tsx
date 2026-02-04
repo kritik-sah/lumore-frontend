@@ -85,7 +85,6 @@ const ChatInbox = () => {
 };
 
 const Inbox = ({ user, rooms, isLoading, error }: any) => {
-  console.log("inbox", { user, rooms, isLoading, error }); //not trigring on archive tab ?? Why
   if (isLoading) {
     return (
       <p className=" text-center mb-4 text-ui-shade">Fetching your chats...</p>
