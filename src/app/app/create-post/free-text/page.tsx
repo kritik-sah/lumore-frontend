@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { createTextPost, getPostById, updatePost } from "@/lib/apis";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
 import VisibilityToggle from "../../components/VisibilityToggle";
@@ -13,42 +13,11 @@ import VisibilityToggle from "../../components/VisibilityToggle";
 const CreateFreeTextPostPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const postId = searchParams.get("postId");
-  const isEditing = Boolean(postId);
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [visibility, setVisibility] = useState("public");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!postId) return;
-    let isMounted = true;
-
-    const loadPost = async () => {
-      setIsLoading(true);
-      try {
-        const post = await getPostById(postId);
-        if (!isMounted) return;
-        if (post?.type !== "TEXT") {
-          setError("This post cannot be edited here.");
-          return;
-        }
-        setText(post?.content?.text || "");
-        setVisibility(post?.visibility || "public");
-      } catch (err) {
-        if (isMounted) setError("Unable to load post.");
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadPost();
-    return () => {
-      isMounted = false;
-    };
-  }, [postId]);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -60,31 +29,17 @@ const CreateFreeTextPostPage = () => {
     setError("");
 
     try {
-      if (isEditing && postId) {
-        await updatePost(postId, {
-          content: { text },
-          visibility,
+      await createTextPost({
+        text,
+        visibility,
+      });
+      const currentUser = getUser();
+      if (currentUser?._id) {
+        await queryClient.invalidateQueries({
+          queryKey: ["user posts", currentUser._id],
         });
-        const currentUser = getUser();
-        if (currentUser?._id) {
-          await queryClient.invalidateQueries({
-            queryKey: ["user posts", currentUser._id],
-          });
-        }
-        router.back();
-      } else {
-        await createTextPost({
-          text,
-          visibility,
-        });
-        const currentUser = getUser();
-        if (currentUser?._id) {
-          await queryClient.invalidateQueries({
-            queryKey: ["user posts", currentUser._id],
-          });
-        }
-        router.push("/app/create-post");
       }
+      router.push("/app/profile");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Post failed";
       setError(message);
@@ -100,16 +55,14 @@ const CreateFreeTextPostPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-ui-shade/70">Create a new post</p>
-              <h1 className="text-xl font-semibold text-ui-shade">
-                {isEditing ? "Edit Free Text" : "Free Text"}
-              </h1>
+              <h1 className="text-xl font-semibold text-ui-shade">Free Text</h1>
             </div>
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting || isLoading}
               className="min-w-[96px]"
             >
-              {isSubmitting ? (isEditing ? "Updating..." : "Posting...") : isEditing ? "Update" : "Post"}
+              {isSubmitting ? "Posting..." : "Post"}
             </Button>
           </div>
 
