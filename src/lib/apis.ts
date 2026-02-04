@@ -199,3 +199,36 @@ export const createPromptPost = async (post: any) => {
   const response = await apiClient.post(`/post`, post);
   return response.data;
 };
+
+export const createImagePost = async (params: {
+  file: File;
+  caption?: string;
+  visibility?: string;
+}) => {
+  const { file, caption = "", visibility = "public" } = params;
+  const formData = new FormData();
+  formData.append("type", "IMAGE");
+  formData.append("visibility", visibility);
+  formData.append("image", file);
+  formData.append("content", JSON.stringify({ caption }));
+
+  const response = await apiClient.post(`/post`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const createTextPost = async (post: {
+  text: string;
+  visibility?: string;
+}) => {
+  const payload = {
+    type: "TEXT",
+    visibility: post.visibility || "public",
+    content: { text: post.text },
+  };
+  const response = await apiClient.post(`/post`, payload);
+  return response.data;
+};
+
+

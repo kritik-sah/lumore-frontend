@@ -33,7 +33,7 @@ const CreatePost = () => {
             title="Free Text"
             description="You're free to express yourself."
             className="border-cyan-700 bg-cyan-700/5 text-cyan-700"
-            onClick={() => router.push("/app/create-post/text")}
+            onClick={() => router.push("/app/create-post/free-text")}
           />
         </div>
       </div>
