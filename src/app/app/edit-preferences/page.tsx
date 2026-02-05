@@ -11,13 +11,17 @@ import {
 import { updateUserPreferences } from "@/lib/apis";
 import allLanguages from "@/lib/languages.json";
 import {
+  drinkingOptions,
   dietOptions,
   goalOptions,
   interestedInOptions,
   interestOptions,
   languageOptions,
+  petOptions,
   personalityTypeOptions,
+  religionOptions,
   relationshipTypeOptions,
+  smokingOptions,
   zodiacOptions,
 } from "@/lib/options";
 import { queryClient } from "@/service/query-client";
@@ -25,7 +29,7 @@ import { getUser } from "@/service/storage";
 import { languageDisplay } from "@/utils/helpers";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MultisliderField,
   SelectField,
@@ -107,6 +111,44 @@ const EditPreferences = () => {
     return <div>Loading...</div>;
   }
 
+  const { completionPercent, missingCount } = useMemo(() => {
+    if (!preferences) return { completionPercent: 0, missingCount: 0 };
+    const fields = [
+      preferences?.interestedIn,
+      preferences?.ageRange?.length ? preferences.ageRange : null,
+      preferences?.distance,
+      preferences?.heightRange?.length ? preferences.heightRange : null,
+      preferences?.goal,
+      preferences?.relationshipType,
+      preferences?.interests?.length ? preferences.interests : null,
+      preferences?.languages?.length ? preferences.languages : null,
+      preferences?.zodiacPreference?.length
+        ? preferences.zodiacPreference
+        : null,
+      preferences?.personalityTypePreference?.length
+        ? preferences.personalityTypePreference
+        : null,
+      preferences?.dietPreference?.length ? preferences.dietPreference : null,
+      preferences?.religionPreference?.length
+        ? preferences.religionPreference
+        : null,
+      preferences?.drinkingPreference?.length
+        ? preferences.drinkingPreference
+        : null,
+      preferences?.smokingPreference?.length
+        ? preferences.smokingPreference
+        : null,
+      preferences?.petPreference?.length ? preferences.petPreference : null,
+    ];
+    const filledCount = fields.filter((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== "";
+    }).length;
+    const total = fields.length;
+    const percent = total ? Math.round((filledCount / total) * 100) : 0;
+    return { completionPercent: percent, missingCount: total - filledCount };
+  }, [preferences]);
+
   return (
     <>
       <SubPageLayout title="Edit Preferences">
@@ -122,76 +164,147 @@ const EditPreferences = () => {
               }
               preferences={preferences as UserPreferences}
             />
-            <Field
-              label="Interested In"
-              field="interestedIn"
-              value={preferences?.interestedIn}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Age Range"
-              field="ageRange"
-              value={
-                preferences?.ageRange?.length
-                  ? `${preferences?.ageRange[0]}y - ${preferences?.ageRange[1]}y`
-                  : null
-              }
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Maximum Distance"
-              field="distance"
-              value={
-                preferences?.distance ? `${preferences?.distance} km` : null
-              }
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Goals"
-              field="goal"
-              value={
-                preferences?.goal
-                  ? Object.values(preferences?.goal).join(", ")
-                  : null
-              }
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Interests"
-              field="interests"
-              value={preferences?.interests?.join(", ")}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Relationship Type"
-              field="relationshipType"
-              value={preferences?.relationshipType}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Preferred Languages"
-              field="languages"
-              value={languageDisplay(preferences?.languages || [])?.join(", ")}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Zodiac Preferences"
-              field="zodiacPreference"
-              value={preferences?.zodiacPreference?.join(", ")}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Personality Type Preferences"
-              field="personalityTypePreference"
-              value={preferences?.personalityTypePreference?.join(", ")}
-              onEdit={handleEditField}
-            />
-            <Field
-              label="Diet Preferences"
-              field="dietPreference"
-              value={preferences?.dietPreference?.join(", ")}
-              onEdit={handleEditField}
-            />
+            <div className="rounded-2xl border border-ui-shade/10 bg-white p-4">
+              <p className="text-sm text-ui-shade/70">Match preferences</p>
+              <p className="text-xs text-ui-shade/60 mt-1">
+                These help us tailor who you see.
+              </p>
+              <div className="mt-3 h-2 w-full rounded-full bg-ui-shade/10">
+                <div
+                  className="h-2 rounded-full bg-ui-highlight"
+                  style={{ width: `${completionPercent}%` }}
+                />
+              </div>
+              <p className="text-xs text-ui-shade mt-2">
+                {completionPercent}% complete
+                {missingCount > 0 ? ` · ${missingCount} left` : ""}
+              </p>
+            </div>
+
+            <Section
+              title="Core"
+              description="The basics that shape your matches."
+            >
+              <Field
+                label="Interested In"
+                field="interestedIn"
+                value={preferences?.interestedIn}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Age Range"
+                field="ageRange"
+                value={
+                  preferences?.ageRange?.length
+                    ? `${preferences?.ageRange[0]}y - ${preferences?.ageRange[1]}y`
+                    : null
+                }
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Maximum Distance"
+                field="distance"
+                value={
+                  preferences?.distance ? `${preferences?.distance} km` : null
+                }
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Height Range"
+                field="heightRange"
+                value={
+                  preferences?.heightRange?.length
+                    ? `${preferences?.heightRange[0]}cm - ${preferences?.heightRange[1]}cm`
+                    : null
+                }
+                onEdit={handleEditField}
+              />
+            </Section>
+
+            <Section title="Intent" description="Your relationship goals.">
+              <Field
+                label="Goals"
+                field="goal"
+                value={
+                  preferences?.goal
+                    ? Object.values(preferences?.goal).join(", ")
+                    : null
+                }
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Relationship Type"
+                field="relationshipType"
+                value={preferences?.relationshipType}
+                onEdit={handleEditField}
+              />
+            </Section>
+
+            <Section
+              title="Lifestyle"
+              description="Day-to-day habits and preferences."
+            >
+              <Field
+                label="Diet Preferences"
+                field="dietPreference"
+                value={preferences?.dietPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Drinking Preferences"
+                field="drinkingPreference"
+                value={preferences?.drinkingPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Smoking Preferences"
+                field="smokingPreference"
+                value={preferences?.smokingPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Pet Preferences"
+                field="petPreference"
+                value={preferences?.petPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+            </Section>
+
+            <Section
+              title="Compatibility"
+              description="Match on values and personality."
+            >
+              <Field
+                label="Interests"
+                field="interests"
+                value={preferences?.interests?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Preferred Languages"
+                field="languages"
+                value={languageDisplay(preferences?.languages || [])?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Zodiac Preferences"
+                field="zodiacPreference"
+                value={preferences?.zodiacPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Personality Type Preferences"
+                field="personalityTypePreference"
+                value={preferences?.personalityTypePreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+              <Field
+                label="Religion Preferences"
+                field="religionPreference"
+                value={preferences?.religionPreference?.join(", ")}
+                onEdit={handleEditField}
+              />
+            </Section>
           </div>
         </div>
       </SubPageLayout>
@@ -222,6 +335,8 @@ const FieldEditor = ({
         return [];
       case "ageRange":
         return [18, 27];
+      case "heightRange":
+        return [150, 200];
       case "goal":
         return {
           primary: "",
@@ -232,6 +347,10 @@ const FieldEditor = ({
       case "zodiacPreference":
       case "personalityTypePreference":
       case "dietPreference":
+      case "religionPreference":
+      case "drinkingPreference":
+      case "smokingPreference":
+      case "petPreference":
         return [];
       default:
         return "";
@@ -315,6 +434,17 @@ const FieldEditor = ({
                 onChange={setValue}
                 min={1}
                 max={100}
+              />
+            ) : null}
+            {fieldType === "heightRange" ? (
+              <MultisliderField
+                unit="cm"
+                name="heightRange"
+                label="Height Range"
+                value={value}
+                onChange={setValue}
+                min={140}
+                max={220}
               />
             ) : null}
             {fieldType === "goal" ? (
@@ -412,6 +542,50 @@ const FieldEditor = ({
                 placeholder="Select diet preferences"
               />
             ) : null}
+            {fieldType === "religionPreference" ? (
+              <MultiSelectField
+                name="religionPreference"
+                label="Religion Preferences"
+                max={5}
+                options={religionOptions}
+                value={value || []}
+                onChange={setValue}
+                placeholder="Select religion preferences"
+              />
+            ) : null}
+            {fieldType === "drinkingPreference" ? (
+              <MultiSelectField
+                name="drinkingPreference"
+                label="Drinking Preferences"
+                max={5}
+                options={drinkingOptions}
+                value={value || []}
+                onChange={setValue}
+                placeholder="Select drinking preferences"
+              />
+            ) : null}
+            {fieldType === "smokingPreference" ? (
+              <MultiSelectField
+                name="smokingPreference"
+                label="Smoking Preferences"
+                max={5}
+                options={smokingOptions}
+                value={value || []}
+                onChange={setValue}
+                placeholder="Select smoking preferences"
+              />
+            ) : null}
+            {fieldType === "petPreference" ? (
+              <MultiSelectField
+                name="petPreference"
+                label="Pet Preferences"
+                max={5}
+                options={petOptions}
+                value={value || []}
+                onChange={setValue}
+                placeholder="Select pet preferences"
+              />
+            ) : null}
           </div>
         </div>
       </SheetContent>
@@ -430,6 +604,22 @@ const Field = ({ label, field, value, onEdit, children }: any) => (
         {children || value || "Not set"}
       </div>
     </div>
+  </div>
+);
+
+const Section = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) => (
+  <div className="mt-6">
+    <p className="text-xs uppercase text-ui-shade/70">{title}</p>
+    <p className="text-xs text-ui-shade/60 mt-1">{description}</p>
+    {children}
   </div>
 );
 

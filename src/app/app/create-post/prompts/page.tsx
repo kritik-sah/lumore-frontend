@@ -11,11 +11,13 @@ import {
   createPromptPost,
   fetchPromptCategories,
   fetchPromptsByCategories,
+  getPostById,
+  updatePost,
 } from "@/lib/apis";
 import { queryClient } from "@/service/query-client";
 import { getUser } from "@/service/storage";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
@@ -97,12 +99,15 @@ export default PromptSelectPage;
 
 const PromptList = ({ category }: { category: string }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const postId = searchParams.get("postId");
   const { data: promptsData = [] } = useQuery<any[]>({
     queryKey: ["categories", category],
     queryFn: () => fetchPromptsByCategories([category]),
   });
   const [isEditPromptOpen, setIsEditPromptOpen] = useState(false);
   const [editPrompt, setEditPrompt] = useState<any>(null);
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
   const handlePromptEdit = (prompt: any) => {
     setEditPrompt(prompt);
@@ -111,9 +116,17 @@ const PromptList = ({ category }: { category: string }) => {
 
   const handlePromptSubmit = async (data: any) => {
     try {
-      await createPromptPost(data);
+      if (editingPostId) {
+        await updatePost(editingPostId, {
+          content: data.content,
+          visibility: data.visibility,
+        });
+      } else {
+        await createPromptPost(data);
+      }
       setIsEditPromptOpen(false);
       setEditPrompt(null);
+      setEditingPostId(null);
       const currentUser = getUser();
       if (currentUser?._id) {
         await queryClient.invalidateQueries({
@@ -125,6 +138,31 @@ const PromptList = ({ category }: { category: string }) => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    const loadEditingPost = async () => {
+      if (!postId) return;
+      try {
+        const post = await getPostById(postId);
+        const promptId =
+          post?.content?.promptId?._id || post?.content?.promptId || "";
+        const promptText = post?.content?.promptId?.text || "Prompt";
+        const promptAnswer = post?.content?.promptAnswer || "";
+        const visibility = post?.visibility || "public";
+        setEditingPostId(postId);
+        setEditPrompt({
+          _id: promptId,
+          text: promptText,
+          answer: promptAnswer,
+          visibility,
+        });
+        setIsEditPromptOpen(true);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadEditingPost();
+  }, [postId]);
 
   return (
     <div className="space-y-2 my-3">
@@ -143,7 +181,10 @@ const PromptList = ({ category }: { category: string }) => {
         setIsOpen={setIsEditPromptOpen}
         prompt={editPrompt}
         onUpdate={handlePromptSubmit}
-        currentValue=""
+        currentValue={editingPostId ? editPrompt?.answer || "" : ""}
+        initialVisibility={
+          editingPostId ? editPrompt?.visibility || "public" : "public"
+        }
         preferences={{}}
       />
     </div>

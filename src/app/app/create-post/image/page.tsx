@@ -12,6 +12,8 @@ import VisibilityToggle from "../../components/VisibilityToggle";
 
 const CreateImagePostPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const postId = searchParams.get("postId");
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -50,7 +52,7 @@ const CreateImagePostPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!file) {
+    if (!file && !existingImageUrl) {
       setError("Please select an image to continue.");
       return;
     }
@@ -59,12 +61,19 @@ const CreateImagePostPage = () => {
     setError("");
 
     try {
-      file &&
-        (await createImagePost({
-          file,
-          caption: caption.trim(),
+      if (postId) {
+        await updatePost(postId, {
+          content: { caption: caption.trim() },
           visibility,
-        }));
+        });
+      } else {
+        file &&
+          (await createImagePost({
+            file,
+            caption: caption.trim(),
+            visibility,
+          }));
+      }
       const currentUser = getUser();
       if (currentUser?._id) {
         await queryClient.invalidateQueries({
@@ -79,6 +88,23 @@ const CreateImagePostPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const loadPost = async () => {
+      if (!postId) return;
+      try {
+        const post = await getPostById(postId);
+        setExistingImageUrl(
+          post?.content?.imageUrls || post?.content?.imageUrl || null
+        );
+        setCaption(post?.content?.caption || "");
+        setVisibility(post?.visibility || "public");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadPost();
+  }, [postId]);
 
   return (
     <GeneralLayout>
@@ -126,9 +152,9 @@ const CreateImagePostPage = () => {
             </div>
 
             <div onClick={handlePick} className="mt-3">
-              {preview ? (
+              {preview || existingImageUrl ? (
                 <img
-                  src={preview}
+                  src={preview || existingImageUrl || ""}
                   alt="Selected upload"
                   className="w-full max-h-96 object-cover rounded-lg border border-ui-shade/10"
                 />

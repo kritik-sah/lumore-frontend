@@ -249,5 +249,34 @@ export const deletePost = async (postId: string) => {
   return response.data;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                                 Moderation                                 */
+/* -------------------------------------------------------------------------- */
+export const submitChatFeedback = async (
+  roomId: string,
+  feedback: string,
+  rating?: number
+) => {
+  const response = await apiClient.post(`/inbox/${roomId}/feedback`, {
+    feedback,
+    rating,
+  });
+  return response.data;
+};
+
+export const reportChatUser = async (
+  roomId: string,
+  category: string,
+  reason: string,
+  details?: string
+) => {
+  const response = await apiClient.post(`/inbox/${roomId}/report`, {
+    category,
+    reason,
+    details,
+  });
+  return response.data;
+};
+
 
 
