@@ -1,19 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createTextPost, getPostById, updatePost } from "@/lib/apis";
+import { createTextPost } from "@/lib/apis";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
 import VisibilityToggle from "../../components/VisibilityToggle";
 
 const CreateFreeTextPostPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const postId = searchParams.get("postId");
   const queryClient = useQueryClient();
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,17 +29,10 @@ const CreateFreeTextPostPage = () => {
     setError("");
 
     try {
-      if (postId) {
-        await updatePost(postId, {
-          content: { text: text.trim() },
-          visibility,
-        });
-      } else {
-        await createTextPost({
-          text,
-          visibility,
-        });
-      }
+      await createTextPost({
+        text,
+        visibility,
+      });
       const currentUser = getUser();
       if (currentUser?._id) {
         await queryClient.invalidateQueries({
@@ -56,20 +47,6 @@ const CreateFreeTextPostPage = () => {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    const loadPost = async () => {
-      if (!postId) return;
-      try {
-        const post = await getPostById(postId);
-        setText(post?.content?.text || "");
-        setVisibility(post?.visibility || "public");
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    loadPost();
-  }, [postId]);
 
   return (
     <GeneralLayout>

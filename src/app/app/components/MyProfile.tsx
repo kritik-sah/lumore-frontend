@@ -100,21 +100,6 @@ const MyProfile = ({
   const isOwner = userId === user?._id;
 
   // const handleEditPost = (post: any) => {
-  const handleEditPost = (post: any) => {
-    if (!post?._id) return;
-    if (post?.type === "PROMPT") {
-      router.push(`/app/create-post/prompts?postId=${post._id}`);
-      return;
-    }
-    if (post?.type === "IMAGE") {
-      router.push(`/app/create-post/image?postId=${post._id}`);
-      return;
-    }
-    if (post?.type === "TEXT") {
-      router.push(`/app/create-post/free-text?postId=${post._id}`);
-      return;
-    }
-  };
 
   const handleDeletePost = async (post: any) => {
     if (!post?._id) return;
@@ -437,7 +422,6 @@ const MyProfile = ({
               post={post}
               isOwner={isOwner}
               isDeleting={deletingId === post._id}
-              onEdit={handleEditPost}
               onDelete={handleDeletePost}
             />
           ))}
@@ -468,13 +452,11 @@ const PostCard = ({
   post,
   isOwner,
   isDeleting,
-  onEdit,
   onDelete,
 }: {
   post: any;
   isOwner: boolean;
   isDeleting: boolean;
-  onEdit: (post: any) => void;
   onDelete: (post: any) => void;
 }) => {
   return (
@@ -487,8 +469,6 @@ const PostCard = ({
                 <Icon name="HiMiniEllipsisVertical" className="text-xl" />
               </MenubarTrigger>
               <MenubarContent align="end">
-                <MenubarItem onClick={() => onEdit(post)}>Edit</MenubarItem>
-                <MenubarSeparator />
                 <MenubarItem
                   className="!text-red-500 focus:text-red-500"
                   onClick={() => onDelete(post)}
