@@ -51,6 +51,11 @@ interface User {
     institutions: string[];
     personalityTypePreference: string[];
     dietPreference: string[];
+    heightRange: number[];
+    religionPreference: string[];
+    drinkingPreference: string[];
+    smokingPreference: string[];
+    petPreference: string[];
     locationPreferences: {
       homeTown: string[];
       currentLocation: string[];

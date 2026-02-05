@@ -28,7 +28,7 @@ import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import React, { ChangeEvent, useCallback, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
@@ -253,6 +253,35 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     return <div>Error loading user data</div>;
   }
 
+  const { completionPercent, missingCount } = useMemo(() => {
+    const fields = [
+      user?.profilePicture,
+      user?.bio,
+      user?.gender,
+      user?.dob,
+      user?.interests?.length ? user?.interests : null,
+      user?.height,
+      user?.diet,
+      user?.zodiacSign,
+      user?.lifestyle?.drinking,
+      user?.lifestyle?.smoking,
+      user?.lifestyle?.pets,
+      user?.work,
+      user?.institution,
+      user?.languages?.length ? user?.languages : null,
+      user?.personalityType,
+      user?.religion,
+      user?.hometown,
+    ];
+    const filledCount = fields.filter((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== "";
+    }).length;
+    const total = fields.length;
+    const percent = total ? Math.round((filledCount / total) * 100) : 0;
+    return { completionPercent: percent, missingCount: total - filledCount };
+  }, [user]);
+
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto pb-10">
@@ -349,162 +378,189 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           </div>
         ) : null}
 
-        <Field
-          label="Username"
-          field="username"
-          value={user.username}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Nickname"
-          field="nickname"
-          value={user.nickname}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Real Name"
-          field="realName"
-          value={user.realName}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Bio"
-          field="bio"
-          value={user.bio}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Gender"
-          field="gender"
-          value={user.gender}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Birthday"
-          field="dob"
-          value={user.dob ? new Date(user.dob).toLocaleDateString() : "Not set"}
-          onEdit={handleEditField}
-        />
-        <Field
-          label="Interests"
-          field="interests"
-          value={user.interests.join(", ")}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.interests}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Blood Group"
-          field="bloodGroup"
-          value={user.bloodGroup}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.bloodGroup}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Height"
-          field="height"
-          value={user.height ? `${user.height}cm` : "Not set"}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.height}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Diet"
-          field="diet"
-          value={user.diet}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.diet}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Zodiac Sign"
-          field="zodiacSign"
-          value={user.zodiacSign}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.zodiacSign}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Lifestyle"
-          field="lifestyle"
-          value={
-            <>
-              {user.lifestyle?.drinking ? (
-                <>
+        <div className="mt-4 rounded-2xl border border-ui-shade/10 bg-white p-4">
+          <p className="text-sm text-ui-shade/70">Profile completeness</p>
+          <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
+            <div
+              className="h-2 rounded-full bg-ui-highlight"
+              style={{ width: `${completionPercent}%` }}
+            />
+          </div>
+          <p className="text-xs text-ui-shade mt-2">
+            {completionPercent}% complete
+            {missingCount > 0 ? ` · ${missingCount} left` : ""}
+          </p>
+        </div>
+
+        <Section title="Basics" description="Help people recognize you quickly.">
+          <Field
+            label="Username"
+            field="username"
+            value={user.username}
+            onEdit={handleEditField}
+          />
+          <Field
+            label="Nickname"
+            field="nickname"
+            value={user.nickname}
+            onEdit={handleEditField}
+          />
+          <Field
+            label="Real Name"
+            field="realName"
+            value={user.realName}
+            onEdit={handleEditField}
+          />
+        </Section>
+
+        <Section title="About" description="Share a little about yourself.">
+          <Field
+            label="Bio"
+            field="bio"
+            value={user.bio}
+            onEdit={handleEditField}
+          />
+          <Field
+            label="Interests"
+            field="interests"
+            value={user.interests.join(", ")}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.interests}
+            onVisibilityChange={handleVisibilityChange}
+          />
+        </Section>
+
+        <Section
+          title="Details"
+          description="Personal details you can control visibility for."
+        >
+          <Field
+            label="Gender"
+            field="gender"
+            value={user.gender}
+            onEdit={handleEditField}
+          />
+          <Field
+            label="Birthday"
+            field="dob"
+            value={
+              user.dob ? new Date(user.dob).toLocaleDateString() : "Not set"
+            }
+            onEdit={handleEditField}
+          />
+          <Field
+            label="Blood Group"
+            field="bloodGroup"
+            value={user.bloodGroup}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.bloodGroup}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Height"
+            field="height"
+            value={user.height ? `${user.height}cm` : "Not set"}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.height}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Religion"
+            field="religion"
+            value={user.religion}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.religion}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Marital Status"
+            field="maritalStatus"
+            value={user.maritalStatus}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.maritalStatus}
+            onVisibilityChange={handleVisibilityChange}
+          />
+        </Section>
+
+        <Section title="Lifestyle" description="Lifestyle helps build matches.">
+          <Field
+            label="Diet"
+            field="diet"
+            value={user.diet}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.diet}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Zodiac Sign"
+            field="zodiacSign"
+            value={user.zodiacSign}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.zodiacSign}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Lifestyle"
+            field="lifestyle"
+            value={
+              <>
+                {user.lifestyle?.drinking ? (
                   <p className="flex items-center gap-2">
                     <Icon name="FaGlassMartiniAlt" /> {user.lifestyle.drinking}
                   </p>
-                </>
-              ) : null}
-              {user.lifestyle?.smoking ? (
-                <>
+                ) : null}
+                {user.lifestyle?.smoking ? (
                   <p className="flex items-center gap-2">
                     <Icon name="FaSmoking" /> {user.lifestyle.smoking}
                   </p>
-                </>
-              ) : null}
-              {user.lifestyle?.pets ? (
-                <>
+                ) : null}
+                {user.lifestyle?.pets ? (
                   <p className="flex items-center gap-2">
                     <Icon name="FaPaw" /> {user.lifestyle.pets}
                   </p>
-                </>
-              ) : null}
-            </>
-          }
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.lifestyle}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Work"
-          field="work"
-          value={user.work}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.work}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="University"
-          field="institution"
-          value={user.institution}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.institution}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Maritial Status"
-          field="maritalStatus"
-          value={user.maritalStatus}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.maritalStatus}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Languages"
-          field="languages"
-          value={languageDisplay(user.languages)?.join(", ")}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.languages}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Personality Type"
-          field="personalityType"
-          value={user.personalityType}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.personalityType}
-          onVisibilityChange={handleVisibilityChange}
-        />
-        <Field
-          label="Religion"
-          field="religion"
-          value={user.religion}
-          onEdit={handleEditField}
-          visibility={user.fieldVisibility?.religion}
-          onVisibilityChange={handleVisibilityChange}
-        />
+                ) : null}
+              </>
+            }
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.lifestyle}
+            onVisibilityChange={handleVisibilityChange}
+          />
+        </Section>
+
+        <Section title="Background" description="Education and work.">
+          <Field
+            label="Work"
+            field="work"
+            value={user.work}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.work}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="University"
+            field="institution"
+            value={user.institution}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.institution}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Languages"
+            field="languages"
+            value={languageDisplay(user.languages)?.join(", ")}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.languages}
+            onVisibilityChange={handleVisibilityChange}
+          />
+          <Field
+            label="Personality Type"
+            field="personalityType"
+            value={user.personalityType}
+            onEdit={handleEditField}
+            visibility={user.fieldVisibility?.personalityType}
+            onVisibilityChange={handleVisibilityChange}
+          />
+        </Section>
       </div>
     </div>
   );
@@ -845,5 +901,21 @@ const Field = ({
         />
       )}
     </div>
+  </div>
+);
+
+const Section = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) => (
+  <div className="mt-6">
+    <p className="text-xs uppercase text-ui-shade/70">{title}</p>
+    <p className="text-xs text-ui-shade/60 mt-1">{description}</p>
+    {children}
   </div>
 );

@@ -17,6 +17,11 @@ export interface UserPreferences {
   institutions: string[];
   personalityTypePreference: string[];
   dietPreference: string[];
+  heightRange: number[];
+  religionPreference: string[];
+  drinkingPreference: string[];
+  smokingPreference: string[];
+  petPreference: string[];
 }
 
 const fetchUserPrefrence = async (userId: string) => {

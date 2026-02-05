@@ -27,7 +27,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 
-const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
+const MyProfile = ({
+  user,
+  posts,
+  preferences,
+}: {
+  user: any;
+  posts: any;
+  preferences?: any;
+}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -68,9 +76,9 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
       icon: "MdOutlineFastfood",
       value: user.diet,
     },
-    user?.zodiac && {
+    user?.zodiacSign && {
       icon: "TbZodiacVirgo",
-      value: user.zodiac,
+      value: user.zodiacSign,
     },
     user?.lifestyle?.drinking && {
       icon: "FaGlassMartiniAlt",
@@ -80,9 +88,9 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
       icon: "FaSmoking",
       value: user.lifestyle.smoking,
     },
-    user?.lifestyle?.pet && {
+    user?.lifestyle?.pets && {
       icon: "FaPaw",
-      value: user.lifestyle.pet,
+      value: user.lifestyle.pets,
     },
     user?.bloodGroup && {
       icon: "MdOutlineBloodtype",
@@ -92,20 +100,21 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
   const isOwner = userId === user?._id;
 
   // const handleEditPost = (post: any) => {
-  //   if (!post?._id) return;
-  //   if (post?.type === "PROMPT") {
-  //     router.push(`/app/create-post/prompts?postId=${post._id}`);
-  //     return;
-  //   }
-  //   if (post?.type === "IMAGE") {
-  //     router.push(`/app/create-post/image?postId=${post._id}`);
-  //     return;
-  //   }
-  //   if (post?.type === "TEXT") {
-  //     router.push(`/app/create-post/free-text?postId=${post._id}`);
-  //     return;
-  //   }
-  // };
+  const handleEditPost = (post: any) => {
+    if (!post?._id) return;
+    if (post?.type === "PROMPT") {
+      router.push(`/app/create-post/prompts?postId=${post._id}`);
+      return;
+    }
+    if (post?.type === "IMAGE") {
+      router.push(`/app/create-post/image?postId=${post._id}`);
+      return;
+    }
+    if (post?.type === "TEXT") {
+      router.push(`/app/create-post/free-text?postId=${post._id}`);
+      return;
+    }
+  };
 
   const handleDeletePost = async (post: any) => {
     if (!post?._id) return;
@@ -126,6 +135,79 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
       setDeletingId(null);
     }
   };
+
+  const { profileCompletion, preferenceCompletion } = (() => {
+    const profileFields = [
+      user?.profilePicture,
+      user?.bio,
+      user?.gender,
+      user?.dob,
+      user?.interests?.length ? user?.interests : null,
+      user?.height,
+      user?.diet,
+      user?.zodiacSign,
+      user?.lifestyle?.drinking,
+      user?.lifestyle?.smoking,
+      user?.lifestyle?.pets,
+      user?.work,
+      user?.institution,
+      user?.languages?.length ? user?.languages : null,
+      user?.personalityType,
+      user?.religion,
+      user?.homeTown,
+    ];
+
+    const profileFilled = profileFields.filter((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== "";
+    }).length;
+
+    const profilePercent = profileFields.length
+      ? Math.round((profileFilled / profileFields.length) * 100)
+      : 0;
+
+    const preferenceFields = [
+      preferences?.interestedIn,
+      preferences?.ageRange?.length ? preferences.ageRange : null,
+      preferences?.distance,
+      preferences?.heightRange?.length ? preferences.heightRange : null,
+      preferences?.goal,
+      preferences?.relationshipType,
+      preferences?.interests?.length ? preferences.interests : null,
+      preferences?.languages?.length ? preferences.languages : null,
+      preferences?.zodiacPreference?.length
+        ? preferences.zodiacPreference
+        : null,
+      preferences?.personalityTypePreference?.length
+        ? preferences.personalityTypePreference
+        : null,
+      preferences?.dietPreference?.length ? preferences.dietPreference : null,
+      preferences?.religionPreference?.length
+        ? preferences.religionPreference
+        : null,
+      preferences?.drinkingPreference?.length
+        ? preferences.drinkingPreference
+        : null,
+      preferences?.smokingPreference?.length
+        ? preferences.smokingPreference
+        : null,
+      preferences?.petPreference?.length ? preferences.petPreference : null,
+    ];
+
+    const preferenceFilled = preferenceFields.filter((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== "";
+    }).length;
+
+    const preferencePercent = preferenceFields.length
+      ? Math.round((preferenceFilled / preferenceFields.length) * 100)
+      : 0;
+
+    return {
+      profileCompletion: profilePercent,
+      preferenceCompletion: preferencePercent,
+    };
+  })();
 
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
@@ -196,12 +278,49 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
           {user?.bio ? <p className="text-lg my-2">{user?.bio}</p> : null}
           <div className="my-3">
             {userId === user?._id ? (
-              <Link href="/app/profile/edit">
-                <Button variant={"outline"} className="w-full items-center">
-                  Edit Profile <Icon name="FaUserPen" />
-                </Button>
-              </Link>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Link href="/app/profile/edit">
+                  <Button variant={"outline"} className="w-full items-center">
+                    Edit Profile <Icon name="FaUserPen" />
+                  </Button>
+                </Link>
+                <Link href="/app/edit-preferences">
+                  <Button variant={"outline"} className="w-full items-center">
+                    Edit Preferences <Icon name="RiSettings3Line" />
+                  </Button>
+                </Link>
+              </div>
             ) : null}
+          </div>
+        </div>
+        <div className="border border-ui-shade/10 rounded-xl p-4 bg-white shadow-sm mb-3">
+          <p className="text-sm text-ui-shade/70">Profile health</p>
+          <p className="text-xs text-ui-shade/60 mt-1">
+            Stronger profiles get more matches.
+          </p>
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-sm text-ui-shade">
+              <span>Profile completion</span>
+              <span>{profileCompletion}%</span>
+            </div>
+            <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
+              <div
+                className="h-2 rounded-full bg-ui-highlight"
+                style={{ width: `${profileCompletion}%` }}
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-sm text-ui-shade">
+              <span>Preference completion</span>
+              <span>{preferenceCompletion}%</span>
+            </div>
+            <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
+              <div
+                className="h-2 rounded-full bg-ui-shade"
+                style={{ width: `${preferenceCompletion}%` }}
+              />
+            </div>
           </div>
         </div>
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl px-4 pb-0 shadow-sm">
@@ -318,7 +437,7 @@ const MyProfile = ({ user, posts }: { user: any; posts: any }) => {
               post={post}
               isOwner={isOwner}
               isDeleting={deletingId === post._id}
-              // onEdit={handleEditPost}
+              onEdit={handleEditPost}
               onDelete={handleDeletePost}
             />
           ))}
@@ -349,13 +468,13 @@ const PostCard = ({
   post,
   isOwner,
   isDeleting,
-  // onEdit,
+  onEdit,
   onDelete,
 }: {
   post: any;
   isOwner: boolean;
   isDeleting: boolean;
-  // onEdit: (post: any) => void;
+  onEdit: (post: any) => void;
   onDelete: (post: any) => void;
 }) => {
   return (
@@ -368,7 +487,7 @@ const PostCard = ({
                 <Icon name="HiMiniEllipsisVertical" className="text-xl" />
               </MenubarTrigger>
               <MenubarContent align="end">
-                {/* <MenubarItem onClick={() => onEdit(post)}>Edit</MenubarItem> */}
+                <MenubarItem onClick={() => onEdit(post)}>Edit</MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem
                   className="!text-red-500 focus:text-red-500"
