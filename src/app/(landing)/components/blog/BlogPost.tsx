@@ -37,14 +37,19 @@ const BlogPost = ({ post }: { post: SanityDocument }) => {
         >
           {new Date(post.publishedAt).toLocaleDateString()}
         </time>
-        {post.category.map((cat: any) => (
+        {post.category.slice(0, 2).map((cat: any) => (
           <span
             key={cat.slug.current}
-            className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-sm py-1 px-3 rounded-full"
+            className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-xs py-1 px-2 rounded-full"
           >
             {cat.title}
           </span>
         ))}
+        {post.category.length > 2 && (
+          <span className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-xs py-1 px-2 rounded-full">
+            +{post.category.length - 2}
+          </span>
+        )}
       </div>
     </article>
   );
