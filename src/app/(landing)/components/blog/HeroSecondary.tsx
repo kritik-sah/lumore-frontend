@@ -10,7 +10,7 @@ const HeroSecondary = ({ post }: { post: SanityDocument }) => {
       <div className="lg:max-w-[238px] w-full">
         <Link href={`/blog/${post.slug.current}`}>
           <img
-            className="w-full rounded-2xl aspect-[4/3] object-cover"
+            className="w-full rounded-2xl aspect-square object-cover"
             src={postImageUrl}
             alt={post.title}
           />
@@ -18,15 +18,22 @@ const HeroSecondary = ({ post }: { post: SanityDocument }) => {
       </div>
 
       <div className="lg:max-w-[272px] w-full">
-        {post.category.map((cat: any) => (
-          <span
-            key={cat.slug.current}
-            className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-sm py-1 px-3 rounded-full mb-4"
-          >
-            {cat.title}
-          </span>
-        ))}
-        <h3 className="font-semibold text-lg md:text-xl text-ui-shade mb-3 leading-tight">
+        <div className="flex flex-wrap gap-2">
+          {post.category.slice(0, 2).map((cat: any) => (
+            <span
+              key={cat.slug.current}
+              className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-xs py-1 px-2 rounded-full"
+            >
+              {cat.title}
+            </span>
+          ))}
+          {post.category.length > 2 && (
+            <span className="inline-flex text-ui-highlight bg-ui-highlight/[0.08] font-medium text-xs py-1 px-2 rounded-full">
+              +{post.category.length - 2}
+            </span>
+          )}
+        </div>
+        <h3 className="font-semibold text-lg md:text-xl text-ui-shade my-3 leading-tight">
           <Link href={`/blog/${post.slug.current}`}>{post.title}</Link>
         </h3>
         <time

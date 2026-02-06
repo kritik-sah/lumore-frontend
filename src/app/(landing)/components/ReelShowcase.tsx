@@ -50,7 +50,7 @@ const ReelShowcase = () => {
               </Button>
             </div>
           </div>
-          <span className="font-dmSans -tracking-[16px] leading-0 font-bold italic absolute -bottom-6 right-4 text-[220px] text-ui-light/40">
+          <span className="font-dmSans -tracking-[16px] leading-0 font-bold italic absolute bottom-16 right-4 text-[220px] text-ui-light/40">
             Lumore
           </span>
         </div>

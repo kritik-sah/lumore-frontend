@@ -28,13 +28,13 @@ const options = { next: { revalidate: 30 } };
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const { slug } = await params;
   const post = await client.fetch<SanityDocument>(
     POST_QUERY,
     { slug },
-    options
+    options,
   );
   if (!post) {
     return {
@@ -90,7 +90,7 @@ export default async function PostPage({
   const post = await client.fetch<SanityDocument>(
     POST_QUERY,
     await params,
-    options
+    options,
   );
 
   if (!post) {
@@ -138,7 +138,7 @@ export default async function PostPage({
 
       <nav className="text-sm text-ui-shade/70">
         <Link href="/blog" className="hover:underline">
-          \u2190 Back to posts
+          Back to posts
         </Link>
       </nav>
 
