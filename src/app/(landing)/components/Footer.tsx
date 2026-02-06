@@ -1,6 +1,5 @@
 "use client";
 import Icon from "@/components/icon";
-// components/Footer.tsx
 import { trackAnalytic } from "@/service/analytics";
 import Link from "next/link";
 
@@ -17,30 +16,14 @@ export default function Footer() {
               alt="lumore"
               className="h-16 w-28"
             />
-            <p className="mt-4 max-w-xs text-ui-shade/60">
+            <p className="mt-3 text-sm font-semibold text-ui-shade">
               Find Your Match, Your Way
+            </p>
+            <p className="mt-2 max-w-xs text-ui-shade/60">
+              A community-first way to meet new people without endless swiping.
             </p>
 
             <ul className="mt-8 flex gap-6">
-              {/* <li>
-                <a
-                  href="#"
-                  rel="noreferrer"
-                  target="_blank"
-                  className="text-ui-light/60 transition hover:opacity-75"
-                >
-                  <span className="sr-only">Facebook</span>
-
-                  <svg className="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                      fillRule="evenodd"
-                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </a>
-              </li> */}
-
               <li>
                 <a
                   href="https://www.instagram.com/0xlumore/"
@@ -100,41 +83,9 @@ export default function Footer() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-            <div className="hidden md:block">
-              {/* <p className="font-medium text-ui-light/80">Company</p>
+            <div className="hidden md:block"></div>
 
-              <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> About </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Meet the Team </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Accounts Review </a>
-                </li>
-              </ul> */}
-            </div>
-
-            <div className="hidden md:block">
-              {/* <p className="font-medium text-ui-light/80">Helpful Links</p>
-
-              <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Contact </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> FAQs </a>
-                </li>
-
-                <li>
-                  <a href="#" className="text-ui-light/60 transition hover:opacity-75"> Live Chat </a>
-                </li>
-              </ul> */}
-            </div>
+            <div className="hidden md:block"></div>
             <div>
               <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
                 Lumore
@@ -184,7 +135,7 @@ export default function Footer() {
       </div>
 
       <div className="text-center border-t border-ui-shade/10 pt-4 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4 mt-8">
-        <p>© {currentYear} Lumore.xyz All rights reserved.</p>
+        <p>\u00A9 {currentYear} Lumore.xyz All rights reserved.</p>
         <p>
           Made In India{" "}
           <img
@@ -194,9 +145,6 @@ export default function Footer() {
           />
         </p>
       </div>
-      {/* {isInstallable && (
-        <InstallPrompt deferredPrompt={deferredPrompt} onInstall={install} />
-      )} */}
     </footer>
   );
 }
