@@ -38,12 +38,11 @@ export function NavbarUI() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Navbar>
-      {/* Desktop Navigation */}
-      <NavBody>
+    <Navbar className="">
+      <NavBody className="px-6">
         <NavbarLogo />
         <NavItems items={navItems} />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <a
             href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
             target="_blank"
@@ -66,8 +65,7 @@ export function NavbarUI() {
         </div>
       </NavBody>
 
-      {/* Mobile Navigation */}
-      <MobileNav>
+      <MobileNav className="border border-ui-shade/10">
         <MobileNavHeader>
           <NavbarLogo />
           <MobileNavToggle

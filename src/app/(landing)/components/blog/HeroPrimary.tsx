@@ -6,10 +6,14 @@ import React from "react";
 const HeroPrimary = ({ post }: { post: SanityDocument }) => {
   const postImageUrl = imageUrl(post.featuredImage);
   return (
-    <div className="max-w-[1170px] w-full flex flex-col lg:flex-row lg:items-center gap-7.5 lg:gap-11 bg-white shadow-1 rounded-xl p-4 lg:p-2.5">
+    <article className="max-w-[1170px] w-full flex flex-col lg:flex-row lg:items-center gap-7.5 lg:gap-11 bg-white shadow-[10px_10px_0px_rgba(0,0,0,0.08)] rounded-2xl p-4 lg:p-3 border border-black/5">
       <div className="lg:max-w-[536px] w-full">
         <Link href={`/blog/${post.slug.current}`}>
-          <img className="w-full rounded-xl" src={postImageUrl} alt="hero" />
+          <img
+            className="w-full rounded-2xl aspect-[16/9] object-cover"
+            src={postImageUrl}
+            alt={post.title}
+          />
         </Link>
       </div>
 
@@ -23,11 +27,13 @@ const HeroPrimary = ({ post }: { post: SanityDocument }) => {
           </span>
         ))}
 
-        <h1 className="font-bold text-custom-4 xl:text-heading-4 text-dark mb-4">
+        <h2 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-ui-shade mb-4 leading-tight">
           <Link href={`/blog/${post.slug.current}`}>{post.title}</Link>
-        </h1>
-        <p className="max-w-[524px] line-clamp-2">{post.excerpt}</p>
-        <div className="flex items-center gap-2.5 mt-5">
+        </h2>
+        <p className="max-w-[524px] line-clamp-2 text-ui-shade/70">
+          {post.excerpt}
+        </p>
+        <div className="flex items-center gap-2.5 mt-5 text-ui-shade/70">
           {/* <a href="author.html" className="flex items-center gap-3">
             <div className="flex w-6 h-6 rounded-full overflow-hidden">
               <img src="images/user-01.png" alt="user" />
@@ -37,12 +43,15 @@ const HeroPrimary = ({ post }: { post: SanityDocument }) => {
 
           <span className="flex w-[3px] h-[3px] rounded-full bg-dark-2"></span> */}
 
-          <p className="text-sm">
+          <time
+            className="text-sm"
+            dateTime={new Date(post.publishedAt).toISOString()}
+          >
             {new Date(post.publishedAt).toLocaleDateString()}
-          </p>
+          </time>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

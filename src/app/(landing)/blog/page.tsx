@@ -4,6 +4,7 @@ import { type SanityDocument } from "next-sanity";
 import BlogHero from "../components/blog/BlogHero";
 import BlogPost from "../components/blog/BlogPost";
 import LoadMorePosts from "../components/blog/LoadMorePosts";
+import type { Metadata } from "next";
 
 const POSTS_QUERY = `*[
   _type == "blog"
@@ -18,17 +19,56 @@ const POSTS_QUERY = `*[
 
 const options = { next: { revalidate: 30 } };
 
+export const metadata: Metadata = {
+  title: "Lumore Blog | Real Connections, Real Stories",
+  description:
+    "Explore Lumore’s blog for thoughtful pieces on meaningful connection, community events, and social discovery—no endless swiping.",
+  alternates: {
+    canonical: "https://www.lumore.xyz/blog",
+  },
+  openGraph: {
+    title: "Lumore Blog | Real Connections, Real Stories",
+    description:
+      "Explore Lumore’s blog for thoughtful pieces on meaningful connection, community events, and social discovery—no endless swiping.",
+    url: "https://www.lumore.xyz/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lumore Blog | Real Connections, Real Stories",
+    description:
+      "Explore Lumore’s blog for thoughtful pieces on meaningful connection, community events, and social discovery—no endless swiping.",
+  },
+};
+
 export default async function IndexPage() {
   const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
 
   return (
-    <main className="container mx-auto min-h-screen p-1 lg:p-6">
+    <main className="container mx-auto min-h-screen px-4 py-6 lg:py-10">
       {posts?.length ? (
         <>
+          <header className="max-w-[1170px] mx-auto mb-8">
+            <p className="text-xs uppercase tracking-wide text-ui-shade/70">
+              Lumore Blog
+            </p>
+            <h1 className="text-3xl md:text-5xl font-bold text-ui-shade mt-2">
+              Real connections. Real stories.
+            </h1>
+            <p className="mt-3 max-w-2xl text-base md:text-lg text-ui-shade/70">
+              Updates, insights, and community moments from Lumore—designed for
+              people who want more than swipes.
+            </p>
+          </header>
           <BlogHero posts={posts} />
-          <section className="pt-20 lg:pt-25 pb-15">
+          <section className="pt-16 lg:pt-20 pb-12" aria-labelledby="all-posts">
             <div className="max-w-[1170px] mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-11 gap-x-7.5">
+              <div className="flex items-center justify-between mb-6">
+                <h2 id="all-posts" className="text-2xl font-bold text-ui-shade">
+                  All posts
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-7.5">
                 {posts.slice(3).map((post) => (
                   <BlogPost key={post?._id} post={post} />
                 ))}
