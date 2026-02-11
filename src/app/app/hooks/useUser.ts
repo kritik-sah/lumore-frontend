@@ -1,6 +1,5 @@
 import { apiClient } from "@/service/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 
 interface User {
   _id: string;

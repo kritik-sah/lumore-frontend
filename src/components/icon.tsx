@@ -109,7 +109,11 @@ import {
   MdOutlineWorkOutline,
   MdVerified,
 } from "react-icons/md";
-import { RiPinDistanceLine, RiRobot2Line } from "react-icons/ri";
+import {
+  RiPinDistanceLine,
+  RiRobot2Line,
+  RiSettings3Line,
+} from "react-icons/ri";
 import {
   TbLibraryPlus,
   TbZodiacAquarius,
@@ -248,6 +252,7 @@ const iconComponents: Record<string, IconType> = {
   GoUnmute,
   LuLoaderCircle,
   TbLibraryPlus,
+  RiSettings3Line,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

@@ -29,26 +29,19 @@ import { extractFullAddressParts } from "../context/LocationProvider";
 
 const MyProfile = ({
   user,
-  posts,
+  postsData,
   preferences,
 }: {
   user: any;
-  posts: any;
+  postsData: any;
   preferences?: any;
 }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  let userId = "";
-  try {
-    const user = getUser();
-    if (user) {
-      userId = user?._id || "";
-    }
-  } catch (error) {
-    console.error("[ChatScreen] Error parsing user cookie:", error);
-  }
-
+  let userId = getUser()._id || "";
+  const { posts } = postsData;
+  console.log("posts", posts);
   const traits = [
     user?.dob && {
       icon: "HiOutlineCake",
@@ -97,6 +90,7 @@ const MyProfile = ({
       value: user.bloodGroup,
     },
   ].filter(Boolean); // remove falsy entries
+
   const isOwner = userId === user?._id;
 
   // const handleEditPost = (post: any) => {
@@ -278,36 +272,39 @@ const MyProfile = ({
             ) : null}
           </div>
         </div>
-        <div className="border border-ui-shade/10 rounded-xl p-4 bg-white shadow-sm mb-3">
-          <p className="text-sm text-ui-shade/70">Profile health</p>
-          <p className="text-xs text-ui-shade/60 mt-1">
-            Stronger profiles get more matches.
-          </p>
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-ui-shade">
-              <span>Profile completion</span>
-              <span>{profileCompletion}%</span>
+        {userId === user?._id ? (
+          <div className="border border-ui-shade/10 rounded-xl p-4 bg-white shadow-sm mb-3">
+            <p className="text-sm text-ui-shade/70">Profile health</p>
+            <p className="text-xs text-ui-shade/60 mt-1">
+              Stronger profiles get more matches.
+            </p>
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-sm text-ui-shade">
+                <span>Profile completion</span>
+                <span>{profileCompletion}%</span>
+              </div>
+              <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
+                <div
+                  className="h-2 rounded-full bg-ui-highlight"
+                  style={{ width: `${profileCompletion}%` }}
+                />
+              </div>
             </div>
-            <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
-              <div
-                className="h-2 rounded-full bg-ui-highlight"
-                style={{ width: `${profileCompletion}%` }}
-              />
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-sm text-ui-shade">
+                <span>Preference completion</span>
+                <span>{preferenceCompletion}%</span>
+              </div>
+              <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
+                <div
+                  className="h-2 rounded-full bg-ui-shade"
+                  style={{ width: `${preferenceCompletion}%` }}
+                />
+              </div>
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-ui-shade">
-              <span>Preference completion</span>
-              <span>{preferenceCompletion}%</span>
-            </div>
-            <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
-              <div
-                className="h-2 rounded-full bg-ui-shade"
-                style={{ width: `${preferenceCompletion}%` }}
-              />
-            </div>
-          </div>
-        </div>
+        ) : null}
+
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl px-4 pb-0 shadow-sm">
           <div className="w-full py-2 border-b border-ui-shade/10 overflow-x-scroll">
             <div className="flex items-center justify-start gap-3 w-full ps-2">
@@ -416,15 +413,16 @@ const MyProfile = ({
           ) : null}
         </div>
         <div className="flex flex-col gap-2 mt-3">
-          {posts?.map((post: any) => (
-            <PostCard
-              key={post._id}
-              post={post}
-              isOwner={isOwner}
-              isDeleting={deletingId === post._id}
-              onDelete={handleDeletePost}
-            />
-          ))}
+          {posts?.length &&
+            posts?.map((post: any) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                isOwner={isOwner}
+                isDeleting={deletingId === post._id}
+                onDelete={handleDeletePost}
+              />
+            ))}
         </div>
       </div>
     </div>

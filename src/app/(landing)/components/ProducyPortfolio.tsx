@@ -93,8 +93,8 @@ function ProductPortfolio() {
           </h2>
           <p className="mt-4 max-w-[30rem] text-left text-base/6">
             We&apos;re building Lumore with our community. Early members get
-            invites to private events \u2014 board game nights, rooftop house
-            parties, mystery meetups, and more.
+            invites to private events board game nights, rooftop house parties,
+            mystery meetups, and more.
           </p>
         </div>
         <img
