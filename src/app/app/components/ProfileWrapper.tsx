@@ -22,9 +22,7 @@ const ProfileWrapper = ({ userId }: ProfileWrapperProps) => {
     return <div>Error loading user data</div>;
   }
 
-  return (
-    <MyProfile user={user} postsData={posts} preferences={userPrefrence} />
-  );
+  return <MyProfile user={user} posts={posts} preferences={userPrefrence} />;
 };
 
 export default ProfileWrapper;
