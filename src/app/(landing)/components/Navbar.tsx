@@ -65,7 +65,7 @@ export function NavbarUI() {
         </div>
       </NavBody>
 
-      <MobileNav className="border border-ui-shade/10">
+      <MobileNav className="">
         <MobileNavHeader>
           <NavbarLogo />
           <MobileNavToggle
