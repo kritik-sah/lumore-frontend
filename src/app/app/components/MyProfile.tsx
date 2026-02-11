@@ -23,25 +23,22 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 
 const MyProfile = ({
   user,
-  postsData,
+  posts,
   preferences,
 }: {
   user: any;
-  postsData: any;
+  posts: any;
   preferences?: any;
 }) => {
-  // const router = useRouter();
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   let userId = getUser()._id || "";
-  const { posts } = postsData;
-  console.log("posts", posts);
+
   const traits = [
     user?.dob && {
       icon: "HiOutlineCake",
@@ -306,8 +303,8 @@ const MyProfile = ({
         ) : null}
 
         <div className="bg-ui-background/10 border border-ui-shade/10 rounded-xl px-4 pb-0 shadow-sm">
-          <div className="w-full py-2 border-b border-ui-shade/10 overflow-x-scroll">
-            <div className="flex items-center justify-start gap-3 w-full ps-2">
+          <div className="w-full py-2 border-b border-ui-shade/10">
+            <div className="flex items-center justify-start gap-2 w-full flex-wrap">
               {traits.map((trait, index) => (
                 <InfoItem key={index} icon={trait.icon} value={trait.value} />
               ))}
@@ -438,8 +435,8 @@ const InfoItem = ({
   icon: string;
   value: string | number;
 }) => (
-  <div className="p-2 border-r border-dashed border-ui-shade/10 flex items-center justify-center gap-1 flex-shrink-0">
-    <div className="h-8 w-8 flex items-center justify-center flex-shrink-0 aspect-square">
+  <div className="px-6 py-2 rounded-full bg-ui-highlight/5 border border-ui-shade/5 flex items-center justify-center gap-1 flex-shrink-0">
+    <div className="flex items-center justify-center flex-shrink-0 aspect-square">
       <Icon name={icon} className="text-xl flex-shrink-0" />
     </div>
     <p className="w-full flex-shrink-0 text-sm">{value}</p>
