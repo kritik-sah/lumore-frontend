@@ -410,16 +410,17 @@ const MyProfile = ({
           ) : null}
         </div>
         <div className="flex flex-col gap-2 mt-3">
-          {posts?.length &&
-            posts?.map((post: any) => (
-              <PostCard
-                key={post._id}
-                post={post}
-                isOwner={isOwner}
-                isDeleting={deletingId === post._id}
-                onDelete={handleDeletePost}
-              />
-            ))}
+          {posts?.length
+            ? posts?.map((post: any) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  isOwner={isOwner}
+                  isDeleting={deletingId === post._id}
+                  onDelete={handleDeletePost}
+                />
+              ))
+            : null}
         </div>
       </div>
     </div>

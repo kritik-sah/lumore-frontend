@@ -15,14 +15,11 @@ export const languageOptions = allLanguages.map(
 export const genderOptions = [
   { label: "Woman", value: "woman" },
   { label: "Man", value: "man" },
-  { label: "Non-binary / Gender Diverse", value: "non-binary" },
-  { label: "Prefer Not to Say", value: "prefer-not-to-say" },
 ];
 
 export const interestedInOptions = [
-  { label: "Women", value: "woman" },
-  { label: "Men", value: "man" },
-  { label: "Everyone", value: "everyone" },
+  { label: "woman", value: "woman" },
+  { label: "Man", value: "man" },
 ];
 
 export const goalOptions = [
