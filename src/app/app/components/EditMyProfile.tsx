@@ -28,7 +28,13 @@ import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Cropper from "react-easy-crop";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
@@ -189,7 +195,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
       0,
       0,
       pixelCrop.width,
-      pixelCrop.height
+      pixelCrop.height,
     );
 
     return new Promise<Blob>((resolve, reject) => {
@@ -199,7 +205,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           resolve(blob);
         },
         "image/jpeg",
-        0.92
+        0.92,
       );
     });
   };
@@ -225,7 +231,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
       const croppedFile = new File(
         [croppedBlob],
         selectedFile?.name || "profile.jpg",
-        { type: croppedBlob.type || "image/jpeg" }
+        { type: croppedBlob.type || "image/jpeg" },
       );
 
       const localPreview = URL.createObjectURL(croppedBlob);
@@ -238,20 +244,12 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     } catch (error) {
       console.error(
         "Upload error:",
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
     } finally {
       setIsUploading(false);
     }
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div>Error loading user data</div>;
-  }
 
   const { completionPercent, missingCount } = useMemo(() => {
     const fields = [
@@ -281,6 +279,14 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
     const percent = total ? Math.round((filledCount / total) * 100) : 0;
     return { completionPercent: percent, missingCount: total - filledCount };
   }, [user]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>Error loading user data</div>;
+  }
 
   return (
     <div className="bg-ui-background/10 p-4 h-full overflow-y-auto">
@@ -392,7 +398,10 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           </p>
         </div>
 
-        <Section title="Basics" description="Help people recognize you quickly.">
+        <Section
+          title="Basics"
+          description="Help people recognize you quickly."
+        >
           <Field
             label="Username"
             field="username"

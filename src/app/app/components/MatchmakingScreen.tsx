@@ -36,7 +36,7 @@ const SearchScreen = () => {
     activeUsers: number;
     isMatching: number;
     inactiveUsers: number;
-    genderDistribution: { women: number; men: number; others: number };
+    genderDistribution: { woman: number; man: number; others: number };
   }
   const [appStatus, setappStatus] = useState<APP_STATUS | null>(null);
 

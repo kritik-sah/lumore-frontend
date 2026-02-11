@@ -10,7 +10,7 @@ export default function CTA() {
     activeUsers: number;
     isMatching: number;
     inactiveUsers: number;
-    genderDistribution: { women: number; men: number; others: number };
+    genderDistribution: { woman: number; man: number; others: number };
   }
   const [appStatus, setappStatus] = useState<APP_STATUS | null>(null);
   useEffect(() => {
@@ -76,19 +76,19 @@ export default function CTA() {
           </div>
           <div className="rounded-xl border border-ui-shade/10 bg-white p-4 shadow-[0_12px_30px_rgba(0,0,0,0.06)]">
             <p className="text-3xl">
-              {formatNumber(appStatus?.genderDistribution?.women || 0)}
+              {formatNumber(appStatus?.genderDistribution?.woman || 0)}
             </p>
-            <h4 className="text-lg font-medium">Women</h4>
+            <h4 className="text-lg font-medium">woman</h4>
             <p className="text-sm text-gray-600">Female community members</p>
           </div>
           <div className="rounded-xl border border-ui-shade/10 bg-white p-4 shadow-[0_12px_30px_rgba(0,0,0,0.06)]">
             <p className="text-3xl">
               {formatNumber(
-                (appStatus?.genderDistribution?.men || 0) +
+                (appStatus?.genderDistribution?.man || 0) +
                   (appStatus?.genderDistribution?.others || 0),
               )}
             </p>
-            <h4 className="text-lg font-medium">Men</h4>
+            <h4 className="text-lg font-medium">Man</h4>
             <p className="text-sm text-gray-600">Male community members</p>
           </div>
         </div>
