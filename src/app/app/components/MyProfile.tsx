@@ -293,9 +293,16 @@ const MyProfile = ({
                     variant={"default"}
                     className="w-full items-center sm:col-span-2"
                     onClick={handleStartVerification}
-                    disabled={startingVerification}
+                    disabled={
+                      startingVerification ||
+                      user?.verificationStatus === "pending"
+                    }
                   >
-                    {startingVerification ? "Redirecting..." : "Verify myself"}{" "}
+                    {user?.verificationStatus === "pending"
+                      ? "Pending verifiction"
+                      : startingVerification
+                        ? "Redirecting..."
+                        : "Verify myself"}{" "}
                     <Icon name="MdOutlineVerified" />
                   </Button>
                 ) : null}
