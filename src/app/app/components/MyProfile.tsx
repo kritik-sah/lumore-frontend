@@ -7,11 +7,10 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator";
-import { deletePost } from "@/lib/apis";
+import { deletePost, startDiditVerification } from "@/lib/apis";
 import { getUser } from "@/service/storage";
 import getLastActive from "@/utils/getLastActive";
 import {
@@ -37,6 +36,7 @@ const MyProfile = ({
 }) => {
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [startingVerification, setStartingVerification] = useState(false);
   let userId = getUser()._id || "";
 
   const traits = [
@@ -109,6 +109,29 @@ const MyProfile = ({
       console.error(error);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleStartVerification = async () => {
+    try {
+      setStartingVerification(true);
+      const response = await startDiditVerification();
+
+      if (response?.verificationUrl) {
+        window.location.assign(response.verificationUrl);
+        return;
+      }
+
+      console.error("Verification link was not returned. Please try again.");
+    } catch (error: any) {
+      console.error(error);
+      const message =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        "Unable to start verification right now.";
+      console.error(message);
+    } finally {
+      setStartingVerification(false);
     }
   };
 
@@ -253,7 +276,7 @@ const MyProfile = ({
           </div>
           {user?.bio ? <p className="text-lg my-2">{user?.bio}</p> : null}
           <div className="my-3">
-            {userId === user?._id ? (
+            {isOwner ? (
               <div className="grid gap-2 sm:grid-cols-2">
                 <Link href="/app/profile/edit">
                   <Button variant={"outline"} className="w-full items-center">
@@ -265,6 +288,17 @@ const MyProfile = ({
                     Edit Preferences <Icon name="RiSettings3Line" />
                   </Button>
                 </Link>
+                {!user?.isVerified ? (
+                  <Button
+                    variant={"default"}
+                    className="w-full items-center sm:col-span-2"
+                    onClick={handleStartVerification}
+                    disabled={startingVerification}
+                  >
+                    {startingVerification ? "Redirecting..." : "Verify myself"}{" "}
+                    <Icon name="MdOutlineVerified" />
+                  </Button>
+                ) : null}
               </div>
             ) : null}
           </div>
