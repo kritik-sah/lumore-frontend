@@ -80,6 +80,11 @@ export const updateUserPreferences = async (data: any) => {
   return response.data;
 };
 
+export const startDiditVerification = async () => {
+  const response = await apiClient.post("/didit/create-verification", {});
+  return response.data;
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                   Slots                                    */
 /* -------------------------------------------------------------------------- */
