@@ -1,5 +1,6 @@
 "use client";
 import { createSlot, fetchRoomData, updateSlot } from "@/lib/apis";
+import { ChatRoomLoader } from "@/components/page-loaders";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +12,6 @@ import { useUser } from "../hooks/useUser";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
 import { ChatMessages } from "./chat/ChatMessages";
-import LumoreSplash from "./LumoreSplash";
 
 export interface Message {
   sender: string;
@@ -146,7 +146,7 @@ const ChatScreen = () => {
     }
   };
 
-  if (!matchedUser || isLoading) return <LumoreSplash />;
+  if (!matchedUser || isLoading) return <ChatRoomLoader />;
 
   return (
     <div className="flex flex-col w-full h-full py-2">

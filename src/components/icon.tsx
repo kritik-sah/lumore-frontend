@@ -77,6 +77,7 @@ import {
   HiOutlineLockOpen,
   HiOutlinePlusCircle,
   HiOutlinePuzzlePiece,
+  HiOutlineSparkles,
   HiOutlineUser,
 } from "react-icons/hi2";
 import { ImSpinner6 } from "react-icons/im";
@@ -84,6 +85,7 @@ import {
   IoChatbubbleOutline,
   IoChevronBackOutline,
   IoCompassOutline,
+  IoGameControllerOutline,
   IoMagnet,
   IoOptionsOutline,
   IoPaperPlane,
@@ -253,6 +255,8 @@ const iconComponents: Record<string, IconType> = {
   LuLoaderCircle,
   TbLibraryPlus,
   RiSettings3Line,
+  IoGameControllerOutline,
+  HiOutlineSparkles,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

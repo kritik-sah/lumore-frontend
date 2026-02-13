@@ -26,6 +26,7 @@ import {
 } from "@/lib/options";
 import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
+import { ProfilePageLoader } from "@/components/page-loaders";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
 import React, {
@@ -281,7 +282,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   }, [user]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <ProfilePageLoader />;
   }
 
   if (!user) {

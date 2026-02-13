@@ -255,6 +255,58 @@ export const deletePost = async (postId: string) => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                               This Or That                                 */
+/* -------------------------------------------------------------------------- */
+export const fetchThisOrThatQuestions = async (limit = 20) => {
+  const response = await apiClient.get(
+    `/games/this-or-that/questions?limit=${limit}`,
+  );
+  return response.data;
+};
+
+export const fetchUserThisOrThatAnswers = async (params: {
+  userId: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const { userId, page = 1, limit = 10 } = params;
+  const response = await apiClient.get(
+    `/games/this-or-that/answers/${userId}?page=${page}&limit=${limit}`,
+  );
+  return response.data;
+};
+
+export const submitThisOrThatAnswer = async (params: {
+  questionId: string;
+  selection: "left" | "right";
+}) => {
+  const response = await apiClient.post(`/games/this-or-that/answers`, params);
+  return response.data;
+};
+
+export const submitThisOrThatQuestion = async (payload: {
+  leftOption: string;
+  leftImage: File;
+  rightOption: string;
+  rightImage: File;
+  category?: string;
+}) => {
+  const formData = new FormData();
+  formData.append("leftOption", payload.leftOption);
+  formData.append("rightOption", payload.rightOption);
+  formData.append("leftImage", payload.leftImage);
+  formData.append("rightImage", payload.rightImage);
+  if (payload.category) {
+    formData.append("category", payload.category);
+  }
+
+  const response = await apiClient.post(`/games/this-or-that/questions`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+/* -------------------------------------------------------------------------- */
 /*                                 Moderation                                 */
 /* -------------------------------------------------------------------------- */
 export const submitChatFeedback = async (
