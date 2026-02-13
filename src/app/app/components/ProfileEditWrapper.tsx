@@ -1,4 +1,5 @@
 "use client";
+import { ProfilePageLoader } from "@/components/page-loaders";
 import React from "react";
 import { useUser } from "../hooks/useUser";
 import EditMyProfile from "./EditMyProfile";
@@ -11,7 +12,7 @@ const ProfileEditWrapper = ({ userId }: ProfileEditWrapperProps) => {
   const { user, isLoading } = useUser(userId);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <ProfilePageLoader />;
   }
 
   if (!user) {

@@ -1,4 +1,5 @@
 "use client";
+import { ProfilePageLoader } from "@/components/page-loaders";
 import React from "react";
 import { useUser } from "../hooks/useUser";
 import { useUserPosts } from "../hooks/useUserPosts";
@@ -14,8 +15,8 @@ const ProfileWrapper = ({ userId }: ProfileWrapperProps) => {
   const { posts, isLoading: isPostsLoading } = useUserPosts(userId);
   const { userPrefrence } = useUserPrefrence(userId);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoading || isPostsLoading) {
+    return <ProfilePageLoader />;
   }
 
   if (!user) {

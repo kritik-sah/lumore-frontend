@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { updateUserPreferences } from "@/lib/apis";
 import allLanguages from "@/lib/languages.json";
+import { SettingsPageLoader } from "@/components/page-loaders";
 import {
   drinkingOptions,
   dietOptions,
@@ -107,10 +108,6 @@ const EditPreferences = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const { completionPercent, missingCount } = useMemo(() => {
     if (!preferences) return { completionPercent: 0, missingCount: 0 };
     const fields = [
@@ -148,6 +145,10 @@ const EditPreferences = () => {
     const percent = total ? Math.round((filledCount / total) * 100) : 0;
     return { completionPercent: percent, missingCount: total - filledCount };
   }, [preferences]);
+
+  if (isLoading) {
+    return <SettingsPageLoader />;
+  }
 
   return (
     <>
