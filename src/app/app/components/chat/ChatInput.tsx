@@ -47,7 +47,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <Button
           size={"icon"}
           onClick={onSend}
-          disabled={!isConnected || !isActive || value.trim() === ""}
+          disabled={!isConnected || !isActive}
           className="border-0 aspect-square rounded-full"
         >
           <Icon name="IoPaperPlane" />

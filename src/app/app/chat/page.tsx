@@ -1,5 +1,6 @@
 "use client";
 import Icon from "@/components/icon";
+import { ChatInboxLoader } from "@/components/page-loaders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchIbox, fetchUserSlots } from "@/lib/apis";
@@ -86,9 +87,7 @@ const ChatInbox = () => {
 
 const Inbox = ({ user, rooms, isLoading, error }: any) => {
   if (isLoading) {
-    return (
-      <p className=" text-center mb-4 text-ui-shade">Fetching your chats...</p>
-    );
+    return <ChatInboxLoader />;
   }
 
   if (error) {
@@ -122,6 +121,18 @@ export default ChatInbox;
 
 const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
   const { user, isLoading } = useUser(matchedUser?._id ?? "");
+  if (isLoading) {
+    return (
+      <li className="flex items-center space-x-4 p-2 border-b border-ui-shade/10">
+        <div className="h-10 w-10 rounded-full bg-ui-shade/10 animate-pulse" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-32 bg-ui-shade/10 rounded animate-pulse" />
+          <div className="h-3 w-20 bg-ui-shade/10 rounded animate-pulse" />
+        </div>
+      </li>
+    );
+  }
+
   return (
     <li key={room._id}>
       <Link

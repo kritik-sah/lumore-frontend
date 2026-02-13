@@ -2,12 +2,6 @@ import Icon from "@/components/icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import {
   Menubar,
   MenubarContent,
   MenubarItem,
@@ -15,6 +9,12 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { reportChatUser, submitChatFeedback } from "@/lib/apis";
 import { calculateAge } from "@/utils/helpers";
 import Link from "next/link";
@@ -42,11 +42,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const router = useRouter();
 
   const [isUnlocked, setisUnlocked] = useState(
-    user?.isViewerUnlockedUser || false
+    user?.isViewerUnlockedUser || false,
   );
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sheetMode, setSheetMode] = useState<"menu" | "feedback" | "report">(
-    "menu"
+    "menu",
   );
   const [feedbackText, setFeedbackText] = useState("");
   const [reportText, setReportText] = useState("");
@@ -122,7 +122,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         roomId,
         reportCategory,
         "report_from_chat",
-        reportText.trim()
+        reportText.trim(),
       );
       toast.success("Report submitted");
       closeSheet();
@@ -234,7 +234,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           <div className="p-4">
             {sheetMode === "menu" ? (
               <>
-                <h3 className="text-lg font-semibold">Chat options</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Chat options</h3>
+                  <Icon
+                    onClick={() => setIsSheetOpen(false)}
+                    name="MdOutlineClose"
+                  />
+                </div>
                 <div className="mt-3 flex flex-col gap-2">
                   <button
                     onClick={() => setSheetMode("feedback")}
@@ -273,9 +279,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
                 {sheetMode === "feedback" ? (
                   <div className="mt-4">
-                    <label className="text-sm text-ui-shade/70">
-                      Feedback
-                    </label>
+                    <label className="text-sm text-ui-shade/70">Feedback</label>
                     <textarea
                       className="mt-2 w-full rounded-lg border border-ui-shade/20 p-3 text-sm"
                       rows={4}
@@ -286,9 +290,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                   </div>
                 ) : (
                   <div className="mt-4">
-                    <label className="text-sm text-ui-shade/70">
-                      Category
-                    </label>
+                    <label className="text-sm text-ui-shade/70">Category</label>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {[
                         { label: "Spam", value: "spam" },

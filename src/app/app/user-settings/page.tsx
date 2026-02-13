@@ -11,6 +11,7 @@ import {
 import { deleteAccount, updateUserData } from "@/lib/apis";
 import useAuth from "@/service/requests/auth";
 import { getUser } from "@/service/storage";
+import { SettingsPageLoader } from "@/components/page-loaders";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -120,7 +121,7 @@ const UserSettings = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SettingsPageLoader />;
   }
 
   return (
