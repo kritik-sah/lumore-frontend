@@ -1,13 +1,14 @@
 "use client";
 
-import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { submitThisOrThatQuestion } from "@/lib/apis";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import Cropper from "react-easy-crop";
+import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import SubPageLayout from "../../../components/layout/SubPageLayout";
+import CropImageModal from "./components/CropImageModal";
+import { getCroppedImage } from "./components/imageCrop";
+import OptionImageInput from "./components/OptionImageInput";
 
 type CropSide = "left" | "right";
 
@@ -33,60 +34,19 @@ const SubmitThisOrThatPage = () => {
     mutationFn: submitThisOrThatQuestion,
   });
 
-  const canSubmit = useMemo(() => {
-    return (
+  const canSubmit = useMemo(
+    () =>
       leftOption.trim().length >= 2 &&
       rightOption.trim().length >= 2 &&
       leftOption.trim().toLowerCase() !== rightOption.trim().toLowerCase() &&
       Boolean(leftImageFile) &&
-      Boolean(rightImageFile)
-    );
-  }, [leftOption, leftImageFile, rightOption, rightImageFile]);
+      Boolean(rightImageFile),
+    [leftImageFile, leftOption, rightImageFile, rightOption],
+  );
 
   const onCropComplete = useCallback((_: any, croppedPixels: any) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
-
-  const createImage = (url: string) =>
-    new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener("load", () => resolve(image));
-      image.addEventListener("error", (err) => reject(err));
-      image.setAttribute("crossOrigin", "anonymous");
-      image.src = url;
-    });
-
-  const getCroppedImage = async (src: string, pixelCrop: any) => {
-    const image = await createImage(src);
-    const canvas = document.createElement("canvas");
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas context not available");
-
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height,
-    );
-
-    return new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) return reject(new Error("Crop failed"));
-          resolve(blob);
-        },
-        "image/jpeg",
-        0.92,
-      );
-    });
-  };
 
   const openCropper = (side: CropSide, file?: File) => {
     if (!file) return;
@@ -98,7 +58,7 @@ const SubmitThisOrThatPage = () => {
     setCroppedAreaPixels(null);
   };
 
-  const onSelectImage = (side: CropSide, e: React.ChangeEvent<HTMLInputElement>) => {
+  const onSelectImage = (side: CropSide, e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     openCropper(side, file);
@@ -134,8 +94,8 @@ const SubmitThisOrThatPage = () => {
         setRightPreview(preview);
       }
       closeCropper();
-    } catch (err) {
-      console.error("Failed to crop image", err);
+    } catch (cropError) {
+      console.error("Failed to crop image", cropError);
       setError("Could not process image. Please try another one.");
     }
   };
@@ -158,9 +118,9 @@ const SubmitThisOrThatPage = () => {
         category: category.trim() || "general",
       });
       router.push("/app/games/this-or-that");
-    } catch (err: any) {
+    } catch (submitError: any) {
       const message =
-        err?.response?.data?.message || "Failed to submit your question";
+        submitError?.response?.data?.message || "Failed to submit your question";
       setError(message);
     }
   };
@@ -169,9 +129,7 @@ const SubmitThisOrThatPage = () => {
     <SubPageLayout title="Submit This Or That">
       <div className="h-full overflow-y-auto bg-ui-background/10 p-4">
         <div className="mx-auto w-full max-w-2xl rounded-2xl border border-ui-shade/10 bg-white p-5">
-          <h1 className="text-xl font-semibold text-ui-shade">
-            Submit a This Or That
-          </h1>
+          <h1 className="text-xl font-semibold text-ui-shade">Submit a This Or That</h1>
           <p className="mt-1 text-sm text-ui-shade/70">
             Your question will be reviewed before it appears for everyone.
           </p>
@@ -187,36 +145,14 @@ const SubmitThisOrThatPage = () => {
                 className="mt-2 h-11 w-full rounded-lg border border-ui-shade/20 px-3 outline-none focus:border-ui-highlight"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-ui-shade">
-                Option A Image
-              </label>
-              <div className="mt-2 flex items-center gap-3">
-                <div className="h-16 w-16 rounded-md bg-ui-shade/10 overflow-hidden border border-ui-shade/10">
-                  {leftPreview ? (
-                    <img
-                      src={leftPreview}
-                      alt="Option A preview"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : null}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => leftInputRef.current?.click()}
-                >
-                  {leftPreview ? "Change image" : "Upload image"}
-                </Button>
-                <input
-                  ref={leftInputRef}
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  className="hidden"
-                  onChange={(e) => onSelectImage("left", e)}
-                />
-              </div>
-            </div>
+
+            <OptionImageInput
+              label="Option A Image"
+              preview={leftPreview}
+              inputRef={leftInputRef}
+              onPick={() => leftInputRef.current?.click()}
+              onChange={(e) => onSelectImage("left", e)}
+            />
 
             <div>
               <label className="text-sm font-medium text-ui-shade">Option B</label>
@@ -228,36 +164,14 @@ const SubmitThisOrThatPage = () => {
                 className="mt-2 h-11 w-full rounded-lg border border-ui-shade/20 px-3 outline-none focus:border-ui-highlight"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-ui-shade">
-                Option B Image
-              </label>
-              <div className="mt-2 flex items-center gap-3">
-                <div className="h-16 w-16 rounded-md bg-ui-shade/10 overflow-hidden border border-ui-shade/10">
-                  {rightPreview ? (
-                    <img
-                      src={rightPreview}
-                      alt="Option B preview"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : null}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => rightInputRef.current?.click()}
-                >
-                  {rightPreview ? "Change image" : "Upload image"}
-                </Button>
-                <input
-                  ref={rightInputRef}
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  className="hidden"
-                  onChange={(e) => onSelectImage("right", e)}
-                />
-              </div>
-            </div>
+
+            <OptionImageInput
+              label="Option B Image"
+              preview={rightPreview}
+              inputRef={rightInputRef}
+              onPick={() => rightInputRef.current?.click()}
+              onChange={(e) => onSelectImage("right", e)}
+            />
 
             <div>
               <label className="text-sm font-medium text-ui-shade">
@@ -289,51 +203,18 @@ const SubmitThisOrThatPage = () => {
           </form>
         </div>
       </div>
-      {imageSrc && cropTarget ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-xl bg-ui-light p-4 shadow-xl">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-ui-shade">
-                Crop {cropTarget === "left" ? "Option A" : "Option B"} Image
-              </h3>
-              <Button variant="ghost" size="icon" onClick={closeCropper}>
-                <Icon name="MdOutlineClose" />
-              </Button>
-            </div>
-            <div className="relative mt-4 h-72 w-full overflow-hidden rounded-lg bg-black">
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </div>
-            <div className="mt-4">
-              <label className="text-sm text-ui-shade/70">Zoom</label>
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={zoom}
-                onChange={(e) => setZoom(Number(e.target.value))}
-                className="mt-2 w-full"
-              />
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <Button variant="outline" className="w-full" onClick={closeCropper}>
-                Cancel
-              </Button>
-              <Button className="w-full" onClick={saveCroppedImage}>
-                Save crop
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+
+      <CropImageModal
+        imageSrc={imageSrc}
+        label={cropTarget === "left" ? "Option A" : "Option B"}
+        crop={crop}
+        zoom={zoom}
+        onCropChange={setCrop}
+        onZoomChange={setZoom}
+        onCropComplete={onCropComplete}
+        onCancel={closeCropper}
+        onSave={saveCroppedImage}
+      />
     </SubPageLayout>
   );
 };
