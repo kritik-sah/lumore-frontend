@@ -169,6 +169,11 @@ const MyProfile = ({
                     Edit Preferences <Icon name="RiSettings3Line" />
                   </Button>
                 </Link>
+                <Link href="/app/credits">
+                  <Button variant="outline" className="w-full items-center">
+                    Credits: {user?.credits ?? 0} <Icon name="FaCoins" />
+                  </Button>
+                </Link>
                 {!user?.isVerified ? (
                   <Button
                     variant="default"
