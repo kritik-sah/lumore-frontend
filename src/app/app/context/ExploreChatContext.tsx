@@ -148,6 +148,18 @@ export const ExploreChatProvider = ({
       setIsMatching(false);
     });
 
+    socket.on("insufficientCredits", ({ message }) => {
+      setError(message || "Not enough credits to start matchmaking.");
+      setIsMatching(false);
+      queryClient.invalidateQueries({ queryKey: ["credits", "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["credits", "history"] });
+    });
+
+    socket.on("creditsUpdated", () => {
+      queryClient.invalidateQueries({ queryKey: ["credits", "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["credits", "history"] });
+    });
+
     socket.on("profileLocked", ({ lockedBy }) =>
       queryClient.invalidateQueries({
         queryKey: ["user", lockedBy],
@@ -173,6 +185,8 @@ export const ExploreChatProvider = ({
       socket.off("profileLocked");
       socket.off("profileUnlocked");
       socket.off("matchmakingError");
+      socket.off("insufficientCredits");
+      socket.off("creditsUpdated");
       socket.off("chatEnded");
     };
   }, [socket, matchId]);

@@ -10,6 +10,7 @@ import { formatNumber } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useExploreChat } from "../context/ExploreChatContext";
+import { useCreditsBalance } from "../hooks/useCredits";
 
 const MatchmakingScreen = () => {
   const { revalidateUser } = useExploreChat();
@@ -30,6 +31,7 @@ export default MatchmakingScreen;
 const SearchScreen = () => {
   const { isMatching, error, startMatchmaking, stopMatchmaking } =
     useExploreChat();
+  const { data: creditsRes } = useCreditsBalance();
   const router = useRouter();
   interface APP_STATUS {
     totalUsers: number;
@@ -70,7 +72,10 @@ const SearchScreen = () => {
   return (
     <div className="relative h-full flex flex-col items-center justify-between gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
       <BackgroundRippleEffect />
-      <div className="z-10 flex items-center justify-end p-3 w-full">
+      <div className="z-10 flex items-center justify-between p-3 w-full gap-2">
+        <Badge className="bg-ui-highlight text-white rounded-full">
+          <span>{creditsRes?.data?.credits ?? 0} credits</span>
+        </Badge>
         <Badge className="animate-pulse bg-ui-light text-ui-shade rounded-full space-x-1">
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>

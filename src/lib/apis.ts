@@ -168,6 +168,26 @@ export const fetchAppStatus = async () => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                  Credits                                   */
+/* -------------------------------------------------------------------------- */
+export const fetchCreditsBalance = async () => {
+  const response = await apiClient.get(`/credits/balance`);
+  return response.data;
+};
+
+export const fetchCreditsHistory = async (params?: { page?: number; limit?: number }) => {
+  const page = params?.page || 1;
+  const limit = params?.limit || 20;
+  const response = await apiClient.get(`/credits/history?page=${page}&limit=${limit}`);
+  return response.data;
+};
+
+export const claimDailyCredits = async () => {
+  const response = await apiClient.post(`/credits/daily-claim`);
+  return response.data;
+};
+
+/* -------------------------------------------------------------------------- */
 /*                           Push Notification                                */
 /* -------------------------------------------------------------------------- */
 export const subscribePushService = async (subscription: PushSubscription) => {
