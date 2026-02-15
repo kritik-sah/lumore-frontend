@@ -4,7 +4,7 @@ import Icon from "@/components/icon";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fetchAppStatus } from "@/lib/apis";
+import { fetchPreferenceMatchCount } from "@/lib/apis";
 import { getIsOnboarded, getUser } from "@/service/storage";
 import { formatNumber } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
@@ -33,24 +33,17 @@ const SearchScreen = () => {
     useExploreChat();
   const { data: creditsRes } = useCreditsBalance();
   const router = useRouter();
-  interface APP_STATUS {
-    totalUsers: number;
-    activeUsers: number;
-    isMatching: number;
-    inactiveUsers: number;
-    genderDistribution: { woman: number; man: number; others: number };
-  }
-  const [appStatus, setappStatus] = useState<APP_STATUS | null>(null);
+  const [availableUsersCount, setAvailableUsersCount] = useState(0);
 
   useEffect(() => {
-    const _fetchAppStatus = async () => {
-      const appStatus = await fetchAppStatus();
-      if (appStatus.success) {
-        setappStatus(appStatus.data);
+    const _fetchPreferenceMatchCount = async () => {
+      const response = await fetchPreferenceMatchCount();
+      if (response?.success) {
+        setAvailableUsersCount(response.data?.availableUsers || 0);
       }
     };
 
-    _fetchAppStatus();
+    _fetchPreferenceMatchCount();
   }, []);
 
   const handleStartMatchmaking = () => {
@@ -73,7 +66,7 @@ const SearchScreen = () => {
     <div className="relative h-full flex flex-col items-center justify-between gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
       <BackgroundRippleEffect />
       <div className="z-10 flex items-center justify-between p-3 w-full gap-2">
-        <Badge className="bg-ui-highlight text-white rounded-full">
+        <Badge className="bg-ui-highlight/70 text-white rounded-full">
           <span>{creditsRes?.data?.credits ?? 0} credits</span>
         </Badge>
         <Badge className="animate-pulse bg-ui-light text-ui-shade rounded-full space-x-1">
@@ -81,7 +74,7 @@ const SearchScreen = () => {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex size-2 rounded-full bg-green-500"></span>
           </span>
-          <span>{formatNumber(appStatus?.isMatching || 0)} Users</span>
+          <span>{formatNumber(availableUsersCount)} Users</span>
         </Badge>
       </div>
       <div className="z-10 relative w-full flex flex-col items-center justify-center gap-4">
