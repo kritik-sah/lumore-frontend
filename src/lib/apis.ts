@@ -167,6 +167,11 @@ export const fetchAppStatus = async () => {
   return response.data;
 };
 
+export const fetchPreferenceMatchCount = async () => {
+  const response = await apiClient.get(`/status/match-available-count`);
+  return response.data;
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                  Credits                                   */
 /* -------------------------------------------------------------------------- */
