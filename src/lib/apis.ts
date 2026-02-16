@@ -163,9 +163,7 @@ export const uploadChatImage = async (roomId: string, file: File) => {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await apiClient.post(`/messages/${roomId}/image`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await apiClient.post(`/messages/${roomId}/image`, formData);
 
   return response.data as {
     message: string;
