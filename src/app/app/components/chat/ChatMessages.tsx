@@ -1,20 +1,21 @@
 import { useEffect, useRef } from "react";
+import type { Message } from "../ChatScreen";
 import { MessageGroup } from "./MessageGroup";
-
-interface Message {
-  sender: string;
-  message: string;
-  timestamp: number;
-}
 
 interface ChatMessagesProps {
   messages: Message[];
   currentUserId: string;
+  onReply: (message: Message) => void;
+  onStartEdit: (message: Message) => void;
+  onToggleLike: (messageId: string, emoji?: string) => void;
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   currentUserId,
+  onReply,
+  onStartEdit,
+  onToggleLike,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -22,14 +23,13 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Group messages by date
   const groupedMessages = messages.reduce(
     (groups, message) => {
-      const date = new Date(message?.timestamp).toLocaleDateString();
+      const date = new Date(message.timestamp).toLocaleDateString();
       if (!groups[date]) {
         groups[date] = {
           messages: [],
-          timestamp: message?.timestamp,
+          timestamp: message.timestamp,
         };
       }
       groups[date].messages.push(message);
@@ -38,9 +38,8 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
     {} as Record<string, { messages: Message[]; timestamp: number }>
   );
 
-  // Sort dates in ascending order
   const sortedDates = Object.keys(groupedMessages).sort(
-    (a, b) => groupedMessages[a]?.timestamp - groupedMessages[b]?.timestamp
+    (a, b) => groupedMessages[a].timestamp - groupedMessages[b].timestamp
   );
 
   return (
@@ -49,8 +48,11 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         <MessageGroup
           key={date}
           date={date}
-          messages={groupedMessages[date]?.messages}
+          messages={groupedMessages[date].messages}
           currentUserId={currentUserId}
+          onReply={onReply}
+          onStartEdit={onStartEdit}
+          onToggleLike={onToggleLike}
         />
       ))}
       <div ref={messagesEndRef} />
