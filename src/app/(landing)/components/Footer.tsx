@@ -135,7 +135,7 @@ export default function Footer() {
       </div>
 
       <div className="text-center border-t border-ui-shade/10 pt-4 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4 mt-8">
-        <p>\u00A9 {currentYear} Lumore.xyz All rights reserved.</p>
+        <p>&copy; {currentYear} Lumore.xyz All rights reserved.</p>
         <p>
           Made In India{" "}
           <img

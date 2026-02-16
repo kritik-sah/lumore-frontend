@@ -38,9 +38,16 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | null>(null);
 
-/* -------------------------------------------------------
-   Helpers
-------------------------------------------------------- */
+const decodeHexField = (raw: any): string | null => {
+  if (!raw) return null;
+  if (typeof raw === "string") return raw;
+
+  if (raw?.data && Array.isArray(raw.data)) {
+    return String.fromCharCode(...raw.data);
+  }
+
+  return null;
+};
 
 const decryptMessage = (
   encryptedHex: string,
@@ -67,9 +74,96 @@ const decryptMessage = (
   }
 };
 
-/* -------------------------------------------------------
-   Provider
-------------------------------------------------------- */
+const getSenderId = (sender: any): string => {
+  if (!sender) return "";
+  if (typeof sender === "string") return sender;
+  return sender._id || sender.id || "";
+};
+
+const mapReplyPreview = (replyTo: any, keyHex: string | null) => {
+  if (!replyTo?._id) return null;
+
+  const replyType: "text" | "image" = replyTo.messageType || "text";
+
+  let replyMessage = "";
+  if (replyType === "image") {
+    replyMessage = "Photo";
+  } else if (keyHex) {
+    const encryptedHex = decodeHexField(replyTo.encryptedData);
+    const ivHex = decodeHexField(replyTo.iv);
+    replyMessage =
+      encryptedHex && ivHex ? decryptMessage(encryptedHex, ivHex, keyHex) || "" : "";
+  }
+
+  return {
+    _id: replyTo._id,
+    senderId: getSenderId(replyTo.sender) || replyTo.senderId || "",
+    messageType: replyType,
+    message: replyMessage,
+    imageUrl: replyTo.imageUrl || null,
+  };
+};
+
+const mapSocketMessage = (payload: any, keyHex: string | null): Message | null => {
+  const messageType: "text" | "image" = payload?.messageType || "text";
+
+  let text = "";
+  if (messageType === "text") {
+    if (!keyHex) return null;
+
+    const decrypted = decryptMessage(payload.encryptedData, payload.iv, keyHex);
+    if (!decrypted) return null;
+    text = decrypted;
+  }
+
+  return {
+    _id: payload?._id,
+    clientMessageId: payload?.clientMessageId || undefined,
+    sender: payload?.senderId || "",
+    message: text,
+    messageType,
+    imageUrl: payload?.imageUrl || null,
+    imagePublicId: payload?.imagePublicId || null,
+    timestamp:
+      payload?.timestamp ||
+      (payload?.createdAt ? new Date(payload.createdAt).getTime() : Date.now()),
+    replyTo: mapReplyPreview(payload?.replyTo, keyHex),
+    reactions: (payload?.reactions || []).map((reaction: any) => ({
+      userId: reaction.userId || reaction.user || "",
+      emoji: reaction.emoji || "\u2764\uFE0F",
+    })),
+    editedAt: payload?.editedAt ? new Date(payload.editedAt).getTime() : null,
+    pending: false,
+  };
+};
+
+const sortByTimestamp = (items: Message[]) =>
+  [...items].sort((a, b) => a.timestamp - b.timestamp);
+
+const mergeIncomingMessage = (messages: Message[], incoming: Message) => {
+  const next = [...messages];
+
+  if (incoming.clientMessageId) {
+    const optimisticIndex = next.findIndex(
+      (item) => item.clientMessageId === incoming.clientMessageId
+    );
+    if (optimisticIndex >= 0) {
+      next[optimisticIndex] = { ...next[optimisticIndex], ...incoming, pending: false };
+      return sortByTimestamp(next);
+    }
+  }
+
+  if (incoming._id) {
+    const existingIndex = next.findIndex((item) => item._id === incoming._id);
+    if (existingIndex >= 0) {
+      next[existingIndex] = { ...next[existingIndex], ...incoming, pending: false };
+      return sortByTimestamp(next);
+    }
+  }
+
+  next.push(incoming);
+  return sortByTimestamp(next);
+};
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const params = useParams<{ id: string }>();
@@ -85,10 +179,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUser(userId ?? "");
   const { user: matchedUser, isLoading } = useUser(matchedUserId ?? "");
 
-  /* -------------------------------------------------------
-     Bootstrap user
-  ------------------------------------------------------- */
-
   const revalidateUser = useCallback(() => {
     if (userId) return;
     const u = getUser();
@@ -100,10 +190,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     revalidateUser();
   }, [revalidateUser]);
-
-  /* -------------------------------------------------------
-     Load room data
-  ------------------------------------------------------- */
 
   const { data: roomData } = useQuery({
     queryKey: ["room", roomId],
@@ -122,10 +208,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [roomData, user]);
 
-  /* -------------------------------------------------------
-     Load chat history
-  ------------------------------------------------------- */
-
   useEffect(() => {
     if (!roomId) return;
 
@@ -136,23 +218,40 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const raw = await fetchRoomChat(roomId);
 
-        const decrypted: Message[] = raw
+        const mapped: Message[] = raw
           .map((msg: any) => {
-            const encryptedHex = String.fromCharCode(...msg.encryptedData.data);
-            const ivHex = String.fromCharCode(...msg.iv.data);
+            const messageType: "text" | "image" = msg.messageType || "text";
+            const encryptedHex = decodeHexField(msg.encryptedData);
+            const ivHex = decodeHexField(msg.iv);
 
-            const text = decryptMessage(encryptedHex, ivHex, keyHex);
-            if (!text) return null;
+            let text = "";
+            if (messageType === "text") {
+              if (!encryptedHex || !ivHex) return null;
+              const decrypted = decryptMessage(encryptedHex, ivHex, keyHex);
+              if (!decrypted) return null;
+              text = decrypted;
+            }
 
             return {
-              sender: msg.sender?._id ?? msg.sender,
+              _id: msg._id,
+              sender: getSenderId(msg.sender),
               message: text,
-              timestamp: new Date(msg.createdAt).getTime(),
-            };
+              messageType,
+              imageUrl: msg.imageUrl || null,
+              imagePublicId: msg.imagePublicId || null,
+              timestamp: new Date(msg.createdAt || msg.timestamp).getTime(),
+              replyTo: mapReplyPreview(msg.replyTo, keyHex),
+              reactions: (msg.reactions || []).map((reaction: any) => ({
+                userId: reaction.user?._id || reaction.user || reaction.userId || "",
+                emoji: reaction.emoji || "\u2764\uFE0F",
+              })),
+              editedAt: msg.editedAt ? new Date(msg.editedAt).getTime() : null,
+              pending: false,
+            } as Message;
           })
           .filter(Boolean);
 
-        setMessages(decrypted);
+        setMessages(mapped);
       } catch (e) {
         console.error("[Chat] Failed loading messages", e);
       }
@@ -161,53 +260,74 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     loadMessages();
   }, [roomId]);
 
-  /* -------------------------------------------------------
-     Socket listeners
-  ------------------------------------------------------- */
-
   useEffect(() => {
     if (!socket || !roomId) return;
 
-    const onNewMessage = (data: any) => {
+    const onIncomingMessage = (payload: any) => {
       const keyHex = localStorage.getItem(`chat_key_${roomId}`);
-      if (!keyHex) return;
+      const mapped = mapSocketMessage(payload, keyHex);
+      if (!mapped) return;
 
-      const text = decryptMessage(data.encryptedData, data.iv, keyHex);
-      if (!text) return;
-
-      setMessages((prev) => {
-        if (
-          prev.some(
-            (m) => m.timestamp === data.timestamp && m.sender === data.senderId
-          )
-        )
-          return prev;
-
-        return [
-          ...prev,
-          {
-            sender: data.senderId,
-            message: text,
-            timestamp: data.timestamp,
-          },
-        ].sort((a, b) => a.timestamp - b.timestamp);
-      });
+      setMessages((prev) => mergeIncomingMessage(prev, mapped));
     };
 
-    socket.on("new_message", onNewMessage);
+    const onEdited = (payload: any) => {
+      const keyHex = localStorage.getItem(`chat_key_${roomId}`);
+      if (!keyHex || !payload?.messageId) return;
+
+      const text = decryptMessage(payload.encryptedData, payload.iv, keyHex);
+      if (!text) return;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === payload.messageId
+            ? {
+                ...msg,
+                message: text,
+                editedAt: payload.editedAt
+                  ? new Date(payload.editedAt).getTime()
+                  : Date.now(),
+              }
+            : msg
+        )
+      );
+    };
+
+    const onReactionUpdated = (payload: any) => {
+      if (!payload?.messageId) return;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === payload.messageId
+            ? {
+                ...msg,
+                reactions: (payload.reactions || []).map((reaction: any) => ({
+                  userId: reaction.userId || reaction.user || "",
+                  emoji: reaction.emoji || "\u2764\uFE0F",
+                })),
+              }
+            : msg
+        )
+      );
+    };
+
+    socket.on("new_message", onIncomingMessage);
+    socket.on("message_sent", onIncomingMessage);
+    socket.on("message_edited", onEdited);
+    socket.on("message_reaction_updated", onReactionUpdated);
 
     socket.on("chatEnded", () => {
       setIsActive(false);
     });
 
     return () => {
-      socket.off("new_message", onNewMessage);
+      socket.off("new_message", onIncomingMessage);
+      socket.off("message_sent", onIncomingMessage);
+      socket.off("message_edited", onEdited);
+      socket.off("message_reaction_updated", onReactionUpdated);
+      socket.off("chatEnded");
     };
-  }, [socket, roomId, matchedUserId, queryClient]);
-
-  /* -------------------------------------------------------
-     Actions
-  ------------------------------------------------------- */
+  }, [socket, roomId]);
 
   const cancelChat = useCallback(() => {
     if (!socket || !roomId) return;
@@ -221,7 +341,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
     setIsActive(false);
     router.push("/app/chat/");
-  }, [socket, roomId]);
+  }, [socket, roomId, queryClient, router]);
 
   const lockProfile = useCallback(
     (profileId: string) => {
@@ -248,10 +368,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     },
     [socket, roomId, userId]
   );
-
-  /* -------------------------------------------------------
-     Context value
-  ------------------------------------------------------- */
 
   const value = useMemo(
     () => ({
@@ -286,12 +402,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
 
-/* -------------------------------------------------------
-   Hook
-------------------------------------------------------- */
-
 export const useChat = () => {
   const ctx = useContext(ChatContext);
   if (!ctx) throw new Error("useChat must be used inside ChatProvider");
   return ctx;
 };
+

@@ -159,6 +159,28 @@ export const fetchRoomChat = async (roomId: string) => {
   return response.data;
 };
 
+export const uploadChatImage = async (roomId: string, file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await apiClient.post(`/messages/${roomId}/image`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return response.data as {
+    message: string;
+    imageUrl: string;
+    imagePublicId: string;
+  };
+};
+
+export const deleteTempChatImage = async (publicId: string) => {
+  const response = await apiClient.delete(`/messages/image-temp`, {
+    data: { publicId },
+  });
+  return response.data as { message: string };
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                  App Status                                */
 /* -------------------------------------------------------------------------- */
@@ -344,6 +366,27 @@ export const submitChatFeedback = async (
     rating,
   });
   return response.data;
+};
+
+export const fetchReceivedFeedbacks = async () => {
+  const response = await apiClient.get(`/inbox/feedback/received`);
+  return response.data as Array<{
+    _id: string;
+    user: {
+      _id: string;
+      username?: string;
+      nickname?: string;
+      profilePicture?: string;
+    };
+    roomId?: {
+      _id: string;
+      createdAt?: string;
+    };
+    feedback?: string;
+    reason?: string;
+    rating?: number;
+    createdAt: string;
+  }>;
 };
 
 export const reportChatUser = async (

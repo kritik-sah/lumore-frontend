@@ -1,32 +1,34 @@
+import type { Message } from "../ChatScreen";
 import { ChatMessage } from "./ChatMessage";
 import { DateHeader } from "./DateHeader";
-
-interface Message {
-  sender: string;
-  message: string;
-  timestamp: number;
-}
 
 interface MessageGroupProps {
   date: string;
   messages: Message[];
   currentUserId: string;
+  onReply: (message: Message) => void;
+  onStartEdit: (message: Message) => void;
+  onToggleLike: (messageId: string, emoji?: string) => void;
 }
 
 export const MessageGroup: React.FC<MessageGroupProps> = ({
-  date,
   messages,
   currentUserId,
+  onReply,
+  onStartEdit,
+  onToggleLike,
 }) => {
   return (
     <div className="space-y-4">
       <DateHeader timestamp={messages[0]?.timestamp} />
       {messages.map((message, index) => (
         <ChatMessage
-          key={index}
-          message={message?.message}
-          timestamp={message?.timestamp}
-          isOwnMessage={message?.sender === currentUserId}
+          key={message._id || message.clientMessageId || index}
+          message={message}
+          isOwnMessage={message.sender === currentUserId}
+          onReply={onReply}
+          onStartEdit={onStartEdit}
+          onToggleLike={onToggleLike}
         />
       ))}
     </div>
