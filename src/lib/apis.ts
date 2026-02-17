@@ -2,6 +2,7 @@ import { apiClient } from "@/service/api-client";
 import { getUser } from "@/service/storage";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { assertImageIsSafe } from "./nsfw.client";
 
 /* -------------------------------------------------------------------------- */
 /*                              External API Call                             */
@@ -137,6 +138,8 @@ export interface UploadResponse {
 export const uploadProfilePicture = async (
   file: File,
 ): Promise<UploadResponse> => {
+  await assertImageIsSafe(file);
+
   const formData = new FormData();
   formData.append("profilePic", file);
 
@@ -160,6 +163,8 @@ export const fetchRoomChat = async (roomId: string) => {
 };
 
 export const uploadChatImage = async (roomId: string, file: File) => {
+  await assertImageIsSafe(file);
+
   const formData = new FormData();
   formData.append("image", file);
 
@@ -256,6 +261,8 @@ export const createImagePost = async (params: {
   visibility?: string;
 }) => {
   const { file, caption = "", visibility = "public" } = params;
+  await assertImageIsSafe(file);
+
   const formData = new FormData();
   formData.append("type", "IMAGE");
   formData.append("visibility", visibility);
@@ -336,6 +343,11 @@ export const submitThisOrThatQuestion = async (payload: {
   rightImage: File;
   category?: string;
 }) => {
+  await Promise.all([
+    assertImageIsSafe(payload.leftImage),
+    assertImageIsSafe(payload.rightImage),
+  ]);
+
   const formData = new FormData();
   formData.append("leftOption", payload.leftOption);
   formData.append("rightOption", payload.rightOption);

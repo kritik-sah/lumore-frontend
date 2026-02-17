@@ -120,7 +120,9 @@ const SubmitThisOrThatPage = () => {
       router.push("/app/games/this-or-that");
     } catch (submitError: any) {
       const message =
-        submitError?.response?.data?.message || "Failed to submit your question";
+        submitError?.response?.data?.message ||
+        (submitError instanceof Error ? submitError.message : null) ||
+        "Failed to submit your question";
       setError(message);
     }
   };
