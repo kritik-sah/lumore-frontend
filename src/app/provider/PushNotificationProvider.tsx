@@ -1,6 +1,7 @@
 // contexts/PushNotificationContext.tsx
 "use client";
 import { subscribePushService, unsubscribePushService } from "@/lib/apis";
+import { Buffer } from "buffer";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface PushNotificationContextType {
@@ -27,7 +28,7 @@ export const PushNotificationProvider = ({
 }: PushNotificationProviderProps) => {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(
-    null
+    null,
   );
   const [isLoading, setIsLoading] = useState(false);
   const [permissionState, setPermissionState] =
@@ -38,6 +39,10 @@ export const PushNotificationProvider = ({
       setIsSupported(true);
       setPermissionState(Notification.permission);
       // registerServiceWorker();
+    }
+    if (typeof window !== "undefined") {
+      // @ts-ignore
+      window.Buffer = Buffer;
     }
   }, []);
 
@@ -74,7 +79,7 @@ export const PushNotificationProvider = ({
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
         ),
       });
 
@@ -152,7 +157,7 @@ export const usePushNotification = () => {
   const context = useContext(PushNotificationContext);
   if (context === undefined) {
     throw new Error(
-      "usePushNotification must be used within a PushNotificationProvider"
+      "usePushNotification must be used within a PushNotificationProvider",
     );
   }
   return context;
