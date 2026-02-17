@@ -1,3 +1,4 @@
+"use client";
 const NSFW_THRESHOLD = 0.6;
 const NSFW_CLASSES = new Set(["Porn", "Hentai", "Sexy"]);
 const NSFW_MODEL_URL = "/nsfw_model/model.json";
@@ -38,9 +39,15 @@ const loadModel = async (): Promise<NsfwModel> => {
       const nsfwLib = (nsfwModule as { default?: any }).default ?? nsfwModule;
 
       try {
-        return (await nsfwLib.load(NSFW_INDEXEDDB_KEY, NSFW_LOAD_OPTIONS)) as NsfwModel;
+        return (await nsfwLib.load(
+          NSFW_INDEXEDDB_KEY,
+          NSFW_LOAD_OPTIONS,
+        )) as NsfwModel;
       } catch {
-        const freshModel = (await nsfwLib.load(NSFW_MODEL_URL, NSFW_LOAD_OPTIONS)) as NsfwModel;
+        const freshModel = (await nsfwLib.load(
+          NSFW_MODEL_URL,
+          NSFW_LOAD_OPTIONS,
+        )) as NsfwModel;
         await persistModelToIndexedDb(freshModel);
         return freshModel;
       }
@@ -64,7 +71,10 @@ export const assertImageIsSafe = async (
 ) => {
   if (!file || !file.type.startsWith("image/")) return;
 
-  const [model, imageBitmap] = await Promise.all([loadModel(), fileToImageBitmap(file)]);
+  const [model, imageBitmap] = await Promise.all([
+    loadModel(),
+    fileToImageBitmap(file),
+  ]);
 
   try {
     const predictions = await model.classify(imageBitmap);
@@ -73,7 +83,9 @@ export const assertImageIsSafe = async (
     );
 
     if (hasNsfw) {
-      throw new Error("NSFW content detected. Please choose a different image.");
+      throw new Error(
+        "NSFW content detected. Please choose a different image.",
+      );
     }
   } finally {
     imageBitmap.close();
