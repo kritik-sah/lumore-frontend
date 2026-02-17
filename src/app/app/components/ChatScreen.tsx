@@ -361,11 +361,7 @@ const ChatScreen = () => {
       const fallbackMessage =
         status === 413
           ? "Image is too large. Please choose a smaller image."
-          : status === 503
-            ? "Image safety scan is temporarily unavailable. Please try again."
-          : status === 422
-            ? "Image was blocked by safety checks. Please choose another image."
-            : "Image upload failed. Please try again.";
+          : "Image upload failed. Please try again.";
       setUploadError(apiMessage || fallbackMessage);
       setPendingImage((prev) => {
         if (prev?.previewUrl === previewUrl) {
