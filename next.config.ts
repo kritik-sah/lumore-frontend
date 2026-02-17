@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
@@ -9,6 +10,18 @@ const nextConfig: NextConfig = {
         hostname: "api.microlink.io",
       },
     ],
+  },
+
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}),
+        buffer: require.resolve("buffer/"),
+        process: require.resolve("process/browser"),
+      };
+    }
+
+    return config;
   },
 };
 
