@@ -356,8 +356,17 @@ const ChatScreen = () => {
       }
     } catch (error: any) {
       if (requestId !== uploadRequestIdRef.current) return;
+      const status = Number(error?.response?.status || 0);
       const apiMessage = error?.response?.data?.message;
-      setUploadError(apiMessage || "Image upload failed. Please try again.");
+      const fallbackMessage =
+        status === 413
+          ? "Image is too large. Please choose a smaller image."
+          : status === 503
+            ? "Image safety scan is temporarily unavailable. Please try again."
+          : status === 422
+            ? "Image was blocked by safety checks. Please choose another image."
+            : "Image upload failed. Please try again.";
+      setUploadError(apiMessage || fallbackMessage);
       setPendingImage((prev) => {
         if (prev?.previewUrl === previewUrl) {
           URL.revokeObjectURL(previewUrl);
