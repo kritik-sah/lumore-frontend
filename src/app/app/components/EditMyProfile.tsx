@@ -5,13 +5,20 @@ import { uploadProfilePicture } from "@/lib/apis";
 import { queryClient } from "@/service/query-client";
 import { languageDisplay } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useUser } from "../hooks/useUser";
 import Field from "./profile/edit/Field";
 import FieldEditor from "./profile/edit/FieldEditor";
-import ProfileImageCropModal from "./profile/edit/ProfileImageCropModal";
 import { calculateProfileCompletion } from "./profile/edit/profileCompletion";
+import ProfileImageCropModal from "./profile/edit/ProfileImageCropModal";
 import { ProfileFormValues, profileSchema } from "./profile/edit/profileSchema";
 import Section from "./profile/edit/Section";
 
@@ -28,7 +35,9 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [editFieldType, setEditFieldType] = useState("");
 
-  const { user, isLoading, updateField, updateVisibility } = useUser(initialUser._id);
+  const { user, isLoading, updateField, updateVisibility } = useUser(
+    initialUser._id,
+  );
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -42,7 +51,9 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
       bio: user?.bio,
       gender: user?.gender,
       religion: user?.religion,
-      dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : undefined,
+      dob: user?.dob
+        ? new Date(user.dob).toISOString().split("T")[0]
+        : undefined,
       height: user?.height,
       hometown: user?.hometown,
       diet: user?.diet,
@@ -162,15 +173,20 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         selectedFile?.name || "profile.jpg",
         { type: croppedBlob.type || "image/jpeg" },
       );
-
-      const localPreview = URL.createObjectURL(croppedBlob);
-      setPreview(localPreview);
-
-      await uploadProfilePicture(croppedFile);
+      const response = await uploadProfilePicture(croppedFile);
+      setPreview(response?.profilePicture || null);
       queryClient.invalidateQueries({ queryKey: ["user", user?.userId] });
       resetCropState();
-    } catch (error) {
-      console.error("Upload error:", error instanceof Error ? error.message : error);
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        (error instanceof Error ? error.message : null) ||
+        "Image upload failed. Please try again.";
+
+      toast.error(message);
+      setPreview(null);
+      resetCropState();
+      console.error("Upload error:", message);
     } finally {
       setIsUploading(false);
     }
@@ -257,7 +273,10 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           </p>
         </div>
 
-        <Section title="Basics" description="Help people recognize you quickly.">
+        <Section
+          title="Basics"
+          description="Help people recognize you quickly."
+        >
           <Field
             label="Username"
             field="username"
@@ -279,7 +298,12 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
         </Section>
 
         <Section title="About" description="Share a little about yourself.">
-          <Field label="Bio" field="bio" value={user.bio} onEdit={handleEditField} />
+          <Field
+            label="Bio"
+            field="bio"
+            value={user.bio}
+            onEdit={handleEditField}
+          />
           <Field
             label="Interests"
             field="interests"
@@ -303,7 +327,9 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           <Field
             label="Birthday"
             field="dob"
-            value={user.dob ? new Date(user.dob).toLocaleDateString() : "Not set"}
+            value={
+              user.dob ? new Date(user.dob).toLocaleDateString() : "Not set"
+            }
             onEdit={handleEditField}
           />
           <Field
@@ -362,8 +388,12 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
             field="lifestyle"
             value={
               <>
-                {user.lifestyle?.drinking ? <p>{user.lifestyle.drinking}</p> : null}
-                {user.lifestyle?.smoking ? <p>{user.lifestyle.smoking}</p> : null}
+                {user.lifestyle?.drinking ? (
+                  <p>{user.lifestyle.drinking}</p>
+                ) : null}
+                {user.lifestyle?.smoking ? (
+                  <p>{user.lifestyle.smoking}</p>
+                ) : null}
                 {user.lifestyle?.pets ? <p>{user.lifestyle.pets}</p> : null}
               </>
             }

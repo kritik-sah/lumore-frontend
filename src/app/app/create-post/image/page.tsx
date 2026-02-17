@@ -6,6 +6,7 @@ import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { TextAreaField } from "../../components/InputField";
 import GeneralLayout from "../../components/layout/general";
 import VisibilityToggle from "../../components/VisibilityToggle";
@@ -20,7 +21,6 @@ const CreateImagePostPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [visibility, setVisibility] = useState("public");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   const handlePick = () => {
     fileInputRef.current?.click();
@@ -39,7 +39,6 @@ const CreateImagePostPage = () => {
     if (!nextFile) return;
 
     setFile(nextFile);
-    setError("");
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -50,12 +49,11 @@ const CreateImagePostPage = () => {
 
   const handleSubmit = async () => {
     if (!file) {
-      setError("Please select an image to continue.");
+      toast.error("Please select an image to continue.");
       return;
     }
 
     setIsSubmitting(true);
-    setError("");
 
     try {
       file &&
@@ -70,10 +68,11 @@ const CreateImagePostPage = () => {
           queryKey: ["user posts", currentUser._id],
         });
       }
-      router.push("/app/create-post");
+      router.push("/app/profile");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";
-      setError(message);
+      toast.error(message);
+      handleClear();
     } finally {
       setIsSubmitting(false);
     }
@@ -166,8 +165,6 @@ const CreateImagePostPage = () => {
               />
             </div>
           </div>
-
-          {error ? <p className="text-red-500 text-sm">{error}</p> : null}
         </div>
       </div>
     </GeneralLayout>

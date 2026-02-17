@@ -358,11 +358,12 @@ const ChatScreen = () => {
       if (requestId !== uploadRequestIdRef.current) return;
       const status = Number(error?.response?.status || 0);
       const apiMessage = error?.response?.data?.message;
+      const localMessage = error instanceof Error ? error.message : null;
       const fallbackMessage =
         status === 413
           ? "Image is too large. Please choose a smaller image."
           : "Image upload failed. Please try again.";
-      setUploadError(apiMessage || fallbackMessage);
+      setUploadError(apiMessage || localMessage || fallbackMessage);
       setPendingImage((prev) => {
         if (prev?.previewUrl === previewUrl) {
           URL.revokeObjectURL(previewUrl);
