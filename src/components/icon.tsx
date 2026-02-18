@@ -48,7 +48,7 @@ import {
 } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { GiRingBox } from "react-icons/gi";
-import { GoMute, GoUnmute } from "react-icons/go";
+import { GoMute, GoReply, GoUnmute } from "react-icons/go";
 import { HiAdjustments, HiOutlineLogout } from "react-icons/hi";
 import {
   HiAdjustmentsHorizontal,
@@ -83,6 +83,7 @@ import {
 import { ImSpinner6 } from "react-icons/im";
 import {
   IoChatbubbleOutline,
+  IoCheckmarkDone,
   IoChevronBackOutline,
   IoCompassOutline,
   IoGameControllerOutline,
@@ -257,6 +258,8 @@ const iconComponents: Record<string, IconType> = {
   RiSettings3Line,
   IoGameControllerOutline,
   HiOutlineSparkles,
+  GoReply,
+  IoCheckmarkDone,
 };
 
 const Icon: React.FC<DynamicIconProps> = ({ name, ...rest }) => {

@@ -1,3 +1,4 @@
+import Icon from "@/components/icon";
 import { useMemo, useRef } from "react";
 import type { Message } from "../ChatScreen";
 
@@ -18,6 +19,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
 }) => {
   const lastTapRef = useRef(0);
   const type = message.messageType || "text";
+  const isRead = Boolean(message.readAt);
+  const isDelivered = Boolean(message.deliveredAt);
 
   const reactionCounts = useMemo(() => {
     const grouped = new Map<string, number>();
@@ -53,13 +56,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         >
           {message.replyTo ? (
             <div
-              className={`mb-2 text-xs rounded-md px-2 py-1 border ${
+              className={`mb-2 text-xs rounded-md px-2 py-1 border flex items-center gap-1 ${
                 isOwnMessage
                   ? "border-white/40 bg-white/10"
                   : "border-ui-shade/20 bg-ui-light"
               }`}
             >
-              Replying to {message.replyTo.senderId === message.sender ? "self" : "message"}: {" "}
+              <Icon name="GoReply" />{" "}
               {message.replyTo.messageType === "image"
                 ? "Photo"
                 : message.replyTo.message || "Message"}
@@ -80,16 +83,23 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         </div>
 
         {reactionCounts.length > 0 ? (
-          <div className={`flex gap-2 text-xs ${isOwnMessage ? "justify-end" : "justify-start"}`}>
+          <div
+            className={`flex gap-2 text-xs ${isOwnMessage ? "justify-end" : "justify-start"}`}
+          >
             {reactionCounts.map(([emoji, count]) => (
-              <span key={emoji} className="bg-ui-highlight/10 rounded-full px-2 py-0.5">
-                {emoji} {count}
+              <span
+                key={emoji}
+                className="bg-ui-highlight/10 rounded-full px-2 py-0.5"
+              >
+                {emoji} {count > 1 ? count : ""}
               </span>
             ))}
           </div>
         ) : null}
 
-        <div className={`flex gap-3 text-xs ${isOwnMessage ? "justify-end" : "justify-start"}`}>
+        <div
+          className={`flex gap-3 text-xs ${isOwnMessage ? "justify-end" : "justify-start"}`}
+        >
           <button
             type="button"
             onClick={() => onReply(message)}
@@ -119,7 +129,23 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             hour12: true,
           })}
           {message.editedAt ? " (edited)" : ""}
-          {message.pending ? " ..." : ""}
+          {isOwnMessage ? (
+            <span className="inline-flex items-center align-middle ml-1">
+              {isRead ? (
+                <>
+                  <Icon
+                    name="IoCheckmarkDone"
+                    className="h-3 w-3 text-ui-highlight"
+                  />
+                </>
+              ) : (
+                <Icon
+                  name="IoCheckmarkDone"
+                  className="h-3 w-3 text-ui-shade/70"
+                />
+              )}
+            </span>
+          ) : null}
         </p>
       </div>
     </div>
@@ -151,4 +177,3 @@ const LinkifyText = ({ text }: { text: string }) => {
     return <span key={index}>{part}</span>;
   });
 };
-

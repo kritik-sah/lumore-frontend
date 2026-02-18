@@ -3,31 +3,21 @@ import Icon from "@/components/icon";
 import { ChatInboxLoader } from "@/components/page-loaders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchIbox, fetchUserSlots } from "@/lib/apis";
-import { calculateAge } from "@/utils/helpers";
-import { useQuery } from "@tanstack/react-query";
+import { fetchIbox } from "@/lib/apis";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import CryptoJS from "crypto-js";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import NavLayout from "../components/layout/NavLayout";
+import { useSocket } from "../context/SocketContext";
 import { useCookies } from "../hooks/useCookies";
-import { useOnboarding } from "../hooks/useOnboarding";
 import { useUser } from "../hooks/useUser";
-
-// interface Slot {
-//   _id: string;
-//   profile: {
-//     username: string;
-//     nickname: string;
-//     profilePicture: string;
-//   };
-//   roomId: string;
-//   unReadMessageCount: number;
-//   createdAt: string;
-// }
 
 const ChatInbox = () => {
   const { userCookie } = useCookies();
-  const { user, isLoading: gettingUser } = useUser(userCookie?._id);
+  const queryClient = useQueryClient();
+  const { socket, revalidateSocket } = useSocket();
+  const { user } = useUser(userCookie?._id);
   const [tab, setTab] = useState<"active" | "archive">("active");
 
   const {
@@ -39,6 +29,24 @@ const ChatInbox = () => {
     queryFn: () => fetchIbox(tab),
     enabled: !!userCookie,
   });
+
+  useEffect(() => {
+    revalidateSocket();
+  }, [revalidateSocket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onInboxUpdated = () => {
+      queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
+    };
+
+    socket.on("inbox_updated", onInboxUpdated);
+    return () => {
+      socket.off("inbox_updated", onInboxUpdated);
+    };
+  }, [socket, queryClient]);
 
   return (
     <NavLayout>
@@ -68,7 +76,6 @@ const ChatInbox = () => {
             </TabsList>
             <TabsContent value="active">
               <Inbox
-                id="active"
                 user={user}
                 rooms={rooms}
                 isLoading={isLoading}
@@ -77,7 +84,6 @@ const ChatInbox = () => {
             </TabsContent>
             <TabsContent value="archive">
               <Inbox
-                id="archived"
                 user={user}
                 rooms={rooms}
                 isLoading={isLoading}
@@ -110,7 +116,7 @@ const Inbox = ({ user, rooms, isLoading, error }: any) => {
         <ul className="space-y-4">
           {rooms.map((room: any) => {
             const matchedUser = room.participants.find(
-              (p: any) => p._id !== user?._id
+              (p: any) => p._id !== user?._id,
             );
 
             return (
@@ -125,8 +131,46 @@ const Inbox = ({ user, rooms, isLoading, error }: any) => {
 
 export default ChatInbox;
 
+const decodeLastMessage = (room: any) => {
+  const lastMessage = room?.lastMessage;
+  if (!lastMessage) return "";
+
+  if (lastMessage.messageType === "image") {
+    return "Photo";
+  }
+
+  if (!lastMessage.encryptedData || !lastMessage.iv) {
+    return "New message";
+  }
+
+  try {
+    const encryptionKey = localStorage.getItem(`chat_key_${room._id}`);
+    if (!encryptionKey) {
+      return "New message";
+    }
+
+    const key = CryptoJS.enc.Hex.parse(encryptionKey);
+    const iv = CryptoJS.enc.Hex.parse(lastMessage.iv);
+    const cipherWordArray = CryptoJS.enc.Hex.parse(lastMessage.encryptedData);
+    const base64Cipher = CryptoJS.enc.Base64.stringify(cipherWordArray);
+
+    const decrypted = CryptoJS.AES.decrypt(base64Cipher, key, {
+      iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+
+    const text = decrypted.toString(CryptoJS.enc.Utf8);
+    return text || "New message";
+  } catch {
+    return "New message";
+  }
+};
+
 const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
   const { user, isLoading } = useUser(matchedUser?._id ?? "");
+  const unreadCount = Number(room?.unreadCount || 0);
+  const lastMessagePreview = useMemo(() => decodeLastMessage(room), [room]);
   if (isLoading) {
     return (
       <li className="flex items-center space-x-4 p-2 border-b border-ui-shade/10">
@@ -172,35 +216,22 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
           <h2 className="font-semibold">
             {user?.realName || user?.nickname || user?.username}
           </h2>
-          <div className="flex items-center justify-start gap-2 text-sm">
-            {user?.dob ? (
-              <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="HiOutlineCake" className="flex-shrink-0" />{" "}
-                <p>{calculateAge(user?.dob)}</p>
-              </div>
-            ) : null}
-
-            {user?.gender ? (
-              <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                <Icon name="HiOutlineUser" className="lex-shrink-0" />{" "}
-                <p>{user?.gender}</p>
-              </div>
-            ) : null}
-            <div className="flex items-center justify-center gap-1 flex-shrink-0">
-              <Icon name="RiPinDistanceLine" className="flex-shrink-0" />{" "}
-              <p>{user?.distance.toFixed(2)}km</p>
-            </div>
-          </div>
-          {/* {slot.unReadMessageCount > 0 && (
-                        <p className="text-sm text-blue-500">
-                          {slot.unReadMessageCount} new message
-                          {slot.unReadMessageCount > 1 ? "s" : ""}
-                        </p>
-                      )} */}
+          {lastMessagePreview ? (
+            <p className="text-sm text-ui-shade/70 truncate">
+              {lastMessagePreview}
+            </p>
+          ) : null}
         </div>
-        <span className="text-xs text-gray-400">
-          {new Date(room.lastMessageAt).toLocaleDateString()}
-        </span>
+        <div className="flex flex-col items-end gap-1">
+          <span className="text-xs text-gray-400">
+            {new Date(room.lastMessageAt).toLocaleDateString()}
+          </span>
+          {unreadCount > 0 ? (
+            <span className="min-w-5 h-5 px-1 rounded-full bg-ui-highlight text-white text-xs flex items-center justify-center">
+              {unreadCount}
+            </span>
+          ) : null}
+        </div>
       </Link>
     </li>
   );

@@ -36,6 +36,8 @@ export interface Message {
   replyTo?: ChatReplyPreview | null;
   reactions?: ChatReaction[];
   editedAt?: number | null;
+  deliveredAt?: number | null;
+  readAt?: number | null;
   pending?: boolean;
 }
 
@@ -71,8 +73,13 @@ const ChatScreen = () => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isPartnerTyping, setIsPartnerTyping] = useState(false);
   const pendingImageRef = useRef<PendingImage | null>(null);
   const uploadRequestIdRef = useRef(0);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const partnerTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const userId = useMemo(() => {
     try {
@@ -263,6 +270,8 @@ const ChatScreen = () => {
           replyTo: replyingToPreview,
           reactions: [],
           pending: true,
+          deliveredAt: null,
+          readAt: null,
         },
       ]);
     }
@@ -299,6 +308,8 @@ const ChatScreen = () => {
             replyTo: replyingToPreview,
             reactions: [],
             pending: true,
+            deliveredAt: null,
+            readAt: null,
           },
         ]);
       }
@@ -448,6 +459,72 @@ const ChatScreen = () => {
     }
   };
 
+  useEffect(() => {
+    if (!socket || !roomId || !matchedUser?._id || !isActive) return;
+
+    const onTyping = (payload: {
+      roomId?: string;
+      userId?: string;
+      isTyping?: boolean;
+    }) => {
+      if (payload?.roomId !== roomId) return;
+      if (payload?.userId !== matchedUser._id) return;
+
+      const typing = Boolean(payload?.isTyping);
+      setIsPartnerTyping(typing);
+
+      if (partnerTypingTimeoutRef.current) {
+        clearTimeout(partnerTypingTimeoutRef.current);
+      }
+
+      if (typing) {
+        partnerTypingTimeoutRef.current = setTimeout(() => {
+          setIsPartnerTyping(false);
+        }, 2500);
+      }
+    };
+
+    socket.on("typing", onTyping);
+    return () => {
+      socket.off("typing", onTyping);
+      if (partnerTypingTimeoutRef.current) {
+        clearTimeout(partnerTypingTimeoutRef.current);
+        partnerTypingTimeoutRef.current = null;
+      }
+    };
+  }, [socket, roomId, matchedUser?._id, isActive]);
+
+  useEffect(() => {
+    if (!socket || !roomId || !isActive) return;
+
+    const isTyping = newMessage.trim().length > 0;
+    socket.emit("typing", { roomId, isTyping });
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    if (isTyping) {
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit("typing", { roomId, isTyping: false });
+      }, 1500);
+    }
+
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [newMessage, socket, roomId, isActive]);
+
+  useEffect(() => {
+    return () => {
+      if (socket && roomId) {
+        socket.emit("typing", { roomId, isTyping: false });
+      }
+    };
+  }, [socket, roomId]);
+
   if (!matchedUser || isLoading) return <ChatRoomLoader />;
 
   return (
@@ -461,6 +538,7 @@ const ChatScreen = () => {
       <ChatMessages
         messages={messages}
         currentUserId={userId}
+        isPartnerTyping={isPartnerTyping}
         onReply={handleReply}
         onStartEdit={handleStartEdit}
         onToggleLike={handleToggleLike}
