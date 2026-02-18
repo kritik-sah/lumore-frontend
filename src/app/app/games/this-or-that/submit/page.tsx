@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { submitThisOrThatQuestion } from "@/lib/apis";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SubPageLayout from "../../../components/layout/SubPageLayout";
 import CropImageModal from "./components/CropImageModal";
 import { getCroppedImage } from "./components/imageCrop";
@@ -78,7 +84,9 @@ const SubmitThisOrThatPage = () => {
     try {
       const croppedBlob = await getCroppedImage(imageSrc, croppedAreaPixels);
       const fileName =
-        cropTarget === "left" ? "this-or-that-left.jpg" : "this-or-that-right.jpg";
+        cropTarget === "left"
+          ? "this-or-that-left.jpg"
+          : "this-or-that-right.jpg";
       const croppedFile = new File([croppedBlob], fileName, {
         type: croppedBlob.type || "image/jpeg",
       });
@@ -131,14 +139,18 @@ const SubmitThisOrThatPage = () => {
     <SubPageLayout title="Submit This Or That">
       <div className="h-full overflow-y-auto bg-ui-background/10 p-4">
         <div className="mx-auto w-full max-w-2xl rounded-2xl border border-ui-shade/10 bg-white p-5">
-          <h1 className="text-xl font-semibold text-ui-shade">Submit a This Or That</h1>
+          <h1 className="text-xl font-semibold text-ui-shade">
+            Submit a This Or That
+          </h1>
           <p className="mt-1 text-sm text-ui-shade/70">
-            Your question will be reviewed before it appears for everyone.
+            Earn +5 credits for every approved submission!
           </p>
 
           <form onSubmit={onSubmit} className="mt-5 space-y-4">
             <div>
-              <label className="text-sm font-medium text-ui-shade">Option A</label>
+              <label className="text-sm font-medium text-ui-shade">
+                Option A
+              </label>
               <input
                 value={leftOption}
                 onChange={(e) => setLeftOption(e.target.value)}
@@ -157,7 +169,9 @@ const SubmitThisOrThatPage = () => {
             />
 
             <div>
-              <label className="text-sm font-medium text-ui-shade">Option B</label>
+              <label className="text-sm font-medium text-ui-shade">
+                Option B
+              </label>
               <input
                 value={rightOption}
                 onChange={(e) => setRightOption(e.target.value)}

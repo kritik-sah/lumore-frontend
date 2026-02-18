@@ -174,6 +174,11 @@ const MyProfile = ({
                     Credits: {user?.credits ?? 0} <Icon name="FaCoins" />
                   </Button>
                 </Link>
+                <Link href="/app/referral">
+                  <Button variant="outline" className="w-full items-center">
+                    Referral <Icon name="HiOutlineSparkles" />
+                  </Button>
+                </Link>
                 {!user?.isVerified ? (
                   <Button
                     variant="default"

@@ -37,9 +37,11 @@ export function validateScreen(screen: Screen, values: Record<string, unknown>) 
   const errors: Record<string, string> = {};
 
   screen.fields.forEach((field) => {
+    const isRequired = field.required !== false;
     const value = values[field.name];
 
     if (
+      isRequired &&
       (field.type === "text" ||
         field.type === "email" ||
         field.type === "select" ||
@@ -49,15 +51,19 @@ export function validateScreen(screen: Screen, values: Record<string, unknown>) 
       errors[field.name] = field.errorText || "This field is required.";
     }
 
-    if (field.type === "multiselect" && (value as string[])?.length === 0) {
+    if (
+      isRequired &&
+      field.type === "multiselect" &&
+      (value as string[])?.length === 0
+    ) {
       errors[field.name] = field.errorText || "Please select at least one option.";
     }
 
-    if (field.type === "number" && (value === undefined || value === "")) {
+    if (isRequired && field.type === "number" && (value === undefined || value === "")) {
       errors[field.name] = field.errorText || "Please enter a number.";
     }
 
-    if (field.type === "password") {
+    if (isRequired && field.type === "password") {
       const password = value as string;
       if (!password || password.trim() === "") {
         errors[field.name] = field.errorText || "Please enter a password.";

@@ -68,3 +68,26 @@ export const getIsOnboarded = (userId: string): boolean | null => {
   }
   return null;
 };
+
+const PENDING_REFERRAL_CODE_KEY = "pendingReferralCode";
+
+export const setPendingReferralCode = (code: string) => {
+  if (typeof window !== "undefined") {
+    const normalized = String(code || "").trim();
+    if (!normalized) return;
+    localStorage.setItem(PENDING_REFERRAL_CODE_KEY, normalized);
+  }
+};
+
+export const getPendingReferralCode = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem(PENDING_REFERRAL_CODE_KEY);
+  }
+  return null;
+};
+
+export const removePendingReferralCode = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(PENDING_REFERRAL_CODE_KEY);
+  }
+};
