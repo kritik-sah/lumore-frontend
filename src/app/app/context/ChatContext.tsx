@@ -133,6 +133,10 @@ const mapSocketMessage = (payload: any, keyHex: string | null): Message | null =
       emoji: reaction.emoji || "\u2764\uFE0F",
     })),
     editedAt: payload?.editedAt ? new Date(payload.editedAt).getTime() : null,
+    deliveredAt: payload?.deliveredAt
+      ? new Date(payload.deliveredAt).getTime()
+      : null,
+    readAt: payload?.readAt ? new Date(payload.readAt).getTime() : null,
     pending: false,
   };
 };
@@ -246,12 +250,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
                 emoji: reaction.emoji || "\u2764\uFE0F",
               })),
               editedAt: msg.editedAt ? new Date(msg.editedAt).getTime() : null,
+              deliveredAt: msg.deliveredAt ? new Date(msg.deliveredAt).getTime() : null,
+              readAt: msg.readAt ? new Date(msg.readAt).getTime() : null,
               pending: false,
             } as Message;
           })
           .filter(Boolean);
 
         setMessages(mapped);
+        queryClient.invalidateQueries({ queryKey: ["inbox", "active"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox", "archive"] });
       } catch (e) {
         console.error("[Chat] Failed loading messages", e);
       }
@@ -311,10 +319,49 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       );
     };
 
+    const onDelivered = (payload: any) => {
+      const messageIds = new Set((payload?.messageIds || []).map(String));
+      const deliveredAt = payload?.deliveredAt
+        ? new Date(payload.deliveredAt).getTime()
+        : Date.now();
+      if (messageIds.size === 0) return;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id && messageIds.has(msg._id)
+            ? {
+                ...msg,
+                deliveredAt: msg.deliveredAt || deliveredAt,
+              }
+            : msg
+        )
+      );
+    };
+
+    const onRead = (payload: any) => {
+      const messageIds = new Set((payload?.messageIds || []).map(String));
+      const readAt = payload?.readAt ? new Date(payload.readAt).getTime() : Date.now();
+      if (messageIds.size === 0) return;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id && messageIds.has(msg._id)
+            ? {
+                ...msg,
+                deliveredAt: msg.deliveredAt || readAt,
+                readAt: msg.readAt || readAt,
+              }
+            : msg
+        )
+      );
+    };
+
     socket.on("new_message", onIncomingMessage);
     socket.on("message_sent", onIncomingMessage);
     socket.on("message_edited", onEdited);
     socket.on("message_reaction_updated", onReactionUpdated);
+    socket.on("message_delivered", onDelivered);
+    socket.on("message_read", onRead);
 
     socket.on("chatEnded", () => {
       setIsActive(false);
@@ -325,6 +372,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       socket.off("message_sent", onIncomingMessage);
       socket.off("message_edited", onEdited);
       socket.off("message_reaction_updated", onReactionUpdated);
+      socket.off("message_delivered", onDelivered);
+      socket.off("message_read", onRead);
       socket.off("chatEnded");
     };
   }, [socket, roomId]);

@@ -5,6 +5,7 @@ import { MessageGroup } from "./MessageGroup";
 interface ChatMessagesProps {
   messages: Message[];
   currentUserId: string;
+  isPartnerTyping?: boolean;
   onReply: (message: Message) => void;
   onStartEdit: (message: Message) => void;
   onToggleLike: (messageId: string, emoji?: string) => void;
@@ -13,6 +14,7 @@ interface ChatMessagesProps {
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   currentUserId,
+  isPartnerTyping = false,
   onReply,
   onStartEdit,
   onToggleLike,
@@ -55,6 +57,9 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
           onToggleLike={onToggleLike}
         />
       ))}
+      {isPartnerTyping ? (
+        <div className="text-xs text-ui-shade/70 italic px-1">Typing...</div>
+      ) : null}
       <div ref={messagesEndRef} />
     </div>
   );
