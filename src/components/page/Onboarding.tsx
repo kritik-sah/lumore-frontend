@@ -4,12 +4,19 @@ import { useUser } from "@/app/app/hooks/useUser";
 import { useUserPrefrence } from "@/app/app/hooks/useUserPrefrence";
 import { Button } from "@/components/ui/button";
 import {
+  applyReferralCode,
   setNewPassword,
   updateUserData,
   updateUserPreferences,
 } from "@/lib/apis";
-import { getUser, setIsOnboarded } from "@/service/storage";
-import { useRouter } from "next/navigation";
+import {
+  getPendingReferralCode,
+  getUser,
+  removePendingReferralCode,
+  setIsOnboarded,
+  setPendingReferralCode,
+} from "@/service/storage";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { onboardingScreens } from "./onboarding/config";
 import {
@@ -29,6 +36,8 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const incomingReferralCode = String(searchParams.get("code") || "").trim();
 
   const currentScreen = screens[screenIndex];
   const totalScreens = screens.length;
@@ -36,10 +45,32 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
 
   useEffect(() => {
     if (!currentScreen) return;
-    setFormValues(getInitialValuesForScreen(currentScreen, user, userPrefrence));
-  }, [currentScreen, user, userPrefrence]);
+
+    const values = getInitialValuesForScreen(currentScreen, user, userPrefrence);
+    if (incomingReferralCode) {
+      setPendingReferralCode(incomingReferralCode);
+    }
+
+    if (currentScreen.fields.some((field) => field.name === "referralCode")) {
+      const storedCode = getPendingReferralCode();
+      if (storedCode && !values.referralCode) {
+        values.referralCode = storedCode;
+      }
+    }
+
+    setFormValues(values);
+  }, [currentScreen, user, userPrefrence, incomingReferralCode]);
 
   const handleInputChange = (name: string, value: unknown) => {
+    if (name === "referralCode") {
+      const nextCode = String(value || "").trim();
+      if (nextCode) {
+        setPendingReferralCode(nextCode);
+      } else {
+        removePendingReferralCode();
+      }
+    }
+
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -53,6 +84,12 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
       currentScreen,
       formValues,
     );
+    const referralCodeRaw =
+      typeof formValues.referralCode === "string" ? formValues.referralCode : "";
+    const referralCode = referralCodeRaw.trim();
+    const hasReferralCodeField = currentScreen.fields.some(
+      (field) => field.name === "referralCode",
+    );
 
     if (Object.keys(userData).length) {
       await updateUserData(userData);
@@ -65,6 +102,18 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
     if (password) {
       await setNewPassword({ newPassword: password });
     }
+
+    if (hasReferralCodeField && referralCode) {
+      try {
+        await applyReferralCode(referralCode);
+        removePendingReferralCode();
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Invalid referral code. Please check and try again.";
+        setErrors((prev) => ({ ...prev, referralCode: message }));
+        throw error;
+      }
+    }
   };
 
   const handleNext = async () => {
@@ -74,7 +123,11 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
     }
 
     setErrors({});
-    await submitOnboardingData();
+    try {
+      await submitOnboardingData();
+    } catch {
+      return;
+    }
 
     if (screenIndex < totalScreens - 1) {
       setScreenIndex((prev) => prev + 1);

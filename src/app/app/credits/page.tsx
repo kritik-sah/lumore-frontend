@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<string, string> = {
   daily_active: "Daily active reward",
   conversation_start: "Conversation start",
   this_or_that_approved: "This-or-That approved",
+  referral_bonus: "Referral bonus",
   admin_adjustment: "Admin adjustment",
 };
 
@@ -21,6 +22,7 @@ export default function CreditsPage() {
 
   const balance = balanceRes?.data?.credits ?? 0;
   const rewardGrantedToday = !!balanceRes?.data?.rewardGrantedToday;
+  const dailyRewardAmount = Number(balanceRes?.data?.dailyRewardAmount || 1);
   const items = historyRes?.items || [];
   const pagination = historyRes?.pagination;
 
@@ -39,7 +41,9 @@ export default function CreditsPage() {
               onClick={() => claimDaily()}
               className="w-full"
             >
-              {rewardGrantedToday ? "Daily reward already claimed" : "Claim daily +3"}
+              {rewardGrantedToday
+                ? "Daily reward already claimed"
+                : `Claim daily +${dailyRewardAmount}`}
             </Button>
           </div>
         </div>

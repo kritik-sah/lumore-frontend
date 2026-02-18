@@ -18,6 +18,7 @@ export interface Field {
   place: "user" | "prefrence" | "password";
   name: string;
   label: string;
+  required?: boolean;
   options?: SelectOption[];
   min?: number;
   max?: number;

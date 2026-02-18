@@ -63,6 +63,15 @@ export const onboardingScreens: Screen[] = [
         helperText: "Please provide a valid email address.",
         errorText: "Please enter a valid email address to continue",
       },
+      {
+        type: "text",
+        place: "user",
+        name: "referralCode",
+        label: "Referral code (optional)",
+        placeholder: "friend_username",
+        required: false,
+        helperText: "Have a referral? Enter your friend's username.",
+      },
     ],
   },
   {

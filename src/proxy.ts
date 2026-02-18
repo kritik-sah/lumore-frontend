@@ -8,6 +8,9 @@ export function proxy(req: NextRequest) {
   if (pathname.startsWith("/app/login")) {
     return NextResponse.next();
   }
+  if (pathname.startsWith("/app/referral")) {
+    return NextResponse.next();
+  }
 
   // If no token and not on a public page, redirect to login
   if (!token) {

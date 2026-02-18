@@ -218,6 +218,19 @@ export const claimDailyCredits = async () => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                 Referral                                   */
+/* -------------------------------------------------------------------------- */
+export const fetchReferralSummary = async () => {
+  const response = await apiClient.get(`/referral/summary`);
+  return response.data;
+};
+
+export const applyReferralCode = async (code: string) => {
+  const response = await apiClient.post(`/referral/apply`, { code });
+  return response.data;
+};
+
+/* -------------------------------------------------------------------------- */
 /*                           Push Notification                                */
 /* -------------------------------------------------------------------------- */
 export const subscribePushService = async (subscription: PushSubscription) => {
