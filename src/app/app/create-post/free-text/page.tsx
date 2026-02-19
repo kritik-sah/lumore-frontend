@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createTextPost } from "@/lib/apis";
+import { textPostSchema } from "@/lib/validation";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -20,8 +21,9 @@ const CreateFreeTextPostPage = () => {
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    if (!text.trim()) {
-      setError("Please write something before posting.");
+    const parsed = textPostSchema.safeParse(text);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message || "Invalid post text.");
       return;
     }
 
@@ -30,7 +32,7 @@ const CreateFreeTextPostPage = () => {
 
     try {
       await createTextPost({
-        text,
+        text: parsed.data,
         visibility,
       });
       const currentUser = getUser();
@@ -70,7 +72,10 @@ const CreateFreeTextPostPage = () => {
             label="Your words"
             name="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              setError("");
+            }}
             placeholder="Write your shayari or quote here..."
             rows={8}
             className="bg-ui-highlight/5 border-ui-highlight/30"

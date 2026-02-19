@@ -19,7 +19,7 @@ import Field from "./profile/edit/Field";
 import FieldEditor from "./profile/edit/FieldEditor";
 import { calculateProfileCompletion } from "./profile/edit/profileCompletion";
 import ProfileImageCropModal from "./profile/edit/ProfileImageCropModal";
-import { ProfileFormValues, profileSchema } from "./profile/edit/profileSchema";
+import { createProfileSchema, ProfileFormValues } from "./profile/edit/profileSchema";
 import Section from "./profile/edit/Section";
 
 const EditMyProfile = ({ user: initialUser }: { user: any }) => {
@@ -38,9 +38,13 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
   const { user, isLoading, updateField, updateVisibility } = useUser(
     initialUser._id,
   );
+  const formSchema = useMemo(
+    () => createProfileSchema(initialUser?.username),
+    [initialUser?.username],
+  );
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       username: user?.username,
       nickname: user?.nickname,
@@ -215,6 +219,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           onUpdate={handleFieldUpdate}
           currentValue={form.getValues(editFieldType as any)}
           form={form}
+          currentUsername={user?.username}
         />
 
         <div

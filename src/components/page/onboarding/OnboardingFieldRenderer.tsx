@@ -1,13 +1,12 @@
 "use client";
 
 import DateField from "@/app/app/components/DateField";
+import MultiSelectChipField from "@/app/app/components/MultiSelectChipField";
 import {
   MultisliderField,
-  SelectField,
   SliderField,
   TextField,
 } from "@/app/app/components/InputField";
-import MultiSelectField from "@/app/app/components/MultiSelectField";
 import type { Field } from "./types";
 
 interface OnboardingFieldRendererProps {
@@ -34,11 +33,12 @@ const OnboardingFieldRenderer = ({
 
   if (field.type === "select") {
     return (
-      <SelectField
+      <MultiSelectChipField
         label={field.label}
         options={field.options || []}
-        value={value as string}
+        value={(value as string) || ""}
         name={field.name}
+        multiple={false}
         onChange={(option) => onChange(field.name, option)}
         placeholder={field.placeholder}
       />
@@ -47,12 +47,13 @@ const OnboardingFieldRenderer = ({
 
   if (field.type === "multiselect") {
     return (
-      <MultiSelectField
+      <MultiSelectChipField
         label={field.label}
-        max={5}
+        max={field.max || 5}
         options={field.options || []}
         value={(value as string[]) || []}
         name={field.name}
+        multiple
         onChange={(options) => onChange(field.name, options)}
         placeholder={field.placeholder}
       />
@@ -94,6 +95,15 @@ const OnboardingFieldRenderer = ({
       name={field.name}
       onChange={(e) => onChange(field.name, e.target.value)}
       placeholder={field.placeholder}
+      type={
+        field.type === "email"
+          ? "email"
+          : field.type === "password"
+            ? "password"
+            : field.type === "number" && field.name === "phoneNumber"
+              ? "tel"
+              : "text"
+      }
     />
   );
 };

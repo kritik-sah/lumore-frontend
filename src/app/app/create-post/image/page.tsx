@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createImagePost } from "@/lib/apis";
+import { imageCaptionSchema } from "@/lib/validation";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,11 @@ const CreateImagePostPage = () => {
       toast.error("Please select an image to continue.");
       return;
     }
+    const captionResult = imageCaptionSchema.safeParse(caption);
+    if (!captionResult.success) {
+      toast.error(captionResult.error.issues[0]?.message || "Invalid caption.");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -59,7 +65,7 @@ const CreateImagePostPage = () => {
       file &&
         (await createImagePost({
           file,
-          caption: caption.trim(),
+          caption: captionResult.data,
           visibility,
         }));
       const currentUser = getUser();

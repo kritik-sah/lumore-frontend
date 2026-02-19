@@ -108,7 +108,10 @@ const SettingsFieldEditor = ({
               label={label}
               type={fieldType === "email" ? "email" : "text"}
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setError("");
+              }}
               placeholder={placeholder}
               error={error}
             />

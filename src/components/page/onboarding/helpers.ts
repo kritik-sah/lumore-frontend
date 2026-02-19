@@ -1,5 +1,7 @@
 "use client";
 
+import * as z from "zod";
+import type { Field } from "./types";
 import type { Screen } from "./types";
 
 const GOAL_FIELD_MAP: Record<string, "primary" | "secondary" | "tertiary"> = {
@@ -36,45 +38,185 @@ export function getInitialValuesForScreen(
 export function validateScreen(screen: Screen, values: Record<string, unknown>) {
   const errors: Record<string, string> = {};
 
-  screen.fields.forEach((field) => {
+  const getAge = (dob: Date) => {
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age -= 1;
+    }
+
+    return age;
+  };
+
+  const getFieldSchema = (field: Field) => {
     const isRequired = field.required !== false;
-    const value = values[field.name];
+    const requiredMessage = field.errorText || "This field is required.";
 
-    if (
-      isRequired &&
-      (field.type === "text" ||
-        field.type === "email" ||
-        field.type === "select" ||
-        field.type === "date") &&
-      (!value || value === "")
-    ) {
-      errors[field.name] = field.errorText || "This field is required.";
-    }
-
-    if (
-      isRequired &&
-      field.type === "multiselect" &&
-      (value as string[])?.length === 0
-    ) {
-      errors[field.name] = field.errorText || "Please select at least one option.";
-    }
-
-    if (isRequired && field.type === "number" && (value === undefined || value === "")) {
-      errors[field.name] = field.errorText || "Please enter a number.";
-    }
-
-    if (isRequired && field.type === "password") {
-      const password = value as string;
-      if (!password || password.trim() === "") {
-        errors[field.name] = field.errorText || "Please enter a password.";
-      } else {
-        const passwordRegex =
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@$#!%*?&]{8,25}$/;
-        if (!passwordRegex.test(password)) {
-          errors[field.name] =
-            "Password must be at least 8 max 25 characters long, contain uppercase, lowercase, a number, and a special character.";
-        }
+    if (field.type === "text") {
+      if (field.name === "referralCode") {
+        return z.preprocess(
+          (raw) => (typeof raw === "string" ? raw.trim() : ""),
+          z.string().refine((value) => value === "" || /^[a-zA-Z0-9_]{3,30}$/.test(value), {
+            message:
+              field.errorText ||
+              "Referral code can only contain letters, numbers, and underscores.",
+          }),
+        );
       }
+
+      let schema = z.string().trim();
+      if (isRequired) {
+        schema = schema.min(1, requiredMessage);
+      }
+      return schema;
+    }
+
+    if (field.type === "number") {
+      if (field.name === "phoneNumber") {
+        let schema = z.string();
+        if (isRequired) {
+          schema = schema.min(1, requiredMessage);
+        }
+        return schema
+          .transform((value) => value.replace(/\s+/g, ""))
+          .refine((value) => !value || /^\+?[1-9]\d{1,14}$/.test(value), {
+            message: field.errorText || "Please enter a valid phone number.",
+          });
+      }
+
+      return z
+        .number()
+        .refine((value) => (field.min === undefined ? true : value >= field.min), {
+          message: `Value must be at least ${field.min}.`,
+        })
+        .refine((value) => (field.max === undefined ? true : value <= field.max), {
+          message: `Value must be at most ${field.max}.`,
+        });
+    }
+
+    if (field.type === "email") {
+      let schema = z.string().trim();
+      if (isRequired) {
+        schema = schema.min(1, requiredMessage);
+      }
+      return schema.refine((value) => !value || z.string().email().safeParse(value).success, {
+        message: field.errorText || "Please enter a valid email address.",
+      });
+    }
+
+    if (field.type === "password") {
+      let schema = z.string().trim();
+      if (isRequired) {
+        schema = schema.min(1, requiredMessage);
+      }
+      return schema.refine(
+        (password) =>
+          !password ||
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@$#!%*?&]{8,25}$/.test(
+            password,
+          ),
+        {
+          message:
+            "Password must be at least 8 max 25 characters long, contain uppercase, lowercase, a number, and a special character.",
+        },
+      );
+    }
+
+    if (field.type === "date") {
+      let schema = z.string().min(1, requiredMessage);
+      if (!isRequired) {
+        schema = z.string();
+      }
+
+      return schema
+        .refine((value) => value === "" || !Number.isNaN(new Date(value).getTime()), {
+          message: field.errorText || "Please enter a valid date.",
+        })
+        .refine((value) => {
+          if (!value) return !isRequired;
+          const age = getAge(new Date(value));
+          return field.min === undefined || age >= field.min;
+        }, {
+          message: field.errorText || `You must be at least ${field.min} years old.`,
+        })
+        .refine((value) => {
+          if (!value) return !isRequired;
+          const age = getAge(new Date(value));
+          return field.max === undefined || age <= field.max;
+        }, {
+          message: field.errorText || `Age must be ${field.max} years or below.`,
+        });
+    }
+
+    if (field.type === "select") {
+      let schema = z.string();
+      if (isRequired) {
+        schema = schema.min(1, requiredMessage);
+      }
+      return schema.refine(
+        (value) =>
+          !value ||
+          !field.options?.length ||
+          field.options.some((option) => option.value === value),
+        {
+          message: field.errorText || "Please select a valid option.",
+        },
+      );
+    }
+
+    if (field.type === "multiselect") {
+      let schema = z.array(z.string());
+      if (isRequired) {
+        schema = schema.min(1, requiredMessage);
+      }
+      return schema.refine(
+        (values) =>
+          !field.options?.length ||
+          values.every((value) => field.options!.some((option) => option.value === value)),
+        {
+          message: field.errorText || "Please select valid options.",
+        },
+      );
+    }
+
+    if (field.type === "range") {
+      return z
+        .array(z.number())
+        .length(2, "Please provide a valid range.")
+        .refine((value) => value[0] <= value[1], {
+          message: "Minimum range must be less than or equal to maximum range.",
+        })
+        .refine((value) => (field.min === undefined ? true : value[0] >= field.min), {
+          message: `Range must be at least ${field.min}.`,
+        })
+        .refine((value) => (field.max === undefined ? true : value[1] <= field.max), {
+          message: `Range must be at most ${field.max}.`,
+        });
+    }
+
+    if (field.type === "slider") {
+      return z
+        .number()
+        .refine((value) => (field.min === undefined ? true : value >= field.min), {
+          message: `Value must be at least ${field.min}.`,
+        })
+        .refine((value) => (field.max === undefined ? true : value <= field.max), {
+          message: `Value must be at most ${field.max}.`,
+        });
+    }
+
+    return z.any();
+  };
+
+  screen.fields.forEach((field) => {
+    const value = values[field.name];
+    const fieldSchema = getFieldSchema(field);
+    const result = fieldSchema.safeParse(value);
+
+    if (!result.success) {
+      errors[field.name] = result.error.issues[0]?.message || "Invalid value.";
     }
   });
 
