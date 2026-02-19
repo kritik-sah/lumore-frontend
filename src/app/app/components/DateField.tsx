@@ -48,11 +48,11 @@ const DateField = ({
     [onChange]
   );
 
-  // const minAgeDate = React.useMemo(() => {
-  //   const date = new Date();
-  //   date.setFullYear(date.getFullYear() - 18);
-  //   return date;
-  // }, []);
+  const minAgeDate = React.useMemo(() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 18);
+    return date;
+  }, []);
 
   return (
     <div className="border border-ui-shade/10 rounded-xl p-2">
@@ -79,13 +79,9 @@ const DateField = ({
             mode="single"
             selected={date}
             onSelect={handleDateSelect}
-            // disabled={(date) => {
-            //   const isDisabled = date > minAgeDate;
-            //   return isDisabled;
-            // }}
+            disabled={(date) => date > minAgeDate}
             defaultMonth={new Date()}
             captionLayout="dropdown"
-            // disableNavigation={true}
           />
         </PopoverContent>
       </Popover>

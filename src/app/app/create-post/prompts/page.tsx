@@ -12,6 +12,7 @@ import {
   fetchPromptCategories,
   fetchPromptsByCategories,
 } from "@/lib/apis";
+import { promptAnswerSchema } from "@/lib/validation";
 import { queryClient } from "@/service/query-client";
 import { getUser } from "@/service/storage";
 import { useQuery } from "@tanstack/react-query";
@@ -183,19 +184,26 @@ const PromptEditor = ({
 
   const [value, setValue] = useState(currentValue);
   const [visibility, setVisibility] = useState(initialVisibility);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setValue(currentValue);
     setVisibility(initialVisibility);
+    setError("");
   }, [currentValue, prompt?._id, initialVisibility]);
 
   const handleSubmit = async () => {
+    const parsed = promptAnswerSchema.safeParse(value);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message || "Invalid prompt answer.");
+      return;
+    }
     try {
       await onUpdate({
         type: "PROMPT",
         content: {
           promptId: prompt._id,
-          promptAnswer: value,
+          promptAnswer: parsed.data,
         },
         visibility,
       });
@@ -207,6 +215,7 @@ const PromptEditor = ({
 
   const handleCancel = () => {
     setValue(currentValue || getDefaultValue(prompt?._id));
+    setError("");
     setIsOpen(false);
   };
 
@@ -244,9 +253,13 @@ const PromptEditor = ({
               placeholder="Write your answer here..."
               name="promptAnswer"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setError("");
+              }}
               rows={3}
             />
+            {error ? <p className="mt-2 text-xs text-red-500">{error}</p> : null}
             <div className="border border-ui-shade/10 rounded-lg p-3 mt-3">
               <p className="text-ui-shade/80 text-sm">Visiblity Options</p>
               <div className="mt-2 flex flex-col gap-2">

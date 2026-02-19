@@ -16,6 +16,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { reportChatUser, submitChatFeedback } from "@/lib/apis";
+import { chatFeedbackSchema, chatReportSchema } from "@/lib/validation";
 import { calculateAge } from "@/utils/helpers";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -87,14 +88,18 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const handleSubmitFeedback = async () => {
     if (!roomId) return;
-    if (!feedbackText.trim()) {
-      setActionError("Please add feedback before ending the chat.");
+    const feedbackResult = chatFeedbackSchema.safeParse(feedbackText);
+    if (!feedbackResult.success) {
+      setActionError(
+        feedbackResult.error.issues[0]?.message ||
+          "Please add feedback before ending the chat.",
+      );
       return;
     }
     setIsSubmitting(true);
     setActionError("");
     try {
-      await submitChatFeedback(roomId, feedbackText.trim());
+      await submitChatFeedback(roomId, feedbackResult.data);
       toast.success("Feedback sent");
       closeSheet();
       onEndChat();
@@ -107,12 +112,15 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const handleReportUser = async () => {
     if (!roomId) return;
-    if (!reportCategory) {
-      setActionError("Please choose a report category.");
-      return;
-    }
-    if (!reportText.trim()) {
-      setActionError("Please describe the issue before reporting.");
+    const reportResult = chatReportSchema.safeParse({
+      category: reportCategory,
+      details: reportText,
+    });
+    if (!reportResult.success) {
+      setActionError(
+        reportResult.error.issues[0]?.message ||
+          "Please describe the issue before reporting.",
+      );
       return;
     }
     setIsSubmitting(true);
@@ -120,9 +128,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     try {
       await reportChatUser(
         roomId,
-        reportCategory,
+        reportResult.data.category,
         "report_from_chat",
-        reportText.trim(),
+        reportResult.data.details,
       );
       toast.success("Report submitted");
       closeSheet();
@@ -285,7 +293,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                       rows={4}
                       placeholder="What could they improve?"
                       value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
+                      onChange={(e) => {
+                        setFeedbackText(e.target.value);
+                        setActionError("");
+                      }}
                     />
                   </div>
                 ) : (
@@ -327,7 +338,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                       rows={4}
                       placeholder="Describe what happened..."
                       value={reportText}
-                      onChange={(e) => setReportText(e.target.value)}
+                      onChange={(e) => {
+                        setReportText(e.target.value);
+                        setActionError("");
+                      }}
                     />
                   </div>
                 )}

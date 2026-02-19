@@ -22,10 +22,11 @@ import {
   zodiacOptions,
 } from "@/lib/options";
 import React, { useState } from "react";
+import * as z from "zod";
 import DateField from "../../DateField";
-import { SelectField, TextAreaField, TextField } from "../../InputField";
-import MultiSelectField from "../../MultiSelectField";
-import { profileSchema } from "./profileSchema";
+import { TextAreaField, TextField } from "../../InputField";
+import MultiSelectChipField from "../../MultiSelectChipField";
+import { createProfileSchema } from "./profileSchema";
 
 interface FieldEditorProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ interface FieldEditorProps {
   onUpdate: (field: string, value: any) => Promise<void>;
   currentValue: any;
   form: any;
+  currentUsername?: string;
 }
 
 const FieldEditor = ({
@@ -43,11 +45,14 @@ const FieldEditor = ({
   onUpdate,
   currentValue,
   form,
+  currentUsername,
 }: FieldEditorProps) => {
   const [value, setValue] = useState(currentValue);
+  const [errorMessage, setErrorMessage] = useState("");
 
   React.useEffect(() => {
     setValue(currentValue);
+    setErrorMessage("");
   }, [currentValue]);
 
   const getFieldSchema = (schema: any, fieldPath: string) => {
@@ -56,22 +61,30 @@ const FieldEditor = ({
 
   const handleSubmit = async () => {
     try {
+      setErrorMessage("");
+      const profileSchema = createProfileSchema(currentUsername);
       const fieldSchema = getFieldSchema(profileSchema, fieldType);
       if (!fieldSchema) {
         throw new Error(`No schema found for field: ${fieldType}`);
       }
 
       await form.trigger(fieldType);
-      fieldSchema.parse(value);
+      await fieldSchema.parseAsync(value);
       await onUpdate(fieldType, value);
       setIsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        setErrorMessage(error.issues[0]?.message || "Invalid value");
+        return;
+      }
       console.error("Validation error:", error);
+      setErrorMessage("Unable to update this field. Please try again.");
     }
   };
 
   const handleCancel = () => {
     setValue(currentValue);
+    setErrorMessage("");
     setIsOpen(false);
   };
 
@@ -102,7 +115,10 @@ const FieldEditor = ({
                 label="Username"
                 value={value || ""}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 placeholder="Enter unique username"
               />
             ) : null}
@@ -111,7 +127,10 @@ const FieldEditor = ({
                 label="Nickname"
                 value={value || ""}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 placeholder="Enter your nickname"
               />
             ) : null}
@@ -120,7 +139,10 @@ const FieldEditor = ({
                 label="Real Name"
                 value={value || ""}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 placeholder="Enter your real name"
               />
             ) : null}
@@ -129,28 +151,39 @@ const FieldEditor = ({
                 label="Phone Number"
                 value={value || ""}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value.replace(/\s+/g, ""))}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value.replace(/\s+/g, ""));
+                }}
                 placeholder="Enter your phone number (e.g., +917021245436)"
               />
             ) : null}
             {fieldType === "bloodGroup" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Blood Group"
                 options={bloodTypeOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="Select your blood group"
               />
             ) : null}
             {fieldType === "interests" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 label="Interests"
                 max={5}
                 options={interestOptions}
                 value={value || []}
                 name="interests"
-                onChange={setValue}
+                multiple
+                onChange={(newValue) => {
+                  setErrorMessage("");
+                  setValue(newValue);
+                }}
                 placeholder="What excites you the most?"
               />
             ) : null}
@@ -159,17 +192,24 @@ const FieldEditor = ({
                 label="Bio"
                 value={value || ""}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 placeholder="Enter your bio"
               />
             ) : null}
             {fieldType === "gender" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Gender"
                 options={genderOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="Select your gender"
               />
             ) : null}
@@ -177,7 +217,10 @@ const FieldEditor = ({
               <DateField
                 label="Date of Birth"
                 value={value}
-                onChange={setValue}
+                onChange={(newValue) => {
+                  setErrorMessage("");
+                  setValue(newValue);
+                }}
                 placeholder={value || "Select your date of birth"}
               />
             ) : null}
@@ -186,56 +229,79 @@ const FieldEditor = ({
                 label="Height in cm."
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 type="number"
                 min={100}
                 max={250}
               />
             ) : null}
             {fieldType === "diet" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Diet"
                 options={dietOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="Select your diet"
               />
             ) : null}
             {fieldType === "zodiacSign" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Zodiac Sign"
                 options={zodiacOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="Select your zodiac sign"
               />
             ) : null}
             {fieldType === "lifestyle" ? (
               <>
-                <SelectField
+                <MultiSelectChipField
                   label="Drinking Habit"
                   options={drinkingOptions}
                   value={value?.drinking}
                   name="lifestyle.drinking"
-                  onChange={(e) => setValue({ ...value, drinking: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, drinking: e });
+                  }}
                   placeholder="How often do you drink?"
                 />
-                <SelectField
+                <MultiSelectChipField
                   label="Smoking Habit"
                   options={smokingOptions}
                   value={value?.smoking}
                   name="lifestyle.smoking"
-                  onChange={(e) => setValue({ ...value, smoking: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, smoking: e });
+                  }}
                   placeholder="How often do you smoke?"
                 />
-                <SelectField
+                <MultiSelectChipField
                   label="Pets"
                   options={petOptions}
                   value={value?.pets}
                   name="lifestyle.pets"
-                  onChange={(e) => setValue({ ...value, pets: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, pets: e });
+                  }}
                   placeholder="Do you have a pet?"
                 />
               </>
@@ -245,7 +311,10 @@ const FieldEditor = ({
                 label="Work"
                 value={value}
                 name="work"
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e.target.value);
+                }}
                 placeholder="What do you do?"
               />
             ) : null}
@@ -254,50 +323,72 @@ const FieldEditor = ({
                 label="Institution"
                 value={value}
                 name="institution"
-                onChange={(e) => setValue(e?.target?.value)}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e?.target?.value);
+                }}
                 placeholder="Where did you study?"
               />
             ) : null}
             {fieldType === "maritalStatus" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Marital Status"
                 options={maritalStatusOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="What is your marital status?"
               />
             ) : null}
             {fieldType === "languages" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 label="Languages"
                 options={languageOptions}
                 value={value}
                 name={fieldType}
                 max={5}
-                onChange={(selectedValues) => setValue(selectedValues)}
+                multiple
+                onChange={(selectedValues) => {
+                  setErrorMessage("");
+                  setValue(selectedValues);
+                }}
                 placeholder="What languages do you speak?"
               />
             ) : null}
             {fieldType === "personalityType" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Personality Type"
                 options={personalityTypeOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="What is your personality type?"
               />
             ) : null}
             {fieldType === "religion" ? (
-              <SelectField
+              <MultiSelectChipField
                 label="Religion"
                 options={religionOptions}
                 value={value}
                 name={fieldType}
-                onChange={(e) => setValue(e)}
+                multiple={false}
+                onChange={(e) => {
+                  setErrorMessage("");
+                  setValue(e);
+                }}
                 placeholder="What is your religion?"
               />
+            ) : null}
+            {errorMessage ? (
+              <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
             ) : null}
           </div>
         </div>

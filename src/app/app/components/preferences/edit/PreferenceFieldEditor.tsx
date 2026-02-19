@@ -22,13 +22,11 @@ import {
   zodiacOptions,
 } from "@/lib/options";
 import { useEffect, useState } from "react";
-import {
-  MultisliderField,
-  SelectField,
-  SliderField,
-} from "../../InputField";
-import MultiSelectField from "../../MultiSelectField";
+import * as z from "zod";
+import { MultisliderField, SliderField } from "../../InputField";
+import MultiSelectChipField from "../../MultiSelectChipField";
 import type { UserPreferences } from "../../../hooks/useUserPrefrence";
+import { preferenceSchema } from "./preferenceSchema";
 
 interface PreferenceFieldEditorProps {
   isOpen: boolean;
@@ -46,6 +44,11 @@ const PreferenceFieldEditor = ({
   currentValue,
 }: PreferenceFieldEditorProps) => {
   const [value, setValue] = useState(currentValue);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const getFieldSchema = (schema: any, fieldPath: string) => {
+    return fieldPath.split(".").reduce((acc, key) => acc?.shape?.[key], schema);
+  };
 
   const getDefaultValue = (field?: keyof UserPreferences | "") => {
     switch (field) {
@@ -73,19 +76,32 @@ const PreferenceFieldEditor = ({
 
   useEffect(() => {
     setValue(currentValue);
+    setErrorMessage("");
   }, [currentValue, fieldType]);
 
   const handleSubmit = async () => {
     try {
+      setErrorMessage("");
+      const fieldSchema = getFieldSchema(preferenceSchema, fieldType || "");
+      if (!fieldSchema) {
+        throw new Error(`No schema found for field: ${fieldType}`);
+      }
+      await fieldSchema.parseAsync(value);
       await onUpdate(fieldType as keyof UserPreferences, value);
       setIsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        setErrorMessage(error.issues[0]?.message || "Invalid value");
+        return;
+      }
       console.error("Error updating field:", error);
+      setErrorMessage("Unable to update this field. Please try again.");
     }
   };
 
   const handleCancel = () => {
     setValue(currentValue || getDefaultValue(fieldType));
+    setErrorMessage("");
     setIsOpen(false);
   };
 
@@ -112,12 +128,16 @@ const PreferenceFieldEditor = ({
         <div className="flex-1 overflow-y-auto px-2">
           <div className="flex flex-col gap-2">
             {fieldType === "interestedIn" ? (
-              <SelectField
+              <MultiSelectChipField
                 name="interestedIn"
                 label="Interested In"
                 options={interestedInOptions}
                 value={value}
-                onChange={setValue}
+                multiple={false}
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select gender preferences"
               />
             ) : null}
@@ -127,7 +147,10 @@ const PreferenceFieldEditor = ({
                 name="ageRange"
                 label="Age Range"
                 value={value}
-                onChange={setValue}
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 min={18}
                 max={50}
               />
@@ -138,7 +161,10 @@ const PreferenceFieldEditor = ({
                 name="distance"
                 label="Maximum Distance (km)"
                 value={[value || 10]}
-                onChange={setValue}
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 min={1}
                 max={100}
               />
@@ -149,147 +175,205 @@ const PreferenceFieldEditor = ({
                 name="heightRange"
                 label="Height Range"
                 value={value}
-                onChange={setValue}
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 min={140}
                 max={220}
               />
             ) : null}
             {fieldType === "goal" ? (
               <>
-                <SelectField
+                <MultiSelectChipField
                   name="goal.primary"
                   label="Primary Goal"
                   options={goalOptions}
                   value={value?.primary || "Undecided"}
-                  onChange={(e) => setValue({ ...value, primary: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, primary: e });
+                  }}
                   placeholder="Select primary goal"
                 />
-                <SelectField
+                <MultiSelectChipField
                   name="goal.secondary"
                   label="Secondary Goal"
                   options={goalOptions}
                   value={value?.secondary || "Undecided"}
-                  onChange={(e) => setValue({ ...value, secondary: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, secondary: e });
+                  }}
                   placeholder="Select secondary goal"
                 />
-                <SelectField
+                <MultiSelectChipField
                   name="goal.tertiary"
                   label="Tertiary Goal"
                   options={goalOptions}
                   value={value?.tertiary || "Undecided"}
-                  onChange={(e) => setValue({ ...value, tertiary: e })}
+                  multiple={false}
+                  onChange={(e) => {
+                    setErrorMessage("");
+                    setValue({ ...value, tertiary: e });
+                  }}
                   placeholder="Select tertiary goal"
                 />
               </>
             ) : null}
             {fieldType === "interests" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="interests"
                 label="Interests"
                 max={5}
                 options={interestOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="What vibes are you looking for?"
               />
             ) : null}
             {fieldType === "relationshipType" ? (
-              <SelectField
+              <MultiSelectChipField
                 name="relationshipType"
                 label="Relationship Type"
                 options={relationshipTypeOptions}
                 value={value || "Not Specified"}
-                onChange={setValue}
+                multiple={false}
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select relationship type"
               />
             ) : null}
             {fieldType === "languages" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="languages"
                 label="Preferred Languages"
                 max={5}
                 options={languageOptions}
                 value={value || []}
-                onChange={(selectedValues) => setValue(selectedValues)}
+                multiple
+                onChange={(selectedValues) => {
+                  setErrorMessage("");
+                  setValue(selectedValues);
+                }}
                 placeholder="What languages do you prefer to speak?"
               />
             ) : null}
             {fieldType === "zodiacPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="zodiacPreference"
                 label="Zodiac Preferences"
                 max={5}
                 options={zodiacOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select zodiac preferences"
               />
             ) : null}
             {fieldType === "personalityTypePreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="personalityTypePreference"
                 label="Personality Type Preferences"
                 max={5}
                 options={personalityTypeOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select personality type preferences"
               />
             ) : null}
             {fieldType === "dietPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="dietPreference"
                 label="Diet Preferences"
                 max={5}
                 options={dietOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select diet preferences"
               />
             ) : null}
             {fieldType === "religionPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="religionPreference"
                 label="Religion Preferences"
                 max={5}
                 options={religionOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select religion preferences"
               />
             ) : null}
             {fieldType === "drinkingPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="drinkingPreference"
                 label="Drinking Preferences"
                 max={5}
                 options={drinkingOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select drinking preferences"
               />
             ) : null}
             {fieldType === "smokingPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="smokingPreference"
                 label="Smoking Preferences"
                 max={5}
                 options={smokingOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select smoking preferences"
               />
             ) : null}
             {fieldType === "petPreference" ? (
-              <MultiSelectField
+              <MultiSelectChipField
                 name="petPreference"
                 label="Pet Preferences"
                 max={5}
                 options={petOptions}
                 value={value || []}
-                onChange={setValue}
+                multiple
+                onChange={(nextValue) => {
+                  setErrorMessage("");
+                  setValue(nextValue);
+                }}
                 placeholder="Select pet preferences"
               />
+            ) : null}
+            {errorMessage ? (
+              <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
             ) : null}
           </div>
         </div>

@@ -2,6 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { submitThisOrThatQuestion } from "@/lib/apis";
+import {
+  thisOrThatCategorySchema,
+  thisOrThatTextSchema,
+} from "@/lib/validation";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, {
@@ -112,6 +116,29 @@ const SubmitThisOrThatPage = () => {
     e.preventDefault();
     setError("");
 
+    const leftResult = thisOrThatTextSchema.safeParse(leftOption);
+    if (!leftResult.success) {
+      setError(`Option A: ${leftResult.error.issues[0]?.message}`);
+      return;
+    }
+
+    const rightResult = thisOrThatTextSchema.safeParse(rightOption);
+    if (!rightResult.success) {
+      setError(`Option B: ${rightResult.error.issues[0]?.message}`);
+      return;
+    }
+
+    const categoryResult = thisOrThatCategorySchema.safeParse(category);
+    if (!categoryResult.success) {
+      setError(categoryResult.error.issues[0]?.message || "Invalid category.");
+      return;
+    }
+
+    if (leftResult.data.toLowerCase() === rightResult.data.toLowerCase()) {
+      setError("Option A and Option B must be different.");
+      return;
+    }
+
     if (!canSubmit) {
       setError("Provide two different options and upload both images.");
       return;
@@ -119,11 +146,11 @@ const SubmitThisOrThatPage = () => {
 
     try {
       await mutateAsync({
-        leftOption: leftOption.trim(),
+        leftOption: leftResult.data,
         leftImage: leftImageFile as File,
-        rightOption: rightOption.trim(),
+        rightOption: rightResult.data,
         rightImage: rightImageFile as File,
-        category: category.trim() || "general",
+        category: categoryResult.data || "general",
       });
       router.push("/app/games/this-or-that");
     } catch (submitError: any) {
@@ -153,7 +180,10 @@ const SubmitThisOrThatPage = () => {
               </label>
               <input
                 value={leftOption}
-                onChange={(e) => setLeftOption(e.target.value)}
+                onChange={(e) => {
+                  setLeftOption(e.target.value);
+                  setError("");
+                }}
                 maxLength={120}
                 placeholder="e.g. Road trip"
                 className="mt-2 h-11 w-full rounded-lg border border-ui-shade/20 px-3 outline-none focus:border-ui-highlight"
@@ -174,7 +204,10 @@ const SubmitThisOrThatPage = () => {
               </label>
               <input
                 value={rightOption}
-                onChange={(e) => setRightOption(e.target.value)}
+                onChange={(e) => {
+                  setRightOption(e.target.value);
+                  setError("");
+                }}
                 maxLength={120}
                 placeholder="e.g. Staycation"
                 className="mt-2 h-11 w-full rounded-lg border border-ui-shade/20 px-3 outline-none focus:border-ui-highlight"
@@ -195,7 +228,10 @@ const SubmitThisOrThatPage = () => {
               </label>
               <input
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setError("");
+                }}
                 maxLength={60}
                 placeholder="e.g. travel, food, lifestyle"
                 className="mt-2 h-11 w-full rounded-lg border border-ui-shade/20 px-3 outline-none focus:border-ui-highlight"

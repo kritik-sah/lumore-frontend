@@ -1,21 +1,21 @@
 "use client";
 
+import { emailSchema, phoneSchema, walletSchema } from "@/lib/validation";
+
 export function validateSettingsField(field: string, value: string) {
   if (field === "email") {
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(value)) return "Invalid email format";
+    const result = emailSchema.safeParse(value);
+    if (!result.success) return result.error.issues[0]?.message || "Invalid email format";
   }
 
   if (field === "phoneNumber") {
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-    if (!phoneRegex.test(value.replace(/\s+/g, ""))) {
-      return "Invalid phone number format";
-    }
+    const result = phoneSchema.safeParse(value);
+    if (!result.success) return result.error.issues[0]?.message || "Invalid phone number format";
   }
 
   if (field === "web3Wallet") {
-    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
-    if (!walletRegex.test(value)) return "Invalid wallet address format";
+    const result = walletSchema.safeParse(value);
+    if (!result.success) return result.error.issues[0]?.message || "Invalid wallet address format";
   }
 
   return "";

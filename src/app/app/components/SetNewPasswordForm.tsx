@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setNewPassword } from "@/lib/apis";
+import { passwordSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -46,13 +47,19 @@ export function SetNewPasswordForm({
     const { newPassword, confirmPassword } = formData;
 
     if (!newPassword || !confirmPassword) {
-      newErrors.newPassword = "Password is required";
+      newErrors.newPassword = "Password is required.";
       valid = false;
-    } else if (newPassword.length < 6) {
-      newErrors.newPassword = "Password must be at least 6 characters";
+    } else {
+      const result = passwordSchema.safeParse(newPassword);
+      if (!result.success) {
+        newErrors.newPassword = result.error.issues[0]?.message || "Invalid password.";
+        valid = false;
+      }
+    }
+
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Both password fields must be the same.";
       valid = false;
-    } else if (newPassword !== confirmPassword) {
-      newErrors.newPassword = "Both password field should be same";
     }
 
     setErrors(newErrors);

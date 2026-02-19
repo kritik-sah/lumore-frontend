@@ -3,6 +3,7 @@
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { referralCodeSchema } from "@/lib/validation";
 import {
   getAccessToken,
   getPendingReferralCode,
@@ -20,6 +21,7 @@ export default function ReferralPage() {
   const initialCode = searchParams.get("code") || "";
   const applyMutation = useApplyReferralCode();
   const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
@@ -93,11 +95,17 @@ export default function ReferralPage() {
 
   const handleApply = async () => {
     if (!canApply) return;
+    const parsed = referralCodeSchema.safeParse(code);
+    if (!parsed.success) {
+      setCodeError(parsed.error.issues[0]?.message || "Invalid referral code.");
+      return;
+    }
+    setCodeError("");
     try {
-      await applyMutation.mutateAsync(code.trim());
+      await applyMutation.mutateAsync(parsed.data);
       removePendingReferralCode();
     } catch (error: any) {
-      alert(error?.response?.data?.message || "Could not apply referral code");
+      setCodeError(error?.response?.data?.message || "Could not apply referral code");
     }
   };
 
@@ -153,6 +161,7 @@ export default function ReferralPage() {
               onChange={(e) => {
                 const nextCode = e.target.value;
                 setCode(nextCode);
+                setCodeError("");
                 const normalized = nextCode.trim();
                 if (normalized) {
                   setPendingReferralCode(normalized);
@@ -167,6 +176,7 @@ export default function ReferralPage() {
                 Already applied: {referredBy}
               </p>
             ) : null}
+            {codeError ? <p className="text-sm text-red-500">{codeError}</p> : null}
             <Button className="w-full" onClick={handleApply}>
               {applyMutation.isPending ? "Applying..." : "Apply code"}
             </Button>

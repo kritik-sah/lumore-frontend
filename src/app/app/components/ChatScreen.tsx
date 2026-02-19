@@ -1,6 +1,7 @@
 "use client";
 import { ChatRoomLoader } from "@/components/page-loaders";
 import { deleteTempChatImage, uploadChatImage } from "@/lib/apis";
+import { messageSchema } from "@/lib/validation";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
 import CryptoJS from "crypto-js";
@@ -227,6 +228,13 @@ const ChatScreen = () => {
 
     const trimmed = newMessage.trim();
     if (!trimmed && !pendingImage) return;
+    if (trimmed) {
+      const messageResult = messageSchema.safeParse(trimmed);
+      if (!messageResult.success) {
+        setUploadError(messageResult.error.issues[0]?.message || "Invalid message.");
+        return;
+      }
+    }
 
     if (editingMessageId) {
       if (!trimmed) return;
