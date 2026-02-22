@@ -1,12 +1,22 @@
 import Provider from "@/app/app/context/index";
 import type { Metadata } from "next";
+import type { Viewport } from "next";
+import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
 import LumoreSplash from "./components/LumoreSplash";
+import { ChatRecoveryGate } from "./components/recovery/ChatRecoveryGate";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
   description:
     "Lumore connects you instantly with like-minded people through real-time, anonymous chat, eliminating endless swiping.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -18,8 +28,11 @@ export default function RootLayout({
     <Provider>
       <ExploreChatProvider>
         <LumoreSplash />
+        <ChatRecoveryGate />
         <div className="h-[100svh]">
-          <main className="flex flex-col h-full">{children}</main>
+          <AppInteractionGuard>
+            <main className="flex flex-col h-full">{children}</main>
+          </AppInteractionGuard>
         </div>
       </ExploreChatProvider>
     </Provider>

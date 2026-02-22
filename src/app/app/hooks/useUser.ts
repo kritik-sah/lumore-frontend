@@ -1,5 +1,9 @@
 import { apiClient } from "@/service/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef } from "react";
+import { getUser, removeAccessToken, removeRefreshToken, removeUser } from "@/service/storage";
 
 interface User {
   _id: string;
@@ -100,6 +104,15 @@ const updateFieldVisibility = async ({
 
 export const useUser = (userId: string) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const hasForcedLogoutRef = useRef(false);
+  const currentUserId = useMemo(() => {
+    try {
+      return getUser()?._id || "";
+    } catch {
+      return "";
+    }
+  }, []);
 
   const {
     data: user,
@@ -109,6 +122,25 @@ export const useUser = (userId: string) => {
     queryKey: ["user", userId],
     queryFn: () => fetchUser(userId),
   });
+
+  useEffect(() => {
+    if (hasForcedLogoutRef.current) return;
+    if (!error) return;
+    if (!userId || !currentUserId || userId !== currentUserId) return;
+
+    const status = (error as any)?.response?.status;
+    const shouldForceLogout = status === 401 || status === 403 || status === 404;
+    if (!shouldForceLogout) return;
+
+    hasForcedLogoutRef.current = true;
+    removeAccessToken();
+    removeRefreshToken();
+    removeUser();
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("user");
+    router.replace("/app/login");
+  }, [currentUserId, error, router, userId]);
 
   const updateFieldMutation = useMutation({
     mutationFn: ({ field, value }: { field: string; value: any }) =>

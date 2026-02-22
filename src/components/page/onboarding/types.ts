@@ -15,7 +15,7 @@ export type FieldType =
 
 export interface Field {
   type: FieldType;
-  place: "user" | "prefrence" | "password";
+  place: "user" | "prefrence" | "password" | "recovery";
   name: string;
   label: string;
   required?: boolean;

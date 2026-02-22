@@ -1,16 +1,30 @@
 "use client";
 import { ChatRoomLoader } from "@/components/page-loaders";
-import { deleteTempChatImage, uploadChatImage } from "@/lib/apis";
+import {
+  deleteTempChatImage,
+  fetchRecoveryStatus,
+  setupRecoveryPin,
+  uploadChatImage,
+} from "@/lib/apis";
+import {
+  buildPinRecoveryBackup,
+  ensureIdentityKeyPair,
+} from "@/lib/chat-crypto/identity";
 import { messageSchema } from "@/lib/validation";
 import { trackAnalytic } from "@/service/analytics";
-import { getUser } from "@/service/storage";
-import CryptoJS from "crypto-js";
+import {
+  getUser,
+  setChatSecurePromptShownToday,
+  wasChatSecurePromptShownToday,
+} from "@/service/storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useSocket } from "../context/SocketContext";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
 import { ChatMessages } from "./chat/ChatMessages";
+import type { EncryptedMessageContent } from "@/lib/chat-crypto/message";
+import { RecoveryPinSheet } from "./recovery/RecoveryPinSheet";
 
 export interface ChatReaction {
   userId: string;
@@ -30,6 +44,7 @@ export interface Message {
   clientMessageId?: string;
   sender: string;
   message: string;
+  encryptedContent?: EncryptedMessageContent | null;
   messageType?: "text" | "image";
   imageUrl?: string | null;
   imagePublicId?: string | null;
@@ -49,18 +64,6 @@ interface PendingImage {
   uploading: boolean;
 }
 
-interface KeyExchangeRequest {
-  fromUserId: string;
-  sessionKey: string;
-  timestamp: number;
-}
-
-interface KeyExchangeResponse {
-  fromUserId: string;
-  sessionKey: string;
-  timestamp: number;
-}
-
 const DEFAULT_HEART_EMOJI = "\u2764\uFE0F";
 const DRAFT_KEY_PREFIX = "chat_draft_";
 const CLIENT_MESSAGE_ID_RANDOM_SLICE_START = 2;
@@ -75,6 +78,10 @@ const ChatScreen = () => {
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
+  const [recoveryEnabled, setRecoveryEnabled] = useState(true);
+  const [secureSheetOpen, setSecureSheetOpen] = useState(false);
+  const [secureStatus, setSecureStatus] = useState<string | null>(null);
+  const [secureLoading, setSecureLoading] = useState(false);
   const pendingImageRef = useRef<PendingImage | null>(null);
   const uploadRequestIdRef = useRef(0);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -101,7 +108,27 @@ const ChatScreen = () => {
     setMessages,
     isLoading,
     isActive,
+    encryptTextForSend,
   } = useChat();
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const status = await fetchRecoveryStatus();
+        if (!cancelled) {
+          setRecoveryEnabled(Boolean(status?.recoveryEnabled));
+        }
+      } catch {
+        if (!cancelled) {
+          setRecoveryEnabled(true);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const replyingToPreview = useMemo(() => {
     if (!replyingTo?._id) return null;
@@ -166,68 +193,37 @@ const ChatScreen = () => {
   useEffect(() => {
     if (!socket || !roomId) return;
 
-    const storedKey = localStorage.getItem(`chat_key_${roomId}`);
-    if (storedKey) {
-      setIsConnected(true);
-    }
-
     socket.emit("joinChat", { roomId });
+    setIsConnected(socket.connected);
 
-    socket.on("key_exchange_request", async (data: KeyExchangeRequest) => {
-      const { fromUserId, sessionKey } = data;
-
-      if (roomId && storedKey !== sessionKey) {
-        localStorage.setItem(`chat_key_${roomId}`, sessionKey);
-        setIsConnected(true);
-        socket.emit("key_exchange_response", {
-          fromUserId,
-          sessionKey,
-          timestamp: Date.now(),
-        });
-      }
-    });
-
-    socket.on("key_exchange_response", async (data: KeyExchangeResponse) => {
-      const { sessionKey } = data;
-
-      if (storedKey !== sessionKey) {
-        localStorage.setItem(`chat_key_${roomId}`, sessionKey);
-        setIsConnected(true);
-      }
-    });
-
-    socket.emit("init_key_exchange", { roomId });
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
 
     return () => {
-      socket.off("key_exchange_request");
-      socket.off("key_exchange_response");
+      socket.emit("leaveChat", { roomId });
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
     };
   }, [socket, roomId]);
 
-  const encryptText = (text: string) => {
-    const encryptionKey = localStorage.getItem(`chat_key_${roomId}`);
-    if (!encryptionKey) return null;
-
-    const iv = CryptoJS.lib.WordArray.random(16);
-    const key = CryptoJS.enc.Hex.parse(encryptionKey);
-    const encrypted = CryptoJS.AES.encrypt(text, key, {
-      iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-
-    return {
-      encryptedContent: encrypted.ciphertext.toString(CryptoJS.enc.Hex),
-      iv: iv.toString(CryptoJS.enc.Hex),
-    };
-  };
-
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!socket || !roomId || !matchedUser || !isActive) return;
     if (pendingImage?.uploading) return;
 
     const trimmed = newMessage.trim();
     if (!trimmed && !pendingImage) return;
+    if (
+      !recoveryEnabled &&
+      userId &&
+      !wasChatSecurePromptShownToday(userId) &&
+      !secureSheetOpen
+    ) {
+      setChatSecurePromptShownToday(userId);
+      setSecureSheetOpen(true);
+      return;
+    }
     if (trimmed) {
       const messageResult = messageSchema.safeParse(trimmed);
       if (!messageResult.success) {
@@ -238,14 +234,12 @@ const ChatScreen = () => {
 
     if (editingMessageId) {
       if (!trimmed) return;
-      const encryptedPayload = encryptText(trimmed);
-      if (!encryptedPayload) return;
-
+      const encrypted = await encryptTextForSend(trimmed);
       socket.emit("edit_message", {
         roomId,
         messageId: editingMessageId,
-        encryptedContent: encryptedPayload.encryptedContent,
-        iv: encryptedPayload.iv,
+        message: encrypted ? undefined : trimmed,
+        encryptedContent: encrypted?.encryptedContent || null,
       });
       setEditingMessageId(null);
       setNewMessage("");
@@ -285,42 +279,41 @@ const ChatScreen = () => {
     }
 
     if (trimmed) {
-      const encryptedPayload = encryptText(trimmed);
-      if (encryptedPayload) {
-        const textClientMessageId = createClientMessageId();
+      const textClientMessageId = createClientMessageId();
+      const encrypted = await encryptTextForSend(trimmed);
 
-        trackAnalytic({
-          activity: "message_sent",
-          label: "Message Sent",
-          value: roomId,
-        });
+      trackAnalytic({
+        activity: "message_sent",
+        label: "Message Sent",
+        value: roomId,
+      });
 
-        socket.emit("send_message", {
-          roomId,
-          receiverId: matchedUser._id,
-          encryptedContent: encryptedPayload.encryptedContent,
-          iv: encryptedPayload.iv,
-          replyTo: replyingToPreview?._id || null,
-          messageType: "text",
+      socket.emit("send_message", {
+        roomId,
+        receiverId: matchedUser._id,
+        message: encrypted ? undefined : trimmed,
+        encryptedContent: encrypted?.encryptedContent || null,
+        replyTo: replyingToPreview?._id || null,
+        messageType: "text",
+        clientMessageId: textClientMessageId,
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        {
           clientMessageId: textClientMessageId,
-        });
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            clientMessageId: textClientMessageId,
-            sender: userId,
-            message: trimmed,
-            messageType: "text",
-            timestamp: Date.now(),
-            replyTo: replyingToPreview,
-            reactions: [],
-            pending: true,
-            deliveredAt: null,
-            readAt: null,
-          },
-        ]);
-      }
+          sender: userId,
+          message: trimmed,
+          encryptedContent: encrypted?.encryptedContent || null,
+          messageType: "text",
+          timestamp: Date.now(),
+          replyTo: replyingToPreview,
+          reactions: [],
+          pending: true,
+          deliveredAt: null,
+          readAt: null,
+        },
+      ]);
     }
 
     setNewMessage("");
@@ -570,6 +563,33 @@ const ChatScreen = () => {
         pendingImage={pendingImage}
         uploadError={uploadError}
         onDismissUploadError={dismissUploadError}
+      />
+      <RecoveryPinSheet
+        open={secureSheetOpen}
+        onOpenChange={setSecureSheetOpen}
+        title="Secure your chats"
+        description="Set a 6-digit chat PIN to restore secure messages on new devices."
+        submitLabel="Secure now"
+        secondaryLabel="Later"
+        onSecondary={() => setSecureSheetOpen(false)}
+        loading={secureLoading}
+        statusText={secureStatus}
+        onSubmit={async (pin) => {
+          setSecureLoading(true);
+          setSecureStatus(null);
+          try {
+            await ensureIdentityKeyPair();
+            const backup = await buildPinRecoveryBackup(pin);
+            await setupRecoveryPin({ ...backup, pin });
+            setRecoveryEnabled(true);
+            setSecureStatus("Chats are secured.");
+            setSecureSheetOpen(false);
+          } catch {
+            setSecureStatus("Could not secure chats right now.");
+          } finally {
+            setSecureLoading(false);
+          }
+        }}
       />
     </div>
   );

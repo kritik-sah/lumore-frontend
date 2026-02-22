@@ -5,7 +5,6 @@ import { trackAnalytic } from "@/service/analytics";
 import { queryClient } from "@/service/query-client";
 import { getUser } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
-import CryptoJS from "crypto-js";
 import { useRouter } from "next/navigation";
 import {
   createContext,

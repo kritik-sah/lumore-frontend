@@ -50,7 +50,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         <div
           onDoubleClick={onDoubleLike}
           onTouchEnd={handleTouchEnd}
-          className={`rounded-xl whitespace-pre-wrap break-words p-3 ${
+          className={`chat-copy-allowed rounded-xl whitespace-pre-wrap break-words p-3 ${
             isOwnMessage ? "bg-ui-highlight text-white" : "bg-ui-highlight/5"
           }`}
         >
