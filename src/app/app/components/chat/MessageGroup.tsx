@@ -34,3 +34,4 @@ export const MessageGroup: React.FC<MessageGroupProps> = ({
     </div>
   );
 };
+

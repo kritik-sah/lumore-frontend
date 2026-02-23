@@ -75,7 +75,7 @@ export default function Features() {
           {features.map((service, index) => (
             <div
               key={index}
-              className={`relative px-6 py-6 flex flex-col items-start justify-start gap-3 rounded-xl border-2 border-black bg-white text-black shadow-[6px_6px_0px_0px_rgba(0,0,0)] min-h-[190px] ${
+              className={`relative px-6 py-6 flex flex-col items-start justify-start gap-3 rounded-xl border-2 border-ui-shade bg-ui-light text-ui-shade shadow-[6px_6px_0px_0px_rgba(0,0,0)] min-h-[190px] ${
                 service.status === "live"
                   ? "border-l-8 border-l-ui-primary"
                   : "border-l-8 border-l-ui-highlight"
@@ -85,7 +85,7 @@ export default function Features() {
                 className={`inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${
                   service.status === "live"
                     ? "bg-ui-primary text-ui-shade"
-                    : "bg-ui-highlight text-white"
+                    : "bg-ui-highlight text-ui-light"
                 }`}
               >
                 {service.status === "live" ? "Live" : "Upcoming"}
@@ -102,3 +102,4 @@ export default function Features() {
     </section>
   );
 }
+

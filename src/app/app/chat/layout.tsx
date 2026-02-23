@@ -14,3 +14,4 @@ export default function RootLayout({
 }) {
   return <ChatProvider>{children}</ChatProvider>;
 }
+

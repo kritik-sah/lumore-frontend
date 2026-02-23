@@ -9,11 +9,11 @@ const OfflinePage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-ui-background p-4 text-center">
-      <div className="bg-white rounded-2xl shadow-xl p-4 max-w-md w-full">
+      <div className="bg-ui-light rounded-2xl shadow-xl p-4 max-w-md w-full">
         <div className="flex flex-col items-center space-y-4">
           <AlertTriangle className="w-12 h-12 text-ui-primary" />
-          <h1 className="text-2xl font-semibold text-gray-800">You&apos;re Offline</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-semibold text-ui-shade">You&apos;re Offline</h1>
+          <p className="text-ui-shade/70">
             It seems you&apos;ve lost your internet connection. Please check your connection and try again.
           </p>
           <button
@@ -29,3 +29,4 @@ const OfflinePage = () => {
 };
 
 export default OfflinePage;
+

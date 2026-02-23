@@ -25,3 +25,4 @@ const PostTypeCard = ({
 };
 
 export default PostTypeCard;
+

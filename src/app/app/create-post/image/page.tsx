@@ -178,3 +178,4 @@ const CreateImagePostPage = () => {
 };
 
 export default CreateImagePostPage;
+

@@ -31,6 +31,11 @@ export interface Field {
 }
 
 export interface Screen {
+  id: string;
   title: string;
+  required: boolean;
   fields: Field[];
 }
+
+export type OnboardingStepConfig = Screen;
+

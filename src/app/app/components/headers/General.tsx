@@ -6,7 +6,7 @@ import Icon from "@/components/icon";
 
 const General = ({ userSetting }: { userSetting?: boolean }) => {
   return (
-    <header className="z-50 w-full bg-ui-light max-h-16">
+    <header className="z-50 w-full bg-bg-surface max-h-16">
       <div className="container mx-auto px-2 md:px-0 flex h-14 items-center">
         <div className="mr-4 flex">
           <Link href="/app" className="mr-6 flex items-center space-x-2">
@@ -31,3 +31,4 @@ const General = ({ userSetting }: { userSetting?: boolean }) => {
 };
 
 export default General;
+

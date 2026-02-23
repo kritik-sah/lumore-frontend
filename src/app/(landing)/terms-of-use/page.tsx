@@ -2,7 +2,7 @@ import React from 'react';
 
 const TermsOfUse = () => {
     return (
-        <div className="max-w-4xl mx-auto p-6 text-gray-800">
+        <div className="max-w-4xl mx-auto p-6 text-ui-shade">
             <h1 className="text-3xl font-bold mb-6">Terms of Use</h1>
             <p className="italic mb-4">Effective Date: 26 May 2025</p>
 
@@ -62,13 +62,13 @@ const TermsOfUse = () => {
                     <h2 className="text-xl font-semibold mb-2">{title}</h2>
                     <ul className="list-disc ml-5 space-y-1">
                         {content.map((item, subIdx) => (
-                            <li key={subIdx} className="text-gray-700">{item}</li>
+                            <li key={subIdx} className="text-ui-shade/80">{item}</li>
                         ))}
                     </ul>
                 </section>
             ))}
 
-            <div className="mt-10 border-t pt-6 text-sm italic text-gray-600">
+            <div className="mt-10 border-t pt-6 text-sm italic text-ui-shade/70">
                 By using Lumore, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use.
             </div>
         </div>
@@ -76,3 +76,4 @@ const TermsOfUse = () => {
 };
 
 export default TermsOfUse;
+

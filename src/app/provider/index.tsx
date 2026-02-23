@@ -10,8 +10,8 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       <GoogleOAuthProvider clientId="681858960345-ve9vanjcbhk293pj2niqnvme31m2kded.apps.googleusercontent.com">
         <ReactQueryProvider>
           <OptionsProvider>
-            <PushNotificationProvider>{children}</PushNotificationProvider>
-          </OptionsProvider>
+              <PushNotificationProvider>{children}</PushNotificationProvider>
+            </OptionsProvider>
         </ReactQueryProvider>
       </GoogleOAuthProvider>
     </>
@@ -19,3 +19,5 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default Providers;
+
+

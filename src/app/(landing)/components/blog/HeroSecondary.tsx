@@ -6,7 +6,7 @@ import React from "react";
 const HeroSecondary = ({ post }: { post: SanityDocument }) => {
   const postImageUrl = imageUrl(post.featuredImage);
   return (
-    <article className="lg:max-w-[570px] w-full flex flex-col sm:flex-row sm:items-center gap-6 bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.08)] rounded-2xl p-3 border border-black/5">
+    <article className="lg:max-w-[570px] w-full flex flex-col sm:flex-row sm:items-center gap-6 bg-ui-light shadow-[8px_8px_0px_rgba(0,0,0,0.08)] rounded-2xl p-3 border border-ui-shade/10">
       <div className="lg:max-w-[238px] w-full">
         <Link href={`/blog/${post.slug.current}`}>
           <img
@@ -48,3 +48,4 @@ const HeroSecondary = ({ post }: { post: SanityDocument }) => {
 };
 
 export default HeroSecondary;
+

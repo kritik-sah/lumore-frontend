@@ -12,7 +12,7 @@ const SketchButton: React.FC<SketchButtonProps> = ({
 }) => {
   return (
     <button
-      className={`px-4 py-2 flex items-center justify-center gap-0 rounded-xl border border-black bg-white text-black text-base hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200 ${className}`}
+      className={`px-4 py-2 flex items-center justify-center gap-0 rounded-xl border border-ui-shade bg-ui-light text-ui-shade text-base hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200 ${className}`}
       {...props}
     >
       {children}
@@ -21,3 +21,4 @@ const SketchButton: React.FC<SketchButtonProps> = ({
 };
 
 export default SketchButton;
+

@@ -40,3 +40,4 @@ export const getCroppedImage = async (src: string, pixelCrop: any) => {
     );
   });
 };
+

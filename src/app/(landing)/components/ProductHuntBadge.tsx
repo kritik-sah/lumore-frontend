@@ -20,3 +20,4 @@ const ProductHuntBadge: React.FC = () => {
 };
 
 export default ProductHuntBadge;
+

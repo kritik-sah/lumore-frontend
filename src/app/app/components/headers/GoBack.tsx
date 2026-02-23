@@ -8,7 +8,7 @@ const GoBack = ({ title }: { title: string }) => {
   const router = useRouter();
 
   return (
-    <header className="z-50 w-full bg-ui-light max-h-16 shadow-sm">
+    <header className="z-50 w-full bg-bg-surface max-h-16 shadow-sm">
       <div className="container mx-auto px-2 md:px-0 flex h-14 items-center">
         <div className="flex gap-3 items-center justify-start">
           {/* Go Back Button */}
@@ -28,3 +28,4 @@ const GoBack = ({ title }: { title: string }) => {
 };
 
 export default GoBack;
+

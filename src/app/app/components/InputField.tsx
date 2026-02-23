@@ -228,3 +228,4 @@ export const SliderField: React.FC<MultisliderFieldProps> = ({
     </div>
   );
 };
+

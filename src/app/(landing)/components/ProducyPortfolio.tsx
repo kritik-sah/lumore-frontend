@@ -11,15 +11,15 @@ function ProductPortfolio() {
         className="p-8"
       >
         <div className="max-w-md">
-          <h2 className="text-left text-balance text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-white leading-tight">
+          <h2 className="text-left text-balance text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-ui-light leading-tight">
             Tired of endless swiping?
           </h2>
-          <p className="mt-4 text-left text-base/6 text-neutral-200">
+          <p className="mt-4 text-left text-base/6 text-ui-light/80">
             Find your perfect match with our AI-powered, intent-based swipeless
             dating app.
           </p>
           <div className="mt-6 flex flex-col gap-3">
-            <p className="text-left text-xs uppercase tracking-wide text-neutral-200">
+            <p className="text-left text-xs uppercase tracking-wide text-ui-light/80">
               Available on
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-start gap-3">
@@ -38,7 +38,7 @@ function ProductPortfolio() {
               </a>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-start gap-2">
-              <span className="text-xs text-neutral-200">
+              <span className="text-xs text-ui-light/80">
                 Also on Telegram Mini App
               </span>
               <a
@@ -66,25 +66,25 @@ function ProductPortfolio() {
         />
       </WobbleCard>
       <WobbleCard
-        containerClassName="col-span-1 min-h-[320px] bg-black overflow-hidden"
+        containerClassName="col-span-1 min-h-[320px] bg-ui-background border border-ui-shade/10 overflow-hidden"
         className="p-8"
       >
         <span className="inline-flex items-center rounded-full bg-ui-primary text-ui-shade text-xs font-bold px-2 py-1">
           Community-first
         </span>
-        <h2 className="mt-4 max-w-80 text-left text-balance text-2xl md:text-3xl font-semibold tracking-tight text-white leading-tight">
+        <h2 className="mt-4 max-w-80 text-left text-balance text-2xl md:text-3xl font-semibold tracking-tight text-ui-light leading-tight">
           Stop Swiping. Start Showing Up.
         </h2>
-        <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
+        <p className="mt-4 max-w-[26rem] text-left text-base/6 text-ui-light/80">
           We do real-life vibes only board games, chill house parties,
           spontaneous meetups. No small talk. No awkwardness. Just connection.
         </p>
-        <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
+        <p className="mt-4 max-w-[26rem] text-left text-base/6 text-ui-light/80">
           Join the Community
         </p>
       </WobbleCard>
       <WobbleCard
-        containerClassName="col-span-1 lg:col-span-3 bg-ui-primary text-ui-dark min-h-[500px] lg:min-h-[600px] xl:min-h-[320px] overflow-hidden"
+        containerClassName="col-span-1 lg:col-span-3 bg-ui-primary text-ui-shade min-h-[500px] lg:min-h-[600px] xl:min-h-[320px] overflow-hidden"
         className="p-8"
       >
         <div className="max-w-md">
@@ -110,3 +110,4 @@ function ProductPortfolio() {
 }
 
 export default ProductPortfolio;
+

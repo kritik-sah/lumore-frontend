@@ -78,8 +78,8 @@ export default function Hero() {
 
         <div className="relative flex items-center justify-center">
           <div className="relative w-full max-w-sm md:max-w-md">
-            <div className="absolute -inset-6 rounded-[2.5rem] bg-white/70 blur-2xl" />
-            <div className="relative rounded-[2rem] border border-ui-shade/20 bg-white p-3 shadow-[0_25px_60px_rgba(0,0,0,0.15)] rotate-2">
+            <div className="absolute -inset-6 rounded-[2.5rem] bg-ui-light/70 blur-2xl" />
+            <div className="relative rounded-[2rem] border border-ui-shade/20 bg-ui-light p-3 shadow-[0_25px_60px_rgba(0,0,0,0.15)] rotate-2">
               <img
                 src="/assets/login-screen.webp"
                 width={480}
@@ -104,3 +104,4 @@ export default function Hero() {
     </section>
   );
 }
+

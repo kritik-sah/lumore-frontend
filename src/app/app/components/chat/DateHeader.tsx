@@ -16,3 +16,4 @@ export const DateHeader: React.FC<DateHeaderProps> = ({ timestamp }) => {
     </div>
   );
 };
+

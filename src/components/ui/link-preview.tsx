@@ -43,7 +43,7 @@ export const LinkPreview = ({
       screenshot: true,
       meta: false,
       embed: "screenshot.url",
-      colorScheme: "dark",
+      colorScheme: "light",
       "viewport.isMobile": true,
       "viewport.deviceScaleFactor": 1,
       "viewport.width": width * 3,
@@ -96,7 +96,7 @@ export const LinkPreview = ({
       >
         <HoverCardPrimitive.Trigger
           onMouseMove={handleMouseMove}
-          className={cn("text-black dark:text-white", className)}
+          className={cn("text-ui-shade", className)}
           href={url}
         >
           {children}
@@ -130,7 +130,7 @@ export const LinkPreview = ({
               >
                 <a
                   href={url}
-                  className="block p-1 bg-white border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800"
+                  className="block p-1 bg-ui-light border-2 border-transparent shadow rounded-xl hover:border-ui-shade/20"
                   style={{ fontSize: 0 }}
                 >
                   <img
@@ -149,3 +149,4 @@ export const LinkPreview = ({
     </>
   );
 };
+

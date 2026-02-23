@@ -110,3 +110,4 @@ const TextPost = ({ post }: { post: any }) => {
 };
 
 export default PostCard;
+

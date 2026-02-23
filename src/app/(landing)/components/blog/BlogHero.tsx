@@ -29,3 +29,4 @@ const BlogHero = ({ posts }: { posts: SanityDocument[] }) => {
 };
 
 export default BlogHero;
+

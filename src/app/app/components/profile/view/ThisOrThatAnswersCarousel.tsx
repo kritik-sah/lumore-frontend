@@ -2,12 +2,15 @@
 
 import { fetchUserThisOrThatAnswers } from "@/lib/apis";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useMemo, useRef } from "react";
 
 const ThisOrThatAnswersCarousel = ({
   profileUserId,
+  isOwner,
 }: {
   profileUserId: string;
+  isOwner: boolean;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -20,7 +23,9 @@ const ThisOrThatAnswersCarousel = ({
           limit: 10,
         }),
       getNextPageParam: (lastPage) =>
-        lastPage?.pagination?.hasMore ? lastPage.pagination.nextPage : undefined,
+        lastPage?.pagination?.hasMore
+          ? lastPage.pagination.nextPage
+          : undefined,
       initialPageParam: 1,
       enabled: Boolean(profileUserId),
     });
@@ -42,8 +47,11 @@ const ThisOrThatAnswersCarousel = ({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-ui-shade/10 bg-white p-4">
-        <p className="text-sm text-ui-shade/70">This or that answers</p>
+      <div className="rounded-xl border border-ui-shade/10 bg-ui-light p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-ui-shade/70">This or that</p>
+          <Link href="/app/this-or-that">play</Link>
+        </div>
         <div className="mt-3 flex gap-3 overflow-hidden">
           {Array.from({ length: 3 }).map((_, idx) => (
             <div
@@ -63,9 +71,19 @@ const ThisOrThatAnswersCarousel = ({
   if (!answers.length) return null;
 
   return (
-    <div className="rounded-xl border border-ui-shade/10 bg-white p-4">
+    <div className="rounded-xl border border-ui-shade/10 bg-ui-light p-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-ui-shade/70">This or that answers</p>
+        <div className="flex items-center justify-between w-full">
+          <p className="text-sm text-ui-shade/70">This or that</p>
+          {isOwner && (
+            <Link
+              className="text-sm text-ui-highlight"
+              href="/app/this-or-that"
+            >
+              Play Now
+            </Link>
+          )}
+        </div>
       </div>
       <div
         ref={containerRef}
@@ -96,7 +114,9 @@ const ThisOrThatAnswersCarousel = ({
                 </p>
                 <p className="mt-1 text-sm font-medium text-ui-shade">
                   {answer.selectedText} over{" "}
-                  {isLeft ? answer.question?.rightOption : answer.question?.leftOption}
+                  {isLeft
+                    ? answer.question?.rightOption
+                    : answer.question?.leftOption}
                 </p>
               </div>
             </div>
@@ -113,3 +133,4 @@ const ThisOrThatAnswersCarousel = ({
 };
 
 export default ThisOrThatAnswersCarousel;
+

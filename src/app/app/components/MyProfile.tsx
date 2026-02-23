@@ -13,12 +13,14 @@ import {
 } from "@/utils/helpers";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { extractFullAddressParts } from "../context/LocationProvider";
 import { calculateProfileAndPreferenceCompletion } from "./profile/view/completion";
 import InfoItem from "./profile/view/InfoItem";
 import PostCard from "./profile/view/PostCard";
 import ThisOrThatAnswersCarousel from "./profile/view/ThisOrThatAnswersCarousel";
+import SecondaryActionsSheet from "./SecondaryActionsSheet";
 
 const MyProfile = ({
   user,
@@ -32,6 +34,8 @@ const MyProfile = ({
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [startingVerification, setStartingVerification] = useState(false);
+  const [dismissOptionalSetup, setDismissOptionalSetup] = useState(false);
+  const searchParams = useSearchParams();
   const userId = getUser()._id || "";
 
   const traits = [
@@ -41,8 +45,9 @@ const MyProfile = ({
     user?.height && { icon: "FaRuler", value: convertHeight(user.height) },
     user?.location?.formattedAddress && {
       icon: "MdOutlineLocationOn",
-      value: extractFullAddressParts(user.location.formattedAddress, ["district"])
-        .district,
+      value: extractFullAddressParts(user.location.formattedAddress, [
+        "district",
+      ]).district,
     },
     user?.diet && { icon: "MdOutlineFastfood", value: user.diet },
     user?.zodiacSign && { icon: "TbZodiacVirgo", value: user.zodiacSign },
@@ -50,22 +55,31 @@ const MyProfile = ({
       icon: "FaGlassMartiniAlt",
       value: user.lifestyle.drinking,
     },
-    user?.lifestyle?.smoking && { icon: "FaSmoking", value: user.lifestyle.smoking },
+    user?.lifestyle?.smoking && {
+      icon: "FaSmoking",
+      value: user.lifestyle.smoking,
+    },
     user?.lifestyle?.pets && { icon: "FaPaw", value: user.lifestyle.pets },
     user?.bloodGroup && { icon: "MdOutlineBloodtype", value: user.bloodGroup },
   ].filter(Boolean) as { icon: string; value: string | number }[];
 
   const isOwner = userId === user?._id;
+  const showOptionalSetup =
+    searchParams.get("showOptionalSetup") === "1" && !dismissOptionalSetup;
 
   const handleDeletePost = async (post: any) => {
     if (!post?._id) return;
-    const confirmDelete = window.confirm("Delete this post? This cannot be undone.");
+    const confirmDelete = window.confirm(
+      "Delete this post? This cannot be undone.",
+    );
     if (!confirmDelete) return;
 
     try {
       setDeletingId(post._id);
       await deletePost(post._id);
-      await queryClient.invalidateQueries({ queryKey: ["user posts", user?._id] });
+      await queryClient.invalidateQueries({
+        queryKey: ["user posts", user?._id],
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -121,7 +135,9 @@ const MyProfile = ({
             )}
             <div className="space-y-1">
               <h3 className="text-xl font-medium flex items-center justify-start gap-1">
-                {user?.isViewerUnlockedByUser && user?.realName && user.nickname ? (
+                {user?.isViewerUnlockedByUser &&
+                user?.realName &&
+                user.nickname ? (
                   <>
                     <span>{user.realName}</span>
                     <span className="text-ui-shade/60"> ({user.nickname})</span>
@@ -138,18 +154,27 @@ const MyProfile = ({
               <div className="flex items-center justify-start gap-2">
                 {user?.dob ? (
                   <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                    <Icon name="HiOutlineCake" className="text-xl flex-shrink-0" />
+                    <Icon
+                      name="HiOutlineCake"
+                      className="text-xl flex-shrink-0"
+                    />
                     <p>{calculateAge(user?.dob)}</p>
                   </div>
                 ) : null}
                 {user?.gender ? (
                   <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                    <Icon name="HiOutlineUser" className="text-xl flex-shrink-0" />
+                    <Icon
+                      name="HiOutlineUser"
+                      className="text-xl flex-shrink-0"
+                    />
                     <p>{user?.gender}</p>
                   </div>
                 ) : null}
                 <div className="flex items-center justify-center gap-1 flex-shrink-0">
-                  <Icon name="RiPinDistanceLine" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="RiPinDistanceLine"
+                    className="text-xl flex-shrink-0"
+                  />
                   <p>{distanceDisplay(user?.distance || 0)}</p>
                 </div>
               </div>
@@ -158,51 +183,110 @@ const MyProfile = ({
           {user?.bio ? <p className="text-lg my-2">{user?.bio}</p> : null}
           <div className="my-3">
             {isOwner ? (
-              <div className="grid gap-2 sm:grid-cols-2">
-                <Link href="/app/profile/edit">
-                  <Button variant="outline" className="w-full items-center">
+              <div className="border border-ui-shade/10 bg-ui-light rounded-xl p-1 flex items-center justify-start w-full flex-wrap">
+                <Link className="flex-1" href="/app/profile/edit">
+                  <Button variant="default" className="w-full items-center">
                     Edit Profile <Icon name="FaUserPen" />
                   </Button>
                 </Link>
-                <Link href="/app/edit-preferences">
-                  <Button variant="outline" className="w-full items-center">
-                    Edit Preferences <Icon name="RiSettings3Line" />
-                  </Button>
-                </Link>
-                <Link href="/app/credits">
-                  <Button variant="outline" className="w-full items-center">
-                    Credits: {user?.credits ?? 0} <Icon name="FaCoins" />
-                  </Button>
-                </Link>
-                <Link href="/app/referral">
-                  <Button variant="outline" className="w-full items-center">
-                    Referral <Icon name="HiOutlineSparkles" />
-                  </Button>
-                </Link>
-                {!user?.isVerified ? (
-                  <Button
-                    variant="default"
-                    className="w-full items-center sm:col-span-2"
-                    onClick={handleStartVerification}
-                    disabled={
-                      startingVerification || user?.verificationStatus === "pending"
-                    }
-                  >
-                    {user?.verificationStatus === "pending"
-                      ? "Pending verifiction"
-                      : startingVerification
-                        ? "Redirecting..."
-                        : "Verify myself"}{" "}
-                    <Icon name="MdOutlineVerified" />
-                  </Button>
-                ) : null}
+                <div className="">
+                  <SecondaryActionsSheet
+                    title="Profile Actions"
+                    actions={[
+                      {
+                        label: "Edit preferences",
+                        href: "/app/edit-preferences",
+                        icon: "RiSettings3Line",
+                      },
+                      {
+                        label: `Credits: ${user?.credits ?? 0}`,
+                        href: "/app/credits",
+                        icon: "FaCoins",
+                      },
+                      {
+                        label: "Referral",
+                        href: "/app/referral",
+                        icon: "HiOutlineSparkles",
+                      },
+                      {
+                        label: "Play games",
+                        href: "/app/games",
+                        icon: "IoGameControllerOutline",
+                      },
+                      ...(user?.isVerified
+                        ? []
+                        : [
+                            {
+                              label:
+                                user?.verificationStatus === "pending"
+                                  ? "Verification pending"
+                                  : startingVerification
+                                    ? "Redirecting to verification..."
+                                    : "Verify myself",
+                              icon: "MdOutlineVerified",
+                              onClick: () => {
+                                if (
+                                  !startingVerification &&
+                                  user?.verificationStatus !== "pending"
+                                ) {
+                                  void handleStartVerification();
+                                }
+                              },
+                            },
+                          ]),
+                    ]}
+                  />
+                </div>
               </div>
             ) : null}
           </div>
         </div>
 
+        {isOwner && showOptionalSetup ? (
+          <div className="border border-ui-shade/10 rounded-xl p-4 bg-ui-light shadow-sm mb-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm text-ui-shade/70">Optional setup</p>
+                <p className="text-xs text-ui-shade/60 mt-1">
+                  You are ready to use the app. Add these details anytime for
+                  better results.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                className="text-xs px-2 py-1 h-auto"
+                onClick={() => setDismissOptionalSetup(true)}
+              >
+                Skip for now
+              </Button>
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <Link href="/app/user-settings">
+                <Button variant="outline" className="w-full justify-between">
+                  Add email/phone <Icon name="IoSettingsOutline" />
+                </Button>
+              </Link>
+              <Link href="/app/edit-preferences">
+                <Button variant="outline" className="w-full justify-between">
+                  Add lifestyle preferences <Icon name="RiSettings3Line" />
+                </Button>
+              </Link>
+              <Link href="/app/profile/edit">
+                <Button variant="outline" className="w-full justify-between">
+                  Add profile details <Icon name="FaUserPen" />
+                </Button>
+              </Link>
+              <Link href="/app/referral">
+                <Button variant="outline" className="w-full justify-between">
+                  Apply referral code <Icon name="HiOutlineSparkles" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
         {isOwner ? (
-          <div className="border border-ui-shade/10 rounded-xl p-4 bg-white shadow-sm mb-3">
+          <div className="border border-ui-shade/10 rounded-xl p-4 bg-ui-light shadow-sm mb-3">
             <p className="text-sm text-ui-shade/70">Profile health</p>
             <p className="text-xs text-ui-shade/60 mt-1">
               Stronger profiles get more matches.
@@ -260,7 +344,10 @@ const MyProfile = ({
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center flex-shrink-0 aspect-square">
-                  <Icon name="LuGraduationCap" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="LuGraduationCap"
+                    className="text-xl flex-shrink-0"
+                  />
                 </div>
                 {user?.institution}
               </div>
@@ -271,7 +358,10 @@ const MyProfile = ({
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center flex-shrink-0 aspect-square">
-                  <Icon name="HiOutlineBookOpen" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="HiOutlineBookOpen"
+                    className="text-xl flex-shrink-0"
+                  />
                 </div>
                 {user?.religion}
               </div>
@@ -282,7 +372,10 @@ const MyProfile = ({
             <>
               <div className="flex items-center justify-start gap-2 py-2">
                 <div className="h-6 w-6 flex items-center justify-center flex-shrink-0 aspect-square">
-                  <Icon name="HiOutlineHome" className="text-xl flex-shrink-0" />
+                  <Icon
+                    name="HiOutlineHome"
+                    className="text-xl flex-shrink-0"
+                  />
                 </div>
                 {user?.homeTown}
               </div>
@@ -325,7 +418,10 @@ const MyProfile = ({
         </div>
 
         <div className="flex flex-col gap-2 mt-3">
-          <ThisOrThatAnswersCarousel profileUserId={user?._id} />
+          <ThisOrThatAnswersCarousel
+            profileUserId={user?._id}
+            isOwner={isOwner}
+          />
           {posts?.length
             ? posts?.map((post: any) => (
                 <PostCard
@@ -344,3 +440,4 @@ const MyProfile = ({
 };
 
 export default MyProfile;
+

@@ -239,7 +239,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
               <div className="h-full w-full bg-gray-300 rounded-full" />
             )}
           </div>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-ui-shade/80">
             Change Profile Picture
           </span>
           <input
@@ -264,7 +264,7 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
           onSave={handleCropSave}
         />
 
-        <div className="mt-4 rounded-2xl border border-ui-shade/10 bg-white p-4">
+        <div className="mt-4 rounded-2xl border border-ui-shade/10 bg-ui-light p-4">
           <p className="text-sm text-ui-shade/70">Profile completeness</p>
           <div className="mt-2 h-2 w-full rounded-full bg-ui-shade/10">
             <div
@@ -448,3 +448,4 @@ const EditMyProfile = ({ user: initialUser }: { user: any }) => {
 };
 
 export default EditMyProfile;
+

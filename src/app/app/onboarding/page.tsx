@@ -6,3 +6,4 @@ const OnboardinScreen = () => {
 };
 
 export default OnboardinScreen;
+

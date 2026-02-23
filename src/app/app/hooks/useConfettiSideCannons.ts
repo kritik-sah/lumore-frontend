@@ -47,3 +47,4 @@ export const useConfettiSideCannons = (options?: ConfettiOptions) => {
 
   return fire;
 };
+

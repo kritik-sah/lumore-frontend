@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export const SplashScreen = () => {
   return (
-    <div className="fixed inset-0 bg-[#F1E9DA] flex items-center justify-center">
+    <div className="fixed inset-0 bg-bg-muted flex items-center justify-center">
       <div className="text-center">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
@@ -10,7 +10,7 @@ export const SplashScreen = () => {
           transition={{ duration: 0.5 }}
           className="relative w-32 h-32 mx-auto mb-8"
         >
-          <div className="absolute inset-0 bg-[#FFD400] rounded-full animate-pulse" />
+          <div className="absolute inset-0 bg-brand-primary rounded-full animate-pulse" />
           <motion.div
             initial={{ rotate: 0 }}
             animate={{ rotate: 360 }}
@@ -18,7 +18,7 @@ export const SplashScreen = () => {
             className="absolute inset-2 border-4 border-white rounded-full"
           />
           <div className="absolute inset-4 flex items-center justify-center">
-            <span className="text-4xl font-bold text-[#FFD400]">L</span>
+            <span className="text-4xl font-bold text-brand-primary">L</span>
           </div>
         </motion.div>
 
@@ -26,7 +26,7 @@ export const SplashScreen = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-3xl font-bold text-gray-800 mb-2"
+          className="text-3xl font-bold text-text-primary mb-2"
         >
           Lumore
         </motion.h1>
@@ -35,7 +35,7 @@ export const SplashScreen = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-gray-600"
+          className="text-text-muted/80"
         >
           Connecting you with like-minded people
         </motion.p>
@@ -43,3 +43,4 @@ export const SplashScreen = () => {
     </div>
   );
 };
+

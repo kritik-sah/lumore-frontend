@@ -75,3 +75,4 @@ const CropImageModal = ({
 };
 
 export default CropImageModal;
+

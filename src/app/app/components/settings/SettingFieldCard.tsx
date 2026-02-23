@@ -1,20 +1,27 @@
 "use client";
 
+import EditableFieldCard from "../shared/EditableFieldCard";
+
 interface SettingFieldCardProps {
   label: string;
+  field: string;
   value?: string;
   onClick: () => void;
 }
 
-const SettingFieldCard = ({ label, value, onClick }: SettingFieldCardProps) => (
-  <div onClick={onClick} className="border border-ui-shade/10 rounded-xl p-2 mt-3">
-    <div className="flex justify-between items-center">
-      <div>
-        <h3 className="text-sm text-ui-shade/60">{label}</h3>
-        {value || "Not set"}
-      </div>
-    </div>
-  </div>
+const SettingFieldCard = ({
+  label,
+  field,
+  value,
+  onClick,
+}: SettingFieldCardProps) => (
+  <EditableFieldCard
+    label={label}
+    field={field}
+    value={value}
+    onEdit={() => onClick()}
+  />
 );
 
 export default SettingFieldCard;
+

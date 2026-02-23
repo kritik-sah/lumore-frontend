@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const CardSkeleton = ({ className = "" }: { className?: string }) => (
   <div
-    className={`rounded-xl border border-ui-shade/10 bg-white p-4 ${className}`}
+    className={`rounded-xl border border-ui-shade/10 bg-ui-light p-4 ${className}`}
   >
     <Skeleton className="h-4 w-28" />
     <Skeleton className="mt-3 h-10 w-full" />
@@ -147,3 +147,4 @@ export const BlogPostLoader = () => (
     </div>
   </div>
 );
+
