@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import type { Viewport } from "next";
 import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
 import LumoreSplash from "./components/LumoreSplash";
-import { ChatRecoveryGate } from "./components/recovery/ChatRecoveryGate";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
 
 export const metadata: Metadata = {
@@ -28,7 +27,6 @@ export default function RootLayout({
     <Provider>
       <ExploreChatProvider>
         <LumoreSplash />
-        <ChatRecoveryGate />
         <div className="h-[100svh]">
           <AppInteractionGuard>
             <main className="flex flex-col h-full">{children}</main>

@@ -13,21 +13,7 @@ import {
   useState,
 } from "react";
 
-import {
-  fetchIdentityKey,
-  fetchRoomChat,
-  fetchRoomData,
-  fetchRoomEnvelopes,
-  upsertIdentityKey,
-  upsertRoomEnvelopes,
-} from "@/lib/apis";
-import { ensureIdentityKeyPair } from "@/lib/chat-crypto/identity";
-import {
-  decryptTextMessage,
-  encryptTextMessage,
-  type EncryptedMessageContent,
-} from "@/lib/chat-crypto/message";
-import { createRoomKeyEnvelopes, ensureRoomKey } from "@/lib/chat-crypto/room-keys";
+import { fetchRoomChat, fetchRoomData } from "@/lib/apis";
 import { trackAnalytic } from "@/service/analytics";
 import { getUser } from "@/service/storage";
 import { Message } from "../components/ChatScreen";
@@ -47,14 +33,9 @@ interface ChatContextType {
   error: string | null;
   isLoading: boolean;
   isActive: boolean;
-  encryptTextForSend: (
-    text: string
-  ) => Promise<{ encryptedContent: EncryptedMessageContent } | null>;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
-const CHAT_E2EE_ENABLED =
-  String(process.env.NEXT_PUBLIC_CHAT_E2EE_ENABLED || "true") === "true";
 
 const getSenderId = (sender: any): string => {
   if (!sender) return "";
@@ -66,12 +47,7 @@ const mapReplyPreview = (replyTo: any) => {
   if (!replyTo?._id) return null;
 
   const replyType: "text" | "image" = replyTo.messageType || "text";
-  const replyMessage =
-    replyType === "image"
-      ? "Photo"
-      : replyTo?.encryptedContent
-        ? "Message"
-        : replyTo.message || "";
+  const replyMessage = replyType === "image" ? "Photo" : replyTo.message || "";
 
   return {
     _id: replyTo._id,
@@ -120,7 +96,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
-  const [cryptoReady, setCryptoReady] = useState<boolean>(!CHAT_E2EE_ENABLED);
   const router = useRouter();
   const { user } = useUser(userId ?? "");
   const { user: matchedUser, isLoading } = useUser(matchedUserId ?? "");
@@ -129,7 +104,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     queryFn: () => fetchRoomData(roomId!),
     enabled: !!roomId,
   });
-  const currentKeyEpoch = Number(roomData?.encryption?.currentKeyEpoch || 1);
 
   const revalidateUser = useCallback(() => {
     if (userId) return;
@@ -143,120 +117,17 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     revalidateUser();
   }, [revalidateUser]);
 
-  useEffect(() => {
-    if (!CHAT_E2EE_ENABLED || !userId) {
-      setCryptoReady(true);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      try {
-        const identity = await ensureIdentityKeyPair();
-        await upsertIdentityKey({
-          identityPublicKey: identity.publicKeySpki,
-          algorithm: identity.algorithm,
-        });
-        if (!cancelled) {
-          setCryptoReady(true);
-        }
-      } catch (e) {
-        console.error("[Chat] identity bootstrap failed", e);
-        if (!cancelled) {
-          setCryptoReady(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId]);
-
-  const ensureRoomKeyForEpoch = useCallback(
-    async (epoch: number) => {
-      if (!CHAT_E2EE_ENABLED || !roomId || !roomData || !userId) return null;
-
-      const fetchMyEnvelope = async () => {
-        const envelopes = await fetchRoomEnvelopes(roomId, epoch);
-        return (
-          envelopes.find(
-            (item) => String(item.recipientUserId) === String(userId) && item.epoch === epoch,
-          ) || null
-        );
-      };
-
-      try {
-        return await ensureRoomKey({
-          roomId,
-          epoch,
-          fetchEnvelope: fetchMyEnvelope,
-        });
-      } catch (error) {
-        const participantIds = (roomData?.participants || [])
-          .map((participant: any) => participant?._id)
-          .filter(Boolean);
-        if (participantIds.length === 0) {
-          throw error;
-        }
-
-        const keyResults = await Promise.all(
-          participantIds.map(async (participantId: string) => {
-            const key = await fetchIdentityKey(participantId);
-            return {
-              userId: participantId,
-              publicKeySpki: key.identityPublicKey,
-            };
-          }),
-        );
-
-        const envelopes = await createRoomKeyEnvelopes({
-          roomId,
-          epoch,
-          recipientPublicKeys: keyResults,
-        });
-        await upsertRoomEnvelopes(roomId, {
-          epoch,
-          envelopes: envelopes.envelopes,
-        });
-
-        return ensureRoomKey({
-          roomId,
-          epoch,
-          fetchEnvelope: fetchMyEnvelope,
-        });
-      }
-    },
-    [roomData, roomId, userId],
-  );
-
-  const decryptIncomingMessage = useCallback(
+  const mapIncomingMessage = useCallback(
     async (rawMessage: any): Promise<Message | null> => {
       const messageType: "text" | "image" = rawMessage?.messageType || "text";
-      let text = messageType === "text" ? rawMessage?.message || "" : "";
-      const encrypted = rawMessage?.encryptedContent || null;
+      const text = messageType === "text" ? rawMessage?.message || "" : "";
       const sender = getSenderId(rawMessage?.sender) || rawMessage?.senderId || "";
-
-      if (CHAT_E2EE_ENABLED && messageType === "text" && encrypted) {
-        try {
-          const roomKey = await ensureRoomKeyForEpoch(Number(encrypted?.keyEpoch || currentKeyEpoch));
-          if (!roomKey) throw new Error("No room key");
-          text = await decryptTextMessage({
-            roomId: rawMessage?.roomId || roomId || "",
-            senderId: sender,
-            keyEpoch: Number(encrypted.keyEpoch || currentKeyEpoch),
-            roomKey,
-            encryptedContent: encrypted,
-          });
-        } catch (e) {
-          text = "Unable to decrypt message";
-        }
-      }
 
       return {
         _id: rawMessage?._id,
         clientMessageId: rawMessage?.clientMessageId || undefined,
         sender,
         message: text,
-        encryptedContent: encrypted,
         messageType,
         imageUrl: rawMessage?.imageUrl || null,
         imagePublicId: rawMessage?.imagePublicId || null,
@@ -278,7 +149,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         pending: false,
       };
     },
-    [currentKeyEpoch, ensureRoomKeyForEpoch, roomId],
+    [],
   );
 
   useEffect(() => {
@@ -300,7 +171,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         const raw = await fetchRoomChat(roomId);
 
         const mapped: Message[] = (
-          await Promise.all(raw.map((msg: any) => decryptIncomingMessage(msg)))
+          await Promise.all(raw.map((msg: any) => mapIncomingMessage(msg)))
         ).filter(Boolean) as Message[];
 
         setMessages(mapped);
@@ -312,48 +183,26 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     loadMessages();
-  }, [roomId, queryClient, decryptIncomingMessage]);
+  }, [roomId, queryClient, mapIncomingMessage]);
 
   useEffect(() => {
     if (!socket || !roomId) return;
 
     const onIncomingMessage = async (payload: any) => {
-      const mapped = await decryptIncomingMessage(payload);
+      const mapped = await mapIncomingMessage(payload);
       if (!mapped) return;
       setMessages((prev) => mergeIncomingMessage(prev, mapped as Message));
     };
 
     const onEdited = async (payload: any) => {
       if (!payload?.messageId) return;
-      let nextMessage = payload.message || "";
-      if (payload?.encryptedContent && CHAT_E2EE_ENABLED) {
-        try {
-          const senderId =
-            messages.find((item) => item._id === payload.messageId)?.sender || "";
-          const roomKey = await ensureRoomKeyForEpoch(
-            Number(payload.encryptedContent.keyEpoch || currentKeyEpoch),
-          );
-          if (roomKey) {
-            nextMessage = await decryptTextMessage({
-              roomId: roomId || "",
-              senderId,
-              keyEpoch: Number(payload.encryptedContent.keyEpoch || currentKeyEpoch),
-              roomKey,
-              encryptedContent: payload.encryptedContent,
-            });
-          }
-        } catch {
-          nextMessage = "Unable to decrypt message";
-        }
-      }
 
       setMessages((prev) =>
         prev.map((msg) =>
           msg._id === payload.messageId
             ? {
                 ...msg,
-                message: nextMessage,
-                encryptedContent: payload?.encryptedContent || msg.encryptedContent || null,
+                message: payload.message || "",
                 editedAt: payload.editedAt
                   ? new Date(payload.editedAt).getTime()
                   : Date.now(),
@@ -438,7 +287,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       socket.off("message_read", onRead);
       socket.off("chatEnded");
     };
-  }, [socket, roomId, currentKeyEpoch, decryptIncomingMessage, ensureRoomKeyForEpoch, messages]);
+  }, [socket, roomId, mapIncomingMessage]);
 
   const cancelChat = useCallback(() => {
     if (!socket || !roomId) return;
@@ -480,26 +329,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     [socket, roomId, userId],
   );
 
-  const encryptTextForSend = useCallback(
-    async (text: string) => {
-      if (!CHAT_E2EE_ENABLED) return null;
-      if (!roomId || !userId || !cryptoReady) return null;
-      const roomKey = await ensureRoomKeyForEpoch(currentKeyEpoch);
-      if (!roomKey) return null;
-      const encrypted = await encryptTextMessage({
-        roomId,
-        senderId: userId,
-        text,
-        keyEpoch: currentKeyEpoch,
-        roomKey,
-      });
-      return {
-        encryptedContent: encrypted.encryptedContent,
-      };
-    },
-    [cryptoReady, currentKeyEpoch, ensureRoomKeyForEpoch, roomId, userId],
-  );
-
   const value = useMemo(
     () => ({
       roomId,
@@ -514,7 +343,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       error,
       isLoading,
       isActive,
-      encryptTextForSend,
     }),
     [
       roomId,
@@ -528,7 +356,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       error,
       isLoading,
       isActive,
-      encryptTextForSend,
     ],
   );
 

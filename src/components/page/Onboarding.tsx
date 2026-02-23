@@ -7,14 +7,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   applyReferralCode,
   setNewPassword,
-  setupRecoveryPin,
   updateUserData,
   updateUserPreferences,
 } from "@/lib/apis";
-import {
-  buildPinRecoveryBackup,
-  ensureIdentityKeyPair,
-} from "@/lib/chat-crypto/identity";
 import {
   getPendingReferralCode,
   getUser,
@@ -95,7 +90,7 @@ const Onboarding = ({
   );
 
   const submitOnboardingData = async () => {
-    const { userData, userPreferenceData, password, recoveryPin } =
+    const { userData, userPreferenceData, password } =
       buildOnboardingPayload(currentScreen, formValues);
     const referralCodeRaw =
       typeof formValues.referralCode === "string"
@@ -116,15 +111,6 @@ const Onboarding = ({
 
     if (password) {
       await setNewPassword({ newPassword: password });
-    }
-
-    if (/^\d{6}$/.test(String(recoveryPin || ""))) {
-      await ensureIdentityKeyPair();
-      const backup = await buildPinRecoveryBackup(String(recoveryPin));
-      await setupRecoveryPin({
-        ...backup,
-        pin: String(recoveryPin),
-      });
     }
 
     if (hasReferralCodeField && referralCode) {

@@ -23,7 +23,7 @@ const features = [
   {
     title: "Secure & Private",
     description:
-      "All chats will be deleted in 24h, and end-to-end encrypted, complete profile control, we will never show your profile to anyone without your consent.",
+      "All chats will be deleted in 24h, complete profile control, and we will never show your profile to anyone without your consent.",
     status: "live",
   },
   {
