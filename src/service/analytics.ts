@@ -19,3 +19,15 @@ export const trackAnalytic = ({
     });
   }
 };
+
+export const trackAnalyticOnce = (
+  key: string,
+  payload: TrackAnalyticProps,
+) => {
+  if (typeof window === "undefined") return;
+  const storageKey = `analytic-once:${key}`;
+  if (window.localStorage.getItem(storageKey)) return;
+  trackAnalytic(payload);
+  window.localStorage.setItem(storageKey, "1");
+};
+

@@ -7,7 +7,7 @@ const BlogPost = ({ post }: { post: SanityDocument }) => {
   const postImageUrl = imageUrl(post.featuredImage);
   return (
     <article className="group flex flex-col h-full">
-      <div className="mb-5 overflow-hidden rounded-2xl border border-black/10 bg-white transition-all group-hover:-translate-y-1 group-hover:shadow-[8px_8px_0px_rgba(0,0,0,0.12)]">
+      <div className="mb-5 overflow-hidden rounded-2xl border border-ui-shade/10 bg-ui-light transition-all group-hover:-translate-y-1 group-hover:shadow-[8px_8px_0px_rgba(0,0,0,0.12)]">
         <Link href={`/blog/${post.slug.current}`}>
           <img
             src={postImageUrl}
@@ -56,3 +56,4 @@ const BlogPost = ({ post }: { post: SanityDocument }) => {
 };
 
 export default BlogPost;
+

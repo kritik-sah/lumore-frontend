@@ -18,13 +18,13 @@ const MultiSlider = React.forwardRef<
     onValueChange={onValueChange}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-neutral-900/20">
+    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-ui-shade/20">
       <SliderPrimitive.Range className="absolute h-full bg-ui-highlight" />
     </SliderPrimitive.Track>
     {value?.map((_, i) => (
       <SliderPrimitive.Thumb
         key={i}
-        className="block h-4 w-4 rounded-full border border-ui-shade/50 bg-ui-light shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50 "
+        className="block h-4 w-4 rounded-full border border-ui-shade/50 bg-ui-light shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-action-primary disabled:pointer-events-none disabled:opacity-50 "
       />
     ))}
   </SliderPrimitive.Root>
@@ -33,3 +33,4 @@ const MultiSlider = React.forwardRef<
 MultiSlider.displayName = SliderPrimitive.Root.displayName;
 
 export { MultiSlider };
+

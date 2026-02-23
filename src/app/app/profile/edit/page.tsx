@@ -24,3 +24,4 @@ const EditProfile = async () => {
 };
 
 export default EditProfile;
+

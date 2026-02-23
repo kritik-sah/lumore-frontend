@@ -27,3 +27,4 @@ const ProfileWrapper = ({ userId }: ProfileWrapperProps) => {
 };
 
 export default ProfileWrapper;
+

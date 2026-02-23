@@ -83,7 +83,7 @@ export function NavbarUI() {
               key={`mobile-link-${idx}`}
               href={item.link}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="relative text-neutral-600"
+              className="relative text-ui-shade/70"
             >
               <span className="block">{item.name}</span>
             </Link>
@@ -117,3 +117,4 @@ export function NavbarUI() {
 }
 
 export default NavbarUI;
+

@@ -4,19 +4,19 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border border-neutral-200 px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2",
+  "inline-flex items-center rounded-md border border-ui-shade/20 px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-action-primary focus:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-ui-shade text-neutral-50 shadow hover:bg-neutral-900/80",
+          "border-transparent bg-ui-shade text-ui-light shadow hover:bg-ui-shade/80",
         secondary:
-          "border-transparent bg-neutral-100 text-neutral-900 hover:bg-neutral-100/80",
+          "border-transparent bg-ui-shade/10 text-ui-shade hover:bg-ui-shade/20",
         destructive:
-          "border-transparent bg-red-500 text-neutral-50 shadow hover:bg-red-500/80",
-        outline: "text-neutral-950",
+          "border-transparent bg-danger text-ui-light shadow hover:bg-danger/80",
+        outline: "text-ui-shade",
         glass:
-          "relative overflow-hidden border-white/30 bg-white/5 text-ui-shade shadow-[0_8px_32px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.5),inset_0_-1px_0_rgba(255,255,255,0.1),inset_0_0_2px_1px_rgba(255,255,255,0.1)] backdrop-blur-[10px] hover:bg-white/10",
+          "relative overflow-hidden border-white/30 bg-ui-light/5 text-ui-shade shadow-[0_8px_32px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.5),inset_0_-1px_0_rgba(255,255,255,0.1),inset_0_0_2px_1px_rgba(255,255,255,0.1)] backdrop-blur-[10px] hover:bg-ui-light/10",
       },
     },
     defaultVariants: {
@@ -46,3 +46,4 @@ function Badge({ className, variant, ...props }: BadgeProps) {
 }
 
 export { Badge, badgeVariants };
+

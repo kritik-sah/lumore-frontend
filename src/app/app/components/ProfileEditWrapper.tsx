@@ -23,3 +23,4 @@ const ProfileEditWrapper = ({ userId }: ProfileEditWrapperProps) => {
 };
 
 export default ProfileEditWrapper;
+

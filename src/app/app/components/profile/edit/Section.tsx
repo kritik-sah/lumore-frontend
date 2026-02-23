@@ -17,3 +17,4 @@ const Section = ({ title, description, children }: SectionProps) => (
 );
 
 export default Section;
+

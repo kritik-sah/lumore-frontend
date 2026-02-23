@@ -58,7 +58,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             <div
               className={`mb-2 text-xs rounded-md px-2 py-1 border flex items-center gap-1 ${
                 isOwnMessage
-                  ? "border-white/40 bg-white/10"
+                  ? "border-white/40 bg-ui-light/10"
                   : "border-ui-shade/20 bg-ui-light"
               }`}
             >
@@ -177,3 +177,4 @@ const LinkifyText = ({ text }: { text: string }) => {
     return <span key={index}>{part}</span>;
   });
 };
+

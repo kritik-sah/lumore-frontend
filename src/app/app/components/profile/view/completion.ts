@@ -55,3 +55,4 @@ export function calculateProfileAndPreferenceCompletion(user: any, preferences: 
     preferenceCompletion: percentage(preferenceFields),
   };
 }
+

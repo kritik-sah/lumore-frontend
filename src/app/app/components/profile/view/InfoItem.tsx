@@ -12,3 +12,4 @@ const InfoItem = ({ icon, value }: { icon: string; value: string | number }) => 
 );
 
 export default InfoItem;
+

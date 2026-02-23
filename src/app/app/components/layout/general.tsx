@@ -1,15 +1,13 @@
 import React from "react";
-import GeneralHeader from "../headers/General";
-import MobileNav from "../MobileNav";
+import AppShell from "./AppShell";
 
-const GeneralLayout = ({ children, userSetting }: { children: React.ReactNode, userSetting?: boolean }) => {
-  return (
-    <>
-      <GeneralHeader userSetting={userSetting} />
-      {children}
-      <MobileNav />
-    </>
-  );
-};
+const GeneralLayout = ({
+  children,
+  userSetting,
+}: {
+  children: React.ReactNode;
+  userSetting?: boolean;
+}) => <AppShell showHeader userSetting={userSetting}>{children}</AppShell>;
 
 export default GeneralLayout;
+

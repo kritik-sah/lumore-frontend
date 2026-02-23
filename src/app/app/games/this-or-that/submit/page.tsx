@@ -165,7 +165,7 @@ const SubmitThisOrThatPage = () => {
   return (
     <SubPageLayout title="Submit This Or That">
       <div className="h-full overflow-y-auto bg-ui-background/10 p-4">
-        <div className="mx-auto w-full max-w-2xl rounded-2xl border border-ui-shade/10 bg-white p-5">
+        <div className="mx-auto w-full max-w-2xl rounded-2xl border border-ui-shade/10 bg-ui-light p-5">
           <h1 className="text-xl font-semibold text-ui-shade">
             Submit a This Or That
           </h1>
@@ -272,3 +272,4 @@ const SubmitThisOrThatPage = () => {
 };
 
 export default SubmitThisOrThatPage;
+

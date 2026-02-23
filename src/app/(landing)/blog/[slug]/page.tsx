@@ -175,7 +175,7 @@ export default async function PostPage({
           <img
             src={postImageUrl}
             alt={post.title}
-            className="w-full rounded-2xl border border-black/5 shadow-[10px_10px_0px_rgba(0,0,0,0.08)]"
+            className="w-full rounded-2xl border border-ui-shade/10 shadow-[10px_10px_0px_rgba(0,0,0,0.08)]"
           />
         </figure>
       ) : null}
@@ -223,3 +223,4 @@ export default async function PostPage({
     </main>
   );
 }
+

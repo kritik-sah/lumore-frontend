@@ -15,7 +15,7 @@ const CreatePost = () => {
           {/* PROMPTS */}
           <PostTypeCard
             title="Prompts"
-            description="Answer simple prompts that describe you well."
+            description="Answer fun prompts to show your personality."
             className="border-ui-highlight bg-ui-highlight/5 text-ui-highlight"
             onClick={() => router.push("/app/create-post/prompts")}
           />
@@ -23,7 +23,7 @@ const CreatePost = () => {
           {/* IMAGE */}
           <PostTypeCard
             title="Image"
-            description="Drop your coolest images here."
+            description="Share photos that express your vibe."
             className="border-ui-accent bg-ui-accent/5 text-ui-accent"
             onClick={() => router.push("/app/create-post/image")}
           />
@@ -31,7 +31,7 @@ const CreatePost = () => {
           {/* FREE TEXT */}
           <PostTypeCard
             title="Free Text"
-            description="You're free to express yourself."
+            description="Write anything you want people to know about you."
             className="border-cyan-700 bg-cyan-700/5 text-cyan-700"
             onClick={() => router.push("/app/create-post/free-text")}
           />
@@ -42,3 +42,4 @@ const CreatePost = () => {
 };
 
 export default CreatePost;
+

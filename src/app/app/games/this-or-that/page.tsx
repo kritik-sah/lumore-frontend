@@ -167,7 +167,7 @@ const ThisOrThatPage = () => {
                   {current.leftOption}
                 </button>
                 <button
-                  className="min-h-24 rounded-xl border border-ui-shade/20 bg-white p-4 text-left font-medium text-ui-shade hover:bg-ui-background disabled:opacity-70"
+                  className="min-h-24 rounded-xl border border-ui-shade/20 bg-ui-light p-4 text-left font-medium text-ui-shade hover:bg-ui-background disabled:opacity-70"
                   onClick={() => handleChoice("right")}
                   disabled={isPending}
                 >
@@ -200,3 +200,4 @@ const ThisOrThatPage = () => {
 };
 
 export default ThisOrThatPage;
+

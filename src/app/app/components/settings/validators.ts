@@ -20,3 +20,4 @@ export function validateSettingsField(field: string, value: string) {
 
   return "";
 }
+

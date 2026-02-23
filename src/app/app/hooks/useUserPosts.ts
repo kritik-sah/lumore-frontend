@@ -22,3 +22,4 @@ export const useUserPosts = (userId: string) => {
     error,
   };
 };
+
