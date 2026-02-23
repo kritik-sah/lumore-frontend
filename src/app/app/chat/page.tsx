@@ -203,7 +203,7 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
           )}
         </div>
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <h2 className="font-semibold">{displayName}</h2>
         {lastMessagePreview ? (
           <p className="text-sm text-ui-shade/70 truncate">
