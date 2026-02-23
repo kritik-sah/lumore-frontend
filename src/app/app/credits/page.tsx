@@ -2,6 +2,7 @@
 
 import Icon from "@/components/icon";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useState } from "react";
 import NavLayout from "../components/layout/NavLayout";
 import SubPageLayout from "../components/layout/SubPageLayout";
@@ -18,12 +19,10 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function CreditsPage() {
   const [page, setPage] = useState(1);
-  const { data: balanceRes, claimDaily, isClaiming } = useCreditsBalance();
+  const { data: balanceRes } = useCreditsBalance();
   const { data: historyRes, isLoading } = useCreditsHistory(page, 20);
 
   const balance = balanceRes?.data?.credits ?? 0;
-  const rewardGrantedToday = !!balanceRes?.data?.rewardGrantedToday;
-  const dailyRewardAmount = Number(balanceRes?.data?.dailyRewardAmount || 1);
   const items = historyRes?.items || [];
   const pagination = historyRes?.pagination;
 
@@ -37,17 +36,9 @@ export default function CreditsPage() {
               <h1 className="text-3xl font-bold">{balance}</h1>
               <Icon name="FaCoins" className="text-2xl text-ui-highlight" />
             </div>
-            <div className="mt-4">
-              <Button
-                disabled={rewardGrantedToday || isClaiming}
-                onClick={() => claimDaily()}
-                className="w-full"
-              >
-                {rewardGrantedToday
-                  ? "Daily reward already claimed"
-                  : `Claim daily +${dailyRewardAmount}`}
-              </Button>
-            </div>
+            <Link href="/app/earn-credits" className="mt-4 block">
+              <Button className="w-full">Earn Credits</Button>
+            </Link>
           </div>
 
           <div className="rounded-xl border border-ui-shade/10 bg-ui-light p-4">
