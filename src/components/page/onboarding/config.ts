@@ -64,6 +64,15 @@ export const onboardingScreens: Screen[] = [
         errorText: "Please enter a valid email address to continue",
       },
       {
+        type: "password",
+        place: "recovery",
+        name: "chatRecoveryPin",
+        label: "Chat PIN (optional)",
+        placeholder: "6-digit PIN",
+        required: false,
+        helperText: "Set a 6-digit PIN to restore your chats on a new device.",
+      },
+      {
         type: "text",
         place: "user",
         name: "referralCode",
@@ -104,7 +113,8 @@ export const onboardingScreens: Screen[] = [
         label: "Languages",
         options: languageOptions,
         placeholder: "Select known languages",
-        helperText: "You can select multiple languages you are comfortable with.",
+        helperText:
+          "You can select multiple languages you are comfortable with.",
         errorText: "Please pick at least one language to continue",
       },
     ],

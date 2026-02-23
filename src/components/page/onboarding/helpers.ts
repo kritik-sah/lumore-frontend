@@ -107,6 +107,15 @@ export function validateScreen(screen: Screen, values: Record<string, unknown>) 
     }
 
     if (field.type === "password") {
+      if (field.name === "chatRecoveryPin") {
+        let schema = z.string().trim();
+        if (isRequired) {
+          schema = schema.min(1, requiredMessage);
+        }
+        return schema.refine((pin) => !pin || /^\d{6}$/.test(pin), {
+          message: "Enter a valid 6-digit PIN.",
+        });
+      }
       let schema = z.string().trim();
       if (isRequired) {
         schema = schema.min(1, requiredMessage);
@@ -230,6 +239,7 @@ export function buildOnboardingPayload(
   const userData: Record<string, unknown> = {};
   const userPreferenceData: Record<string, any> = {};
   let password = "";
+  let recoveryPin = "";
 
   screen.fields.forEach((field) => {
     const value = formValues[field.name];
@@ -253,7 +263,11 @@ export function buildOnboardingPayload(
     if (field.place === "password") {
       password = value as string;
     }
+
+    if (field.place === "recovery" && field.name === "chatRecoveryPin") {
+      recoveryPin = String(value || "").trim();
+    }
   });
 
-  return { userData, userPreferenceData, password };
+  return { userData, userPreferenceData, password, recoveryPin };
 }

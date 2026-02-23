@@ -23,6 +23,8 @@ interface TextFieldProps {
   type?: string;
   min?: number;
   max?: number;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  maxLength?: number;
 }
 
 interface TextAreaFieldProps {
@@ -58,6 +60,8 @@ export const TextField: React.FC<TextFieldProps> = ({
   type,
   min,
   max,
+  inputMode,
+  maxLength,
 }) => {
   return (
     <div className="border border-ui-shade/10 rounded-xl p-2">
@@ -72,6 +76,8 @@ export const TextField: React.FC<TextFieldProps> = ({
           type={type}
           min={min}
           max={max}
+          inputMode={inputMode}
+          maxLength={maxLength}
         />
       </div>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}

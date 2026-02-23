@@ -60,21 +60,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   if (!isActive) {
     return (
       <div className="p-4 text-center text-sm text-ui-shade">
-        The chat has ended by {" "}
+        The chat has ended by{" "}
         {roomData?.endedBy === userId ? "you" : "the other user"}. You can no
         longer send messages.
       </div>
     );
   }
-
   return (
     <div className="p-2 bg-ui-light border border-ui-shade/10 rounded-2xl mx-2 space-y-2">
       {replyingTo ? (
         <div className="flex items-center justify-between rounded-xl px-3 py-2 bg-ui-highlight/5 text-xs">
           <span>
-            Replying: {replyingTo.messageType === "image" ? "Photo" : replyingTo.message || "Message"}
+            Replying:{" "}
+            {replyingTo.messageType === "image"
+              ? "Photo"
+              : replyingTo.message || "Message"}
           </span>
-          <button type="button" onClick={onCancelReply} className="text-ui-shade/70">
+          <button
+            type="button"
+            onClick={onCancelReply}
+            className="text-ui-shade/70"
+          >
             Cancel
           </button>
         </div>
@@ -83,7 +89,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       {isEditing ? (
         <div className="flex items-center justify-between rounded-xl px-3 py-2 bg-ui-highlight/5 text-xs">
           <span>Editing message</span>
-          <button type="button" onClick={onCancelEdit} className="text-ui-shade/70">
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="text-ui-shade/70"
+          >
             Cancel
           </button>
         </div>

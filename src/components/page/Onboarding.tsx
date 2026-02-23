@@ -3,12 +3,18 @@
 import { useUser } from "@/app/app/hooks/useUser";
 import { useUserPrefrence } from "@/app/app/hooks/useUserPrefrence";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   applyReferralCode,
   setNewPassword,
+  setupRecoveryPin,
   updateUserData,
   updateUserPreferences,
 } from "@/lib/apis";
+import {
+  buildPinRecoveryBackup,
+  ensureIdentityKeyPair,
+} from "@/lib/chat-crypto/identity";
 import {
   getPendingReferralCode,
   getUser,
@@ -27,7 +33,11 @@ import {
 import OnboardingFieldRenderer from "./onboarding/OnboardingFieldRenderer";
 import type { Screen } from "./onboarding/types";
 
-const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => {
+const Onboarding = ({
+  screens = onboardingScreens,
+}: {
+  screens?: Screen[];
+}) => {
   const currentUser = getUser();
   const userId = currentUser?._id;
   const { user } = useUser(userId);
@@ -35,6 +45,7 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
   const [screenIndex, setScreenIndex] = useState(0);
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const incomingReferralCode = String(searchParams.get("code") || "").trim();
@@ -46,7 +57,11 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
   useEffect(() => {
     if (!currentScreen) return;
 
-    const values = getInitialValuesForScreen(currentScreen, user, userPrefrence);
+    const values = getInitialValuesForScreen(
+      currentScreen,
+      user,
+      userPrefrence,
+    );
     if (incomingReferralCode) {
       setPendingReferralCode(incomingReferralCode);
     }
@@ -74,18 +89,18 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const screenErrors = useMemo(() => validateScreen(currentScreen, formValues), [
-    currentScreen,
-    formValues,
-  ]);
+  const screenErrors = useMemo(
+    () => validateScreen(currentScreen, formValues),
+    [currentScreen, formValues],
+  );
 
   const submitOnboardingData = async () => {
-    const { userData, userPreferenceData, password } = buildOnboardingPayload(
-      currentScreen,
-      formValues,
-    );
+    const { userData, userPreferenceData, password, recoveryPin } =
+      buildOnboardingPayload(currentScreen, formValues);
     const referralCodeRaw =
-      typeof formValues.referralCode === "string" ? formValues.referralCode : "";
+      typeof formValues.referralCode === "string"
+        ? formValues.referralCode
+        : "";
     const referralCode = referralCodeRaw.trim();
     const hasReferralCodeField = currentScreen.fields.some(
       (field) => field.name === "referralCode",
@@ -103,13 +118,23 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
       await setNewPassword({ newPassword: password });
     }
 
+    if (/^\d{6}$/.test(String(recoveryPin || ""))) {
+      await ensureIdentityKeyPair();
+      const backup = await buildPinRecoveryBackup(String(recoveryPin));
+      await setupRecoveryPin({
+        ...backup,
+        pin: String(recoveryPin),
+      });
+    }
+
     if (hasReferralCodeField && referralCode) {
       try {
         await applyReferralCode(referralCode);
         removePendingReferralCode();
       } catch (error: any) {
         const message =
-          error?.response?.data?.message || "Invalid referral code. Please check and try again.";
+          error?.response?.data?.message ||
+          "Invalid referral code. Please check and try again.";
         setErrors((prev) => ({ ...prev, referralCode: message }));
         throw error;
       }
@@ -132,6 +157,18 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
     if (screenIndex < totalScreens - 1) {
       setScreenIndex((prev) => prev + 1);
       return;
+    }
+
+    if (userId) {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["user", userId] }),
+        queryClient.invalidateQueries({ queryKey: ["user-profile", userId] }),
+        queryClient.refetchQueries({ queryKey: ["user", userId], type: "all" }),
+        queryClient.refetchQueries({
+          queryKey: ["user-profile", userId],
+          type: "all",
+        }),
+      ]);
     }
 
     setIsOnboarded(userId, true);
@@ -163,8 +200,16 @@ const Onboarding = ({ screens = onboardingScreens }: { screens?: Screen[] }) => 
                   value={formValues[field.name]}
                   onChange={handleInputChange}
                 />
+                {field.helperText && !errors[field.name] ? (
+                  <p className="mt-1 text-xs text-ui-shade/70">
+                    {field.helperText}
+                  </p>
+                ) : null}
+
                 {errors[field.name] ? (
-                  <p className="mt-1 text-xs text-red-500">{errors[field.name]}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors[field.name]}
+                  </p>
                 ) : null}
               </div>
             ))}

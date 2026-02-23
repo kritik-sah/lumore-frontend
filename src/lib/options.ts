@@ -10,11 +10,12 @@ export const DYNAMIC_OPTIONS_VERSION_KEY = "lumore:dynamic-options-version";
 export const DYNAMIC_OPTIONS_REFETCH_EVENT = "lumore:options-refetch";
 export const DYNAMIC_OPTIONS_UPDATED_EVENT = "lumore:options-updated";
 
-const cloneOptions = (options: SelectOption[]) => options.map((option) => ({ ...option }));
+const cloneOptions = (options: SelectOption[]) =>
+  options.map((option) => ({ ...option }));
 
 const defaultLanguageOptions: SelectOption[] = allLanguages.map(
   ({ code, name, nativeName }) => ({
-    label: `${name} (${nativeName})`,
+    label: `${name}`,
     value: code.toLowerCase().replace(/\s+/g, "-"),
   }),
 );
@@ -184,9 +185,13 @@ export const drinkingOptions = cloneOptions(defaultDrinkingOptions);
 export const smokingOptions = cloneOptions(defaultSmokingOptions);
 export const petOptions = cloneOptions(defaultPetOptions);
 export const maritalStatusOptions = cloneOptions(defaultMaritalStatusOptions);
-export const personalityTypeOptions = cloneOptions(defaultPersonalityTypeOptions);
+export const personalityTypeOptions = cloneOptions(
+  defaultPersonalityTypeOptions,
+);
 export const religionOptions = cloneOptions(defaultReligionOptions);
-export const relationshipTypeOptions = cloneOptions(defaultRelationshipTypeOptions);
+export const relationshipTypeOptions = cloneOptions(
+  defaultRelationshipTypeOptions,
+);
 export const visibilityOptions = cloneOptions(defaultVisibilityOptions);
 
 export type DynamicOptionKey =
@@ -207,7 +212,9 @@ export type DynamicOptionKey =
   | "relationshipTypeOptions"
   | "visibilityOptions";
 
-export type DynamicOptionsPayload = Partial<Record<DynamicOptionKey, SelectOption[]>>;
+export type DynamicOptionsPayload = Partial<
+  Record<DynamicOptionKey, SelectOption[]>
+>;
 
 const dynamicOptionRegistry: Record<DynamicOptionKey, SelectOption[]> = {
   languageOptions,
@@ -249,7 +256,10 @@ const normalizeOptionArray = (options: SelectOption[]) => {
   return Array.from(unique.values());
 };
 
-const replaceOptionsInPlace = (target: SelectOption[], next: SelectOption[]) => {
+const replaceOptionsInPlace = (
+  target: SelectOption[],
+  next: SelectOption[],
+) => {
   target.splice(0, target.length, ...next);
 };
 
@@ -268,7 +278,10 @@ export const saveDynamicOptionsToCache = (
   version?: string,
 ) => {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(DYNAMIC_OPTIONS_CACHE_KEY, JSON.stringify(payload));
+  window.localStorage.setItem(
+    DYNAMIC_OPTIONS_CACHE_KEY,
+    JSON.stringify(payload),
+  );
   if (version) {
     window.localStorage.setItem(DYNAMIC_OPTIONS_VERSION_KEY, version);
   }

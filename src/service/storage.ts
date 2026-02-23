@@ -91,3 +91,20 @@ export const removePendingReferralCode = () => {
     localStorage.removeItem(PENDING_REFERRAL_CODE_KEY);
   }
 };
+
+const CHAT_SECURE_PROMPT_PREFIX = "chatSecurePromptShownAt";
+
+export const setChatSecurePromptShownToday = (userId: string) => {
+  if (typeof window !== "undefined") {
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(`${CHAT_SECURE_PROMPT_PREFIX}-${userId}`, today);
+  }
+};
+
+export const wasChatSecurePromptShownToday = (userId: string): boolean => {
+  if (typeof window !== "undefined") {
+    const today = new Date().toISOString().slice(0, 10);
+    return localStorage.getItem(`${CHAT_SECURE_PROMPT_PREFIX}-${userId}`) === today;
+  }
+  return false;
+};

@@ -3,9 +3,10 @@ import Icon from "@/components/icon";
 import { ChatInboxLoader } from "@/components/page-loaders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchIbox } from "@/lib/apis";
+import { fetchIbox, fetchRoomEnvelopes } from "@/lib/apis";
+import { decryptTextMessage, type EncryptedMessageContent } from "@/lib/chat-crypto/message";
+import { ensureRoomKey } from "@/lib/chat-crypto/room-keys";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import CryptoJS from "crypto-js";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import NavLayout from "../components/layout/NavLayout";
@@ -135,42 +136,81 @@ const decodeLastMessage = (room: any) => {
   const lastMessage = room?.lastMessage;
   if (!lastMessage) return "";
 
-  if (lastMessage.messageType === "image") {
+  if (lastMessage.previewType === "image" || lastMessage.messageType === "image") {
     return "Photo";
   }
 
-  if (!lastMessage.encryptedData || !lastMessage.iv) {
+  if (
+    lastMessage.previewType === "text" ||
+    lastMessage.hasEncryptedText ||
+    lastMessage?.encryptedContent?.ciphertext
+  ) {
     return "New message";
   }
 
-  try {
-    const encryptionKey = localStorage.getItem(`chat_key_${room._id}`);
-    if (!encryptionKey) {
-      return "New message";
-    }
-
-    const key = CryptoJS.enc.Hex.parse(encryptionKey);
-    const iv = CryptoJS.enc.Hex.parse(lastMessage.iv);
-    const cipherWordArray = CryptoJS.enc.Hex.parse(lastMessage.encryptedData);
-    const base64Cipher = CryptoJS.enc.Base64.stringify(cipherWordArray);
-
-    const decrypted = CryptoJS.AES.decrypt(base64Cipher, key, {
-      iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-
-    const text = decrypted.toString(CryptoJS.enc.Utf8);
-    return text || "New message";
-  } catch {
+  if (!lastMessage.message) {
     return "New message";
   }
+
+  return lastMessage.message;
 };
 
 const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
-  const { user, isLoading } = useUser(matchedUser?._id ?? "");
+  const { user, isLoading, error } = useUser(matchedUser?._id ?? "");
   const unreadCount = Number(room?.unreadCount || 0);
-  const lastMessagePreview = useMemo(() => decodeLastMessage(room), [room]);
+  const [decryptedPreview, setDecryptedPreview] = useState<string | null>(null);
+  const lastMessagePreview = useMemo(() => {
+    if (decryptedPreview) return decryptedPreview;
+    return decodeLastMessage(room);
+  }, [decryptedPreview, room]);
+  const isUserUnavailable = Boolean(error);
+  const displayName = isUserUnavailable
+    ? "Lumore User"
+    : user?.realName || user?.nickname || user?.username || "Lumore User";
+
+  useEffect(() => {
+    let cancelled = false;
+    const decryptPreview = async () => {
+      try {
+        const encrypted = room?.lastMessage?.encryptedContent as EncryptedMessageContent;
+        if (!encrypted?.ciphertext) return;
+        if (!room?._id) return;
+        const keyEpoch = Number(encrypted.keyEpoch || room?.encryption?.currentKeyEpoch || 1);
+        const roomKey = await ensureRoomKey({
+          roomId: room._id,
+          epoch: keyEpoch,
+          fetchEnvelope: async () => {
+            const envelopes = await fetchRoomEnvelopes(room._id, keyEpoch);
+            return envelopes?.[0] || null;
+          },
+        });
+        const senderId =
+          typeof room?.lastMessage?.sender === "string"
+            ? room.lastMessage.sender
+            : room?.lastMessage?.sender?._id?.toString?.() ||
+              room?.lastMessage?.sender?.toString?.() ||
+              "";
+        const text = await decryptTextMessage({
+          roomId: room._id,
+          senderId,
+          keyEpoch,
+          roomKey,
+          encryptedContent: encrypted,
+        });
+        if (!cancelled) {
+          setDecryptedPreview(text || "New message");
+        }
+      } catch {
+        if (!cancelled) {
+          setDecryptedPreview(null);
+        }
+      }
+    };
+    void decryptPreview();
+    return () => {
+      cancelled = true;
+    };
+  }, [room]);
   if (isLoading) {
     return (
       <li className="flex items-center space-x-4 p-2 border-b border-ui-shade/10">
@@ -183,29 +223,23 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
     );
   }
 
-  return (
-    <li key={room._id}>
-      <Link
-        href={`/app/chat/${room._id}`}
-        className="flex items-center space-x-4 hover:bg-gray-100 p-2 border-b border-ui-shade/10 "
-      >
+  const content = (
+    <>
         <div className="relative">
           <div className="w-10 h-10 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                className={user?.isViewerUnlockedByUser ? "" : "blur-xs"}
+                className={user?.isViewerUnlockedByUser && !isUserUnavailable ? "" : "blur-xs"}
                 src={user?.profilePicture}
-                alt={user?.realName || user?.nickname || user?.username}
+                alt={displayName}
               />
               <AvatarFallback>
-                {`${user?.realName || user?.nickname || user?.username}`
-                  .charAt(0)
-                  .toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="absolute -bottom-0.5 -right-0.5 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
-            {user?.isViewerUnlockedByUser ? (
+            {!isUserUnavailable && user?.isViewerUnlockedByUser ? (
               <Icon name="HiLockOpen" className="h-3 w-3 text-ui-shade" />
             ) : (
               <Icon name="HiLockClosed" className="h-3 w-3 text-ui-shade" />
@@ -213,9 +247,7 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
           </div>
         </div>
         <div className="flex-1">
-          <h2 className="font-semibold">
-            {user?.realName || user?.nickname || user?.username}
-          </h2>
+          <h2 className="font-semibold">{displayName}</h2>
           {lastMessagePreview ? (
             <p className="text-sm text-ui-shade/70 truncate">
               {lastMessagePreview}
@@ -232,7 +264,23 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
             </span>
           ) : null}
         </div>
-      </Link>
+      </>
+  );
+
+  return (
+    <li key={room._id}>
+      {isUserUnavailable ? (
+        <div className="flex items-center space-x-4 p-2 border-b border-ui-shade/10 opacity-75 cursor-not-allowed">
+          {content}
+        </div>
+      ) : (
+        <Link
+          href={`/app/chat/${room._id}`}
+          className="flex items-center space-x-4 hover:bg-gray-100 p-2 border-b border-ui-shade/10"
+        >
+          {content}
+        </Link>
+      )}
     </li>
   );
 };
