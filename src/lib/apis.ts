@@ -3,8 +3,6 @@ import { getUser } from "@/service/storage";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { assertImageIsSafe } from "./nsfw.client";
-import type { RecoveryBackupPayload } from "./chat-crypto/identity";
-import type { RoomKeyEnvelopePayload } from "./chat-crypto/room-keys";
 
 /* -------------------------------------------------------------------------- */
 /*                              External API Call                             */
@@ -184,85 +182,6 @@ export const deleteTempChatImage = async (publicId: string) => {
     data: { publicId },
   });
   return response.data as { message: string };
-};
-
-/* -------------------------------------------------------------------------- */
-/*                              Chat Crypto APIs                              */
-/* -------------------------------------------------------------------------- */
-export const upsertIdentityKey = async (payload: {
-  identityPublicKey: string;
-  algorithm?: string;
-}) => {
-  const response = await apiClient.post(`/crypto/identity-key`, payload);
-  return response.data;
-};
-
-export const fetchIdentityKey = async (userId: string) => {
-  const response = await apiClient.get(`/crypto/identity-key/${userId}`);
-  return response.data as {
-    userId: string;
-    identityPublicKey: string;
-    algorithm: string;
-  };
-};
-
-export const upsertRecoveryBackup = async (payload: RecoveryBackupPayload) => {
-  const response = await apiClient.post(`/crypto/recovery-backup`, payload);
-  return response.data;
-};
-
-export const fetchRecoveryBackup = async () => {
-  const response = await apiClient.get(`/crypto/recovery-backup`);
-  return response.data as RecoveryBackupPayload;
-};
-
-export const fetchRecoveryStatus = async () => {
-  const response = await apiClient.get(`/crypto/recovery-status`);
-  return response.data as {
-    recoveryEnabled: boolean;
-    recoveryMethod: "passphrase" | "pin" | null;
-    needsPinUpgrade: boolean;
-    pinLockedUntil: string | null;
-    remainingAttempts: number;
-  };
-};
-
-export const setupRecoveryPin = async (
-  payload: RecoveryBackupPayload & { pin: string }
-) => {
-  const response = await apiClient.post(`/crypto/recovery-pin/setup`, payload);
-  return response.data;
-};
-
-export const recoverWithPin = async (pin: string) => {
-  const response = await apiClient.post(`/crypto/recovery-pin/recover`, { pin });
-  return response.data as RecoveryBackupPayload & {
-    recoveryMethod: "pin";
-  };
-};
-
-export const upsertRoomEnvelopes = async (
-  roomId: string,
-  payload: { epoch: number; envelopes: RoomKeyEnvelopePayload[] }
-) => {
-  const response = await apiClient.post(`/crypto/room/${roomId}/envelopes`, payload);
-  return response.data;
-};
-
-export const fetchRoomEnvelopes = async (roomId: string, epoch?: number) => {
-  const query = Number.isInteger(epoch) ? `?epoch=${epoch}` : "";
-  const response = await apiClient.get(`/crypto/room/${roomId}/envelopes${query}`);
-  return response.data as Array<{
-    epoch: number;
-    recipientUserId: string;
-    senderUserId: string;
-    algorithm: string;
-    ephemeralPublicKey: string;
-    iv: string;
-    salt: string;
-    ciphertext: string;
-    tag: string;
-  }>;
 };
 
 /* -------------------------------------------------------------------------- */

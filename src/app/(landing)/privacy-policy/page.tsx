@@ -71,7 +71,7 @@ const PrivacyPolicy = () => {
                 {
                     title: '8. Data Security',
                     content: [
-                        'End-to-end encryption for chat messages',
+                        'Secure transport for app data',
                         'Encrypted storage of passwords',
                         'Access control and secure data storage practices'
                     ]

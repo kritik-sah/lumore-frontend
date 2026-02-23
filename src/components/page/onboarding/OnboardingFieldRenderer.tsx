@@ -93,17 +93,8 @@ const OnboardingFieldRenderer = ({
       label={field.label}
       value={(value as string) || ""}
       name={field.name}
-      onChange={(e) =>
-        onChange(
-          field.name,
-          field.name === "chatRecoveryPin"
-            ? e.target.value.replace(/\D+/g, "").slice(0, 6)
-            : e.target.value,
-        )
-      }
+      onChange={(e) => onChange(field.name, e.target.value)}
       placeholder={field.placeholder}
-      inputMode={field.name === "chatRecoveryPin" ? "numeric" : undefined}
-      maxLength={field.name === "chatRecoveryPin" ? 6 : undefined}
       type={
         field.type === "email"
           ? "email"

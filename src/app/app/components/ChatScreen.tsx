@@ -2,29 +2,17 @@
 import { ChatRoomLoader } from "@/components/page-loaders";
 import {
   deleteTempChatImage,
-  fetchRecoveryStatus,
-  setupRecoveryPin,
   uploadChatImage,
 } from "@/lib/apis";
-import {
-  buildPinRecoveryBackup,
-  ensureIdentityKeyPair,
-} from "@/lib/chat-crypto/identity";
 import { messageSchema } from "@/lib/validation";
 import { trackAnalytic } from "@/service/analytics";
-import {
-  getUser,
-  setChatSecurePromptShownToday,
-  wasChatSecurePromptShownToday,
-} from "@/service/storage";
+import { getUser } from "@/service/storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useSocket } from "../context/SocketContext";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatInput } from "./chat/ChatInput";
 import { ChatMessages } from "./chat/ChatMessages";
-import type { EncryptedMessageContent } from "@/lib/chat-crypto/message";
-import { RecoveryPinSheet } from "./recovery/RecoveryPinSheet";
 
 export interface ChatReaction {
   userId: string;
@@ -44,7 +32,6 @@ export interface Message {
   clientMessageId?: string;
   sender: string;
   message: string;
-  encryptedContent?: EncryptedMessageContent | null;
   messageType?: "text" | "image";
   imageUrl?: string | null;
   imagePublicId?: string | null;
@@ -78,10 +65,6 @@ const ChatScreen = () => {
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
-  const [recoveryEnabled, setRecoveryEnabled] = useState(true);
-  const [secureSheetOpen, setSecureSheetOpen] = useState(false);
-  const [secureStatus, setSecureStatus] = useState<string | null>(null);
-  const [secureLoading, setSecureLoading] = useState(false);
   const pendingImageRef = useRef<PendingImage | null>(null);
   const uploadRequestIdRef = useRef(0);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -108,27 +91,7 @@ const ChatScreen = () => {
     setMessages,
     isLoading,
     isActive,
-    encryptTextForSend,
   } = useChat();
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const status = await fetchRecoveryStatus();
-        if (!cancelled) {
-          setRecoveryEnabled(Boolean(status?.recoveryEnabled));
-        }
-      } catch {
-        if (!cancelled) {
-          setRecoveryEnabled(true);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const replyingToPreview = useMemo(() => {
     if (!replyingTo?._id) return null;
@@ -214,16 +177,6 @@ const ChatScreen = () => {
 
     const trimmed = newMessage.trim();
     if (!trimmed && !pendingImage) return;
-    if (
-      !recoveryEnabled &&
-      userId &&
-      !wasChatSecurePromptShownToday(userId) &&
-      !secureSheetOpen
-    ) {
-      setChatSecurePromptShownToday(userId);
-      setSecureSheetOpen(true);
-      return;
-    }
     if (trimmed) {
       const messageResult = messageSchema.safeParse(trimmed);
       if (!messageResult.success) {
@@ -234,12 +187,10 @@ const ChatScreen = () => {
 
     if (editingMessageId) {
       if (!trimmed) return;
-      const encrypted = await encryptTextForSend(trimmed);
       socket.emit("edit_message", {
         roomId,
         messageId: editingMessageId,
-        message: encrypted ? undefined : trimmed,
-        encryptedContent: encrypted?.encryptedContent || null,
+        message: trimmed,
       });
       setEditingMessageId(null);
       setNewMessage("");
@@ -280,7 +231,6 @@ const ChatScreen = () => {
 
     if (trimmed) {
       const textClientMessageId = createClientMessageId();
-      const encrypted = await encryptTextForSend(trimmed);
 
       trackAnalytic({
         activity: "message_sent",
@@ -291,8 +241,7 @@ const ChatScreen = () => {
       socket.emit("send_message", {
         roomId,
         receiverId: matchedUser._id,
-        message: encrypted ? undefined : trimmed,
-        encryptedContent: encrypted?.encryptedContent || null,
+        message: trimmed,
         replyTo: replyingToPreview?._id || null,
         messageType: "text",
         clientMessageId: textClientMessageId,
@@ -304,7 +253,6 @@ const ChatScreen = () => {
           clientMessageId: textClientMessageId,
           sender: userId,
           message: trimmed,
-          encryptedContent: encrypted?.encryptedContent || null,
           messageType: "text",
           timestamp: Date.now(),
           replyTo: replyingToPreview,
@@ -563,33 +511,6 @@ const ChatScreen = () => {
         pendingImage={pendingImage}
         uploadError={uploadError}
         onDismissUploadError={dismissUploadError}
-      />
-      <RecoveryPinSheet
-        open={secureSheetOpen}
-        onOpenChange={setSecureSheetOpen}
-        title="Secure your chats"
-        description="Set a 6-digit chat PIN to restore secure messages on new devices."
-        submitLabel="Secure now"
-        secondaryLabel="Later"
-        onSecondary={() => setSecureSheetOpen(false)}
-        loading={secureLoading}
-        statusText={secureStatus}
-        onSubmit={async (pin) => {
-          setSecureLoading(true);
-          setSecureStatus(null);
-          try {
-            await ensureIdentityKeyPair();
-            const backup = await buildPinRecoveryBackup(pin);
-            await setupRecoveryPin({ ...backup, pin });
-            setRecoveryEnabled(true);
-            setSecureStatus("Chats are secured.");
-            setSecureSheetOpen(false);
-          } catch {
-            setSecureStatus("Could not secure chats right now.");
-          } finally {
-            setSecureLoading(false);
-          }
-        }}
       />
     </div>
   );
