@@ -2,7 +2,7 @@ import React from 'react';
 
 const PrivacyPolicy = () => {
     return (
-        <div className="max-w-4xl mx-auto p-6 text-gray-800">
+        <div className="max-w-4xl mx-auto p-6 text-ui-shade">
             <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
             <p className="italic mb-4">Effective Date: 26 may 2025</p>
             <p className="mb-6">Lumore (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application (&quot;App&quot;). By using Lumore, you agree to the practices described in this Privacy Policy.</p>
@@ -102,13 +102,13 @@ const PrivacyPolicy = () => {
                     <h2 className="text-xl font-semibold mb-2">{title}</h2>
                     <ul className="list-disc ml-5 space-y-1">
                         {content.map((item, subIdx) => (
-                            <li key={subIdx} className="text-gray-700">{item}</li>
+                            <li key={subIdx} className="text-ui-shade/80">{item}</li>
                         ))}
                     </ul>
                 </section>
             ))}
 
-            <div className="mt-10 border-t pt-6 text-sm italic text-gray-600">
+            <div className="mt-10 border-t pt-6 text-sm italic text-ui-shade/70">
                 We recommend that you review this Privacy Policy regularly. Your continued use of Lumore signifies acceptance of our practices.
             </div>
         </div>
@@ -116,3 +116,4 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy;
+

@@ -123,7 +123,7 @@ export function SetNewPasswordForm({
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-[10px] text-gray-500"
+                    className="absolute right-3 top-[10px] text-ui-shade/60"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -163,3 +163,4 @@ export const useSetNewPassword = () => {
     },
   });
 };
+

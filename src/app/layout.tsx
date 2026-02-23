@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html data-theme="light" lang="en">
+    <html lang="en">
       <head className="overflow-x-hidden">
         <meta
           name="google-adsense-account"
@@ -74,3 +74,4 @@ export default function RootLayout({
     </html>
   );
 }
+

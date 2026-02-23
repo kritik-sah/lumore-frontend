@@ -5,21 +5,37 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 @theme {
-  --color-ui-light: #fafafa;
-  --color-ui-shade: #0a0a09;
-  --color-ui-background: #f1e9da;
-  --color-ui-foreground: #2e294e;
-  --color-ui-primary: #ffd400;
-  --color-ui-accent: #d90368;
-  --color-ui-highlight: #541388;
-  --color-ui-dark-background: #1a1a2e;
-  --color-ui-dark-foreground: #eaeaea;
-  --color-ui-dark-primary: #ffdd33;
-  --color-ui-dark-accent: #ff4f7b;
-  --color-ui-dark-highlight: #6a28a5;
+  /* Canonical semantic tokens */
+  --color-bg-canvas: #fafafa;
+  --color-bg-surface: #fafafa;
+  --color-bg-muted: #f1e9da;
+
+  --color-text-primary: #0a0a09;
+  --color-text-muted: #2e294e;
+
+  --color-border-default: #0a0a09;
+  --color-border-muted: #2e294e;
+
+  --color-brand-primary: #ffd400;
+  --color-brand-secondary: #d90368;
+  --color-action-primary: #541388;
+  --color-action-primary-contrast: #fafafa;
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
+  --color-overlay: rgba(10, 10, 9, 0.5);
+
+  /* Compatibility aliases for gradual migration */
+  --color-ui-light: var(--color-bg-surface);
+  --color-ui-shade: var(--color-text-primary);
+  --color-ui-background: var(--color-bg-muted);
+  --color-ui-foreground: var(--color-text-muted);
+  --color-ui-primary: var(--color-brand-primary);
+  --color-ui-accent: var(--color-brand-secondary);
+  --color-ui-highlight: var(--color-action-primary);
 
   --font-dmSans: var(--font-dm-sans);
   --font-workSans: var(--font-work-sans);
@@ -36,11 +52,13 @@ body {
 }
 
 body {
-  background-color: #fafafa;
-  color: #0a0a09;
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-primary);
   font-family: var(--font-work-sans);
   overflow-x: hidden;
 }
+
+
 
 .app-guard {
   user-select: none;
@@ -206,3 +224,5 @@ body {
     rgba(255, 255, 255, 0.3)
   );
 }
+
+

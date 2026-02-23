@@ -4,9 +4,11 @@ import { ChatInboxLoader } from "@/components/page-loaders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchIbox } from "@/lib/apis";
+import { trackAnalyticOnce } from "@/service/analytics";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
+import SecondaryActionsSheet from "../components/SecondaryActionsSheet";
 import NavLayout from "../components/layout/NavLayout";
 import { useSocket } from "../context/SocketContext";
 import { useCookies } from "../hooks/useCookies";
@@ -50,14 +52,20 @@ const ChatInbox = () => {
   return (
     <NavLayout>
       <div className="h-full w-full  max-w-md mx-auto p-4">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 w-full">
           <h1 className="text-2xl font-bold">Inbox</h1>
-          <Link
-            href="/app/feedback"
-            className="text-sm text-ui-highlight hover:underline"
-          >
-            Feedback
-          </Link>
+          <div>
+            <SecondaryActionsSheet
+              title="Chat Actions"
+              actions={[
+                {
+                  label: "Received feedback",
+                  href: "/app/feedback",
+                  icon: "FaRegFileLines",
+                },
+              ]}
+            />
+          </div>
         </div>
         <div className="w-full">
           <Tabs
@@ -110,7 +118,7 @@ const Inbox = ({ user, rooms, isLoading, error }: any) => {
   return (
     <>
       {rooms?.length === 0 ? (
-        <p className="text-gray-500 text-center">No active chats yet</p>
+        <p className="text-ui-shade/60 text-center">No active chats yet</p>
       ) : (
         <ul className="space-y-4">
           {rooms.map((room: any) => {
@@ -134,7 +142,10 @@ const decodeLastMessage = (room: any) => {
   const lastMessage = room?.lastMessage;
   if (!lastMessage) return "";
 
-  if (lastMessage.previewType === "image" || lastMessage.messageType === "image") {
+  if (
+    lastMessage.previewType === "image" ||
+    lastMessage.messageType === "image"
+  ) {
     return "Photo";
   }
 
@@ -167,46 +178,50 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
 
   const content = (
     <>
-        <div className="relative">
-          <div className="w-10 h-10 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                className={user?.isViewerUnlockedByUser && !isUserUnavailable ? "" : "blur-xs"}
-                src={user?.profilePicture}
-                alt={displayName}
-              />
-              <AvatarFallback>
-                {displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="absolute -bottom-0.5 -right-0.5 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
-            {!isUserUnavailable && user?.isViewerUnlockedByUser ? (
-              <Icon name="HiLockOpen" className="h-3 w-3 text-ui-shade" />
-            ) : (
-              <Icon name="HiLockClosed" className="h-3 w-3 text-ui-shade" />
-            )}
-          </div>
+      <div className="relative">
+        <div className="w-10 h-10 rounded-full border border-ui-shade/10 bg-ui-light overflow-hidden">
+          <Avatar className="h-10 w-10">
+            <AvatarImage
+              className={
+                user?.isViewerUnlockedByUser && !isUserUnavailable
+                  ? ""
+                  : "blur-xs"
+              }
+              src={user?.profilePicture}
+              alt={displayName}
+            />
+            <AvatarFallback>
+              {displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         </div>
-        <div className="flex-1">
-          <h2 className="font-semibold">{displayName}</h2>
-          {lastMessagePreview ? (
-            <p className="text-sm text-ui-shade/70 truncate">
-              {lastMessagePreview}
-            </p>
-          ) : null}
+        <div className="absolute -bottom-0.5 -right-0.5 bg-ui-light h-4 w-4 rounded-full flex items-center justify-center">
+          {!isUserUnavailable && user?.isViewerUnlockedByUser ? (
+            <Icon name="HiLockOpen" className="h-3 w-3 text-ui-shade" />
+          ) : (
+            <Icon name="HiLockClosed" className="h-3 w-3 text-ui-shade" />
+          )}
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-xs text-gray-400">
-            {new Date(room.lastMessageAt).toLocaleDateString()}
+      </div>
+      <div className="flex-1">
+        <h2 className="font-semibold">{displayName}</h2>
+        {lastMessagePreview ? (
+          <p className="text-sm text-ui-shade/70 truncate">
+            {lastMessagePreview}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex flex-col items-end gap-1">
+        <span className="text-xs text-ui-shade/50">
+          {new Date(room.lastMessageAt).toLocaleDateString()}
+        </span>
+        {unreadCount > 0 ? (
+          <span className="min-w-5 h-5 px-1 rounded-full bg-ui-highlight text-white text-xs flex items-center justify-center">
+            {unreadCount}
           </span>
-          {unreadCount > 0 ? (
-            <span className="min-w-5 h-5 px-1 rounded-full bg-ui-highlight text-white text-xs flex items-center justify-center">
-              {unreadCount}
-            </span>
-          ) : null}
-        </div>
-      </>
+        ) : null}
+      </div>
+    </>
   );
 
   return (
@@ -218,7 +233,14 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
       ) : (
         <Link
           href={`/app/chat/${room._id}`}
-          className="flex items-center space-x-4 hover:bg-gray-100 p-2 border-b border-ui-shade/10"
+          onClick={() =>
+            trackAnalyticOnce("first_chat_opened", {
+              activity: "first_chat_opened",
+              label: room._id,
+              category: "ui-simplification",
+            })
+          }
+          className="flex items-center space-x-4 hover:bg-ui-shade/10 p-2 border-b border-ui-shade/10"
         >
           {content}
         </Link>
@@ -226,3 +248,4 @@ const UserChat = ({ room, matchedUser }: { room: any; matchedUser: any }) => {
     </li>
   );
 };
+

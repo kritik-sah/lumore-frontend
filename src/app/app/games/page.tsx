@@ -14,7 +14,7 @@ const GamesPage = () => {
         <div className="mx-auto w-full max-w-2xl">
           <h2 className="text-2xl font-semibold text-ui-shade">Games</h2>
           <p className="text-sm text-ui-shade/70 mt-1">
-            Help us understand your vibe better.
+            Optional but useful. Games improve your match signals.
           </p>
         </div>
         <div className="flex flex-col items-center justify-center px-0 gap-3 mt-4 max-w-2xl mx-auto">
@@ -31,3 +31,4 @@ const GamesPage = () => {
 };
 
 export default GamesPage;
+

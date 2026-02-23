@@ -90,6 +90,20 @@ const UserSettingsPage = () => {
     return <SettingsPageLoader />;
   }
 
+  const settingsFields: Array<{
+    label: string;
+    field: keyof UserSettings;
+    value?: string;
+  }> = [
+    { label: "Email", field: "email", value: settings.email },
+    { label: "Phone Number", field: "phoneNumber", value: settings.phoneNumber },
+    {
+      label: "Wallet Address",
+      field: "web3Wallet",
+      value: settings.web3Wallet.addresses[0],
+    },
+  ];
+
   return (
     <SubPageLayout title="User Settings">
       <div className="bg-ui-background/10 p-4">
@@ -109,21 +123,15 @@ const UserSettingsPage = () => {
             }
           />
 
-          <SettingFieldCard
-            label="Email"
-            value={settings.email}
-            onClick={() => handleEditField("email")}
-          />
-          <SettingFieldCard
-            label="Phone Number"
-            value={settings.phoneNumber}
-            onClick={() => handleEditField("phoneNumber")}
-          />
-          <SettingFieldCard
-            label="Wallet Address"
-            value={settings.web3Wallet.addresses[0]}
-            onClick={() => handleEditField("web3Wallet")}
-          />
+          {settingsFields.map((item) => (
+            <SettingFieldCard
+              key={item.field}
+              label={item.label}
+              field={item.field}
+              value={item.value}
+              onClick={() => handleEditField(item.field)}
+            />
+          ))}
 
           <div className="mt-8 space-y-4">
             <Button
@@ -144,3 +152,5 @@ const UserSettingsPage = () => {
 };
 
 export default UserSettingsPage;
+
+

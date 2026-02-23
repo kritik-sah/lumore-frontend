@@ -206,12 +206,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={isUnlocked ? handleLockProfile : handleUnlockProfile}
-          className="hover:bg-gray-100"
+          className="hover:bg-ui-shade/10"
         >
           {isUnlocked ? (
-            <Icon name="HiLockOpen" className="h-5 w-5 text-gray-500" />
+            <Icon name="HiLockOpen" className="h-5 w-5 text-ui-shade/60" />
           ) : (
-            <Icon name="HiLockClosed" className="h-5 w-5 text-gray-500" />
+            <Icon name="HiLockClosed" className="h-5 w-5 text-ui-shade/60" />
           )}
         </Button>
         {isActive && (
@@ -323,7 +323,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                           className={`rounded-full border px-3 py-1 text-xs ${
                             reportCategory === option.value
                               ? "border-ui-highlight bg-ui-highlight text-white"
-                              : "border-ui-shade/20 bg-white text-ui-shade"
+                              : "border-ui-shade/20 bg-ui-light text-ui-shade"
                           }`}
                         >
                           {option.label}
@@ -375,3 +375,4 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     </div>
   );
 };
+

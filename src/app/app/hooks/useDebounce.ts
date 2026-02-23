@@ -15,3 +15,4 @@ export function useDebounce<T>(value: T, delay: number = 1000): T {
 
   return debouncedValue;
 }
+

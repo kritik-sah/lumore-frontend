@@ -3,23 +3,17 @@
 import { useUser } from "@/app/app/hooks/useUser";
 import { useUserPrefrence } from "@/app/app/hooks/useUserPrefrence";
 import { Button } from "@/components/ui/button";
+import { updateUserData, updateUserPreferences } from "@/lib/apis";
+import { isUiSimplificationEnabled } from "@/lib/feature-flags";
+import { trackAnalytic } from "@/service/analytics";
+import { getUser, setIsOnboarded } from "@/service/storage";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  applyReferralCode,
-  setNewPassword,
-  updateUserData,
-  updateUserPreferences,
-} from "@/lib/apis";
-import {
-  getPendingReferralCode,
-  getUser,
-  removePendingReferralCode,
-  setIsOnboarded,
-  setPendingReferralCode,
-} from "@/service/storage";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { onboardingScreens } from "./onboarding/config";
+  legacyOnboardingScreens,
+  onboardingScreens,
+} from "./onboarding/config";
 import {
   buildOnboardingPayload,
   getInitialValuesForScreen,
@@ -29,7 +23,9 @@ import OnboardingFieldRenderer from "./onboarding/OnboardingFieldRenderer";
 import type { Screen } from "./onboarding/types";
 
 const Onboarding = ({
-  screens = onboardingScreens,
+  screens = isUiSimplificationEnabled()
+    ? onboardingScreens
+    : legacyOnboardingScreens,
 }: {
   screens?: Screen[];
 }) => {
@@ -42,8 +38,8 @@ const Onboarding = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const queryClient = useQueryClient();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const incomingReferralCode = String(searchParams.get("code") || "").trim();
+  const trackedStartRef = useRef(false);
+  const isSimplifiedOnboarding = isUiSimplificationEnabled();
 
   const currentScreen = screens[screenIndex];
   const totalScreens = screens.length;
@@ -57,32 +53,22 @@ const Onboarding = ({
       user,
       userPrefrence,
     );
-    if (incomingReferralCode) {
-      setPendingReferralCode(incomingReferralCode);
-    }
-
-    if (currentScreen.fields.some((field) => field.name === "referralCode")) {
-      const storedCode = getPendingReferralCode();
-      if (storedCode && !values.referralCode) {
-        values.referralCode = storedCode;
-      }
-    }
 
     setFormValues(values);
-  }, [currentScreen, user, userPrefrence, incomingReferralCode]);
+  }, [currentScreen, user, userPrefrence]);
 
-  const handleInputChange = (name: string, value: unknown) => {
-    if (name === "referralCode") {
-      const nextCode = String(value || "").trim();
-      if (nextCode) {
-        setPendingReferralCode(nextCode);
-      } else {
-        removePendingReferralCode();
-      }
-    }
+  useEffect(() => {
+    if (trackedStartRef.current) return;
+    trackedStartRef.current = true;
+    trackAnalytic({
+      activity: "onboarding_started",
+      label: isSimplifiedOnboarding ? "simplified" : "legacy",
+      category: "ui-simplification",
+    });
+  }, [isSimplifiedOnboarding]);
 
+  const handleInputChange = (name: string, value: unknown) =>
     setFormValues((prev) => ({ ...prev, [name]: value }));
-  };
 
   const screenErrors = useMemo(
     () => validateScreen(currentScreen, formValues),
@@ -90,15 +76,9 @@ const Onboarding = ({
   );
 
   const submitOnboardingData = async () => {
-    const { userData, userPreferenceData, password } =
-      buildOnboardingPayload(currentScreen, formValues);
-    const referralCodeRaw =
-      typeof formValues.referralCode === "string"
-        ? formValues.referralCode
-        : "";
-    const referralCode = referralCodeRaw.trim();
-    const hasReferralCodeField = currentScreen.fields.some(
-      (field) => field.name === "referralCode",
+    const { userData, userPreferenceData } = buildOnboardingPayload(
+      currentScreen,
+      formValues,
     );
 
     if (Object.keys(userData).length) {
@@ -107,23 +87,6 @@ const Onboarding = ({
 
     if (Object.keys(userPreferenceData).length) {
       await updateUserPreferences(userPreferenceData);
-    }
-
-    if (password) {
-      await setNewPassword({ newPassword: password });
-    }
-
-    if (hasReferralCodeField && referralCode) {
-      try {
-        await applyReferralCode(referralCode);
-        removePendingReferralCode();
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message ||
-          "Invalid referral code. Please check and try again.";
-        setErrors((prev) => ({ ...prev, referralCode: message }));
-        throw error;
-      }
     }
   };
 
@@ -139,6 +102,13 @@ const Onboarding = ({
     } catch {
       return;
     }
+
+    trackAnalytic({
+      activity: "onboarding_step_completed",
+      label: currentScreen.id || `step-${screenIndex + 1}`,
+      category: "ui-simplification",
+      value: screenIndex + 1,
+    });
 
     if (screenIndex < totalScreens - 1) {
       setScreenIndex((prev) => prev + 1);
@@ -158,7 +128,12 @@ const Onboarding = ({
     }
 
     setIsOnboarded(userId, true);
-    router.replace("/app/profile");
+    trackAnalytic({
+      activity: "onboarding_completed",
+      label: isSimplifiedOnboarding ? "simplified" : "legacy",
+      category: "ui-simplification",
+    });
+    router.replace("/app/profile?showOptionalSetup=1");
   };
 
   return (
@@ -170,15 +145,15 @@ const Onboarding = ({
         />
       </div>
 
-      <div className="flex h-full flex-col justify-between items-center pt-4 w-full">
+      <div className="flex h-full flex-col justify-between items-center w-full">
         <div className="w-full">
-          <div className="my-6">
-            <p className="text-3xl font-bold text-ui-dark mb-2">
+          <div className="my-3">
+            <p className="text-2xl font-bold text-ui-shade mb-2">
               {currentScreen.title}
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-auto max-h-[70vh] pr-2">
             {currentScreen.fields.map((field) => (
               <div key={field.name} className="w-full">
                 <OnboardingFieldRenderer
@@ -203,6 +178,12 @@ const Onboarding = ({
         </div>
 
         <div className="w-full mt-6">
+          {/* {screenIndex === totalScreens - 1 ? (
+            <p className="mt-3 text-xs text-ui-shade/70 text-center">
+              You can skip optional profile details for now and complete them
+              later.
+            </p>
+          ) : null} */}
           <Button className="w-full p-6" onClick={handleNext}>
             {screenIndex === totalScreens - 1 ? "Let's Go..." : "Next"}
           </Button>
@@ -213,3 +194,5 @@ const Onboarding = ({
 };
 
 export default Onboarding;
+
+

@@ -34,3 +34,4 @@ export function calculateProfileCompletion(user: any) {
     missingCount: total - filledCount,
   };
 }
+

@@ -35,3 +35,4 @@ export function calculatePreferencesCompletion(preferences?: UserPreferences) {
 
   return { completionPercent, missingCount: total - filledCount };
 }
+

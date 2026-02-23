@@ -1,13 +1,9 @@
 import React from "react";
-import MobileNav from "../MobileNav";
+import AppShell from "./AppShell";
 
 const NavLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <>
-      {children}
-      <MobileNav />
-    </>
-  );
+  return <AppShell>{children}</AppShell>;
 };
 
 export default NavLayout;
+

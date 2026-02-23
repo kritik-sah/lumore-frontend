@@ -367,3 +367,4 @@ export const useChat = () => {
   if (!ctx) throw new Error("useChat must be used inside ChatProvider");
   return ctx;
 };
+

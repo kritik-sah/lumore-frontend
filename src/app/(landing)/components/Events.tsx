@@ -16,7 +16,7 @@ const Events = () => {
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl overflow-hidden border border-ui-shade/10 bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)] p-2">
+        <div className="mt-6 rounded-2xl overflow-hidden border border-ui-shade/10 bg-ui-light shadow-[0_18px_40px_rgba(0,0,0,0.08)] p-2">
           <iframe
             src="https://luma.com/embed/calendar/cal-yIjBmTVHsWlce0n/events?lt=light"
             width={"100%"}
@@ -31,3 +31,4 @@ const Events = () => {
 };
 
 export default Events;
+

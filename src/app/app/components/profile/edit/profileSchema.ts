@@ -111,3 +111,4 @@ export const createProfileSchema = (currentUsername?: string) =>
 export const profileSchema = createProfileSchema();
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
+

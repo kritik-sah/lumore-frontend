@@ -36,3 +36,4 @@ export const useOnboarding = () => {
 
   return { user, token, isOnboarded, loading };
 };
+

@@ -1,10 +1,12 @@
 "use client";
+
 import AnimatedDots from "@/components/AnimatedDots";
 import Icon from "@/components/icon";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { fetchPreferenceMatchCount } from "@/lib/apis";
+import { trackAnalytic } from "@/service/analytics";
 import { getIsOnboarded, getUser } from "@/service/storage";
 import { formatNumber } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
@@ -17,7 +19,7 @@ const MatchmakingScreen = () => {
 
   useEffect(() => {
     return revalidateUser();
-  }, []);
+  }, [revalidateUser]);
 
   return (
     <div className="flex-1 overflow-y-auto p-2">
@@ -36,17 +38,22 @@ const SearchScreen = () => {
   const [availableUsersCount, setAvailableUsersCount] = useState(0);
 
   useEffect(() => {
-    const _fetchPreferenceMatchCount = async () => {
+    const fetchMatchCount = async () => {
       const response = await fetchPreferenceMatchCount();
       if (response?.success) {
         setAvailableUsersCount(response.data?.availableUsers || 0);
       }
     };
 
-    _fetchPreferenceMatchCount();
+    void fetchMatchCount();
   }, []);
 
   const handleStartMatchmaking = () => {
+    trackAnalytic({
+      activity: "matchmaking_started",
+      label: "explore",
+      category: "ui-simplification",
+    });
     startMatchmaking();
   };
 
@@ -54,22 +61,20 @@ const SearchScreen = () => {
     const user = getUser();
     const isOnborded = getIsOnboarded(user?._id);
     if (isOnborded) {
-      // redirect to edit profile
       router.push("/app/profile/edit");
-    } else {
-      // redirect to onboarding
-      router.push("/app/onboarding");
+      return;
     }
+    router.push("/app/onboarding");
   };
 
   return (
-    <div className="relative h-full flex flex-col items-center justify-between gap-4 bg-ui-background border border-ui-shade/10 rounded-xl">
+    <div className="relative h-full flex flex-col items-center justify-between gap-4 bg-bg-muted border border-border-default/10 rounded-xl">
       <BackgroundRippleEffect />
       <div className="z-10 flex items-center justify-between p-3 w-full gap-2">
-        <Badge className="bg-ui-highlight/70 text-white rounded-full">
+        <Badge className="bg-action-primary/70 text-action-primary-contrast rounded-full">
           <span>{creditsRes?.data?.credits ?? 0} credits</span>
         </Badge>
-        <Badge className="animate-pulse bg-ui-light text-ui-shade rounded-full space-x-1">
+        <Badge className="animate-pulse bg-bg-surface text-text-primary rounded-full space-x-1">
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex size-2 rounded-full bg-green-500"></span>
@@ -77,11 +82,12 @@ const SearchScreen = () => {
           <span>{formatNumber(availableUsersCount)} Users</span>
         </Badge>
       </div>
+
       <div className="z-10 relative w-full flex flex-col items-center justify-center gap-4">
         <div className="text-center">
           <div className="flex items-center justify-center mb-3">
             <div
-              className={`h-16 w-16 ${isMatching ? "animate-revolve" : "animate-wiggle"} bg-ui-light/30 border border-ui-shade/10 rounded-full flex items-center justify-center`}
+              className={`h-16 w-16 ${isMatching ? "animate-revolve" : "animate-wiggle"} bg-bg-surface/30 border border-border-default/10 rounded-full flex items-center justify-center`}
             >
               <Icon
                 name={isMatching ? "BsSearchHeart" : "IoRoseOutline"}
@@ -96,16 +102,19 @@ const SearchScreen = () => {
               "Meet Someone New"
             )}
           </h1>
-          <p className="text-ui-shade/80 text-lg px-4">
+          <p className="text-text-primary/80 text-lg px-4">
             {isMatching ? (
-              <span className="text-base">{`We're searching for your perfect match! As we're newly launched, it might take a moment to connect you with someone special. Hang tight we'll notify you as soon as we find them.`}</span>
+              <span className="text-base">
+                We are searching for your perfect match. It can take a moment
+                while availability grows.
+              </span>
             ) : (
-              "Discover real connection around you, effortlessly, and authentically"
+              "Discover real connection around you, effortlessly, and authentically."
             )}
           </p>
         </div>
 
-        {error && <div className="text-red-500 text-sm">{error}</div>}
+        {error ? <div className="text-red-500 text-sm">{error}</div> : null}
 
         <Button
           variant={isMatching ? "outline" : "default"}
@@ -115,15 +124,16 @@ const SearchScreen = () => {
           {isMatching ? "Stop Matchmaking" : "Start Matchmaking"}
         </Button>
       </div>
-      <div className="z-10 p-3 w-full">
+
+      <div className="z-10 p-3 w-full grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div
           onClick={handleRedirection}
-          className="bg-[#E9E3EF] border border-ui-shade/10 rounded-xl p-3 flex items-center justify-between "
+          className="bg-bg-surface/60 border border-border-default/10 rounded-xl p-3 flex items-center justify-between cursor-pointer"
         >
-          <p className="text-ui-highlight font-medium">
-            Complete your profile for better experience ❤️‍🔥
+          <p className="text-action-primary font-medium">
+            Complete your profile for better matches.
           </p>
-          <Button size={"icon"} className="rounded-full shrink-0">
+          <Button size="icon" className="rounded-full shrink-0">
             <Icon name="HiArrowLongRight" />
           </Button>
         </div>
@@ -131,3 +141,4 @@ const SearchScreen = () => {
     </div>
   );
 };
+

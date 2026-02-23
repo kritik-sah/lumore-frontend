@@ -80,7 +80,7 @@ const EditPreferences = () => {
             }
           />
 
-          <div className="rounded-2xl border border-ui-shade/10 bg-white p-4">
+          <div className="rounded-2xl border border-ui-shade/10 bg-ui-light p-4">
             <p className="text-sm text-ui-shade/70">Match preferences</p>
             <p className="text-xs text-ui-shade/60 mt-1">
               These help us tailor who you see.
@@ -215,3 +215,4 @@ const EditPreferences = () => {
 };
 
 export default EditPreferences;
+

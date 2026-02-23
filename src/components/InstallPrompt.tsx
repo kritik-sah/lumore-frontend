@@ -25,7 +25,7 @@ export const InstallPrompt = ({
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg p-6 z-50"
+          className="fixed bottom-0 left-0 right-0 bg-ui-light rounded-t-2xl shadow-lg p-6 z-50"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -37,15 +37,15 @@ export const InstallPrompt = ({
                 />
               </div>
               <div className="text-left">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-ui-shade">
                   Install Lumore
                 </h3>
-                <p className="text-sm text-gray-500">Get the best experience</p>
+                <p className="text-sm text-ui-shade/60">Get the best experience</p>
               </div>
             </div>
             <button
               onClick={() => setIsVisible(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-ui-shade/50 hover:text-ui-shade/70"
             >
               <svg
                 className="w-6 h-6"
@@ -70,7 +70,7 @@ export const InstallPrompt = ({
                 alt="Home Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />
-              <p className="text-sm text-gray-600 mt-2">Explore new people</p>
+              <p className="text-sm text-ui-shade/70 mt-2">Explore new people</p>
             </div>
             <div className="flex-shrink-0 w-48">
               <img
@@ -78,7 +78,7 @@ export const InstallPrompt = ({
                 alt="Chat Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />
-              <p className="text-sm text-gray-600 mt-2">Saved Chats</p>
+              <p className="text-sm text-ui-shade/70 mt-2">Saved Chats</p>
             </div>
             <div className="flex-shrink-0 w-48">
               <img
@@ -86,7 +86,7 @@ export const InstallPrompt = ({
                 alt="Profile Screen"
                 className="w-full h-80 object-cover rounded-lg shadow-md"
               />
-              <p className="text-sm text-gray-600 mt-2">Personal Profile</p>
+              <p className="text-sm text-ui-shade/70 mt-2">Personal Profile</p>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ export const InstallPrompt = ({
             </button>
             <button
               onClick={() => setIsVisible(false)}
-              className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-ui-shade/30 text-ui-shade/80 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
             >
               Maybe Later
             </button>
@@ -109,3 +109,4 @@ export const InstallPrompt = ({
     </AnimatePresence>
   );
 };
+
