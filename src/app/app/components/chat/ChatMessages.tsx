@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import type { Message } from "../ChatScreen";
+import { MatchNoteBanner } from "./MatchNoteBanner";
 import { MessageGroup } from "./MessageGroup";
 
 interface ChatMessagesProps {
   messages: Message[];
   currentUserId: string;
+  matchNote?: string | null;
+  matchCreatedAt?: string | Date | null;
   isPartnerTyping?: boolean;
   onReply: (message: Message) => void;
   onStartEdit: (message: Message) => void;
@@ -14,6 +17,8 @@ interface ChatMessagesProps {
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   currentUserId,
+  matchNote,
+  matchCreatedAt,
   isPartnerTyping = false,
   onReply,
   onStartEdit,
@@ -46,6 +51,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <MatchNoteBanner note={matchNote || ""} createdAt={matchCreatedAt} />
       {sortedDates.map((date) => (
         <MessageGroup
           key={date}
