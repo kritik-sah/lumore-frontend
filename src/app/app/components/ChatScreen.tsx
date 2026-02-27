@@ -93,6 +93,15 @@ const ChatScreen = () => {
     isActive,
   } = useChat();
 
+  const matchNoteText = useMemo(() => {
+    const note = roomData?.matchingNote;
+    if (!note) return "";
+    if (typeof note === "string") return note.trim();
+    const perUser = note?.notesByUser?.[userId];
+    if (typeof perUser === "string" && perUser.trim()) return perUser.trim();
+    return String(note?.oneSentenceNote || "").trim();
+  }, [roomData?.matchingNote, userId]);
+
   const replyingToPreview = useMemo(() => {
     if (!replyingTo?._id) return null;
     return {
@@ -487,6 +496,8 @@ const ChatScreen = () => {
       <ChatMessages
         messages={messages}
         currentUserId={userId}
+        matchNote={matchNoteText}
+        matchCreatedAt={roomData?.createdAt || null}
         isPartnerTyping={isPartnerTyping}
         onReply={handleReply}
         onStartEdit={handleStartEdit}
