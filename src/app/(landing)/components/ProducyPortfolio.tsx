@@ -62,11 +62,11 @@ function ProductPortfolio() {
           width={500}
           height={500}
           alt="Lumore app preview"
-          className="absolute right-0 -bottom-16 translate-x-6 object-contain rounded-2xl w-[320px] md:w-[420px]"
+          className="absolute right-0 -bottom-52 translate-x-6 object-contain rounded-2xl w-[320px] md:w-[420px]"
         />
       </WobbleCard>
       <WobbleCard
-        containerClassName="col-span-1 min-h-[320px] bg-ui-background border border-ui-shade/10 overflow-hidden"
+        containerClassName="col-span-1 min-h-[320px] bg-ui-shade border border-ui-shade/10 overflow-hidden"
         className="p-8"
       >
         <span className="inline-flex items-center rounded-full bg-ui-primary text-ui-shade text-xs font-bold px-2 py-1">
@@ -110,4 +110,3 @@ function ProductPortfolio() {
 }
 
 export default ProductPortfolio;
-

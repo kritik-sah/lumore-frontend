@@ -4,7 +4,7 @@ import { formatNumber } from "@/utils/helpers";
 import { PopupButton } from "@typeform/embed-react";
 import { useEffect, useState } from "react";
 
-export default function CTA() {
+export default function AppStats() {
   interface APP_STATUS {
     totalUsers: number;
     activeUsers: number;
@@ -24,8 +24,8 @@ export default function CTA() {
     _fetchAppStatus();
   }, []);
   return (
-    <section className="px-4 lg:px-0">
-      <div className="relative bg-ui-primary/10 text-ui-shade/90 p-6 rounded-2xl max-w-7xl mx-auto border border-1 border-ui-shade/10">
+    <section className="my-6 px-4 lg:px-0">
+      <div className="relative  text-ui-shade/90 p-6 rounded-2xl max-w-7xl mx-auto bg-gradient-to-b from-ui-highlight/10 to-ui-highlight/30  border border-ui-highlight/30">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="flex-1">
             <h3 className="text-2xl font-semibold">
@@ -37,11 +37,11 @@ export default function CTA() {
           </div>
           <div>
             <PopupButton id="ITzseckk" className="mt-0">
-              <div className="relative rounded-full border border-ui-shade px-4 py-2 bg-ui-primary text-ui-shade font-semibold">
+              <div className="relative rounded-full  px-4 py-2 bg-ui-highlight text-ui-light font-semibold">
                 Feedback
-                <span className="absolute -top-1 -right-1 flex size-4">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ui-accent opacity-75"></span>
-                  <span className="relative inline-flex size-4 rounded-full bg-ui-accent"></span>
+                <span className="absolute -top-0 -right-0 flex size-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ui-light opacity-75"></span>
+                  <span className="relative inline-flex size-3 rounded-full bg-ui-accent"></span>
                 </span>
               </div>
             </PopupButton>
@@ -83,10 +83,7 @@ export default function CTA() {
           </div>
           <div className="rounded-xl border border-ui-shade/10 bg-ui-light p-4 shadow-[0_12px_30px_rgba(0,0,0,0.06)]">
             <p className="text-3xl">
-              {formatNumber(
-                (appStatus?.genderDistribution?.man || 0) +
-                  (appStatus?.genderDistribution?.others || 0),
-              )}
+              {formatNumber(appStatus?.genderDistribution?.man || 0)}
             </p>
             <h4 className="text-lg font-medium">Man</h4>
             <p className="text-sm text-ui-shade/70">Male community members</p>
@@ -96,4 +93,3 @@ export default function CTA() {
     </section>
   );
 }
-
