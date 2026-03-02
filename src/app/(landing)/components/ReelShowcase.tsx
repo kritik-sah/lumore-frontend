@@ -4,15 +4,12 @@ import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
-
 const ReelShowcase = () => {
   const [muted, setMuted] = useState(true);
   return (
-    <section id="reel-showcase" className="py-20">
+    <section id="reel-showcase" className="my-6">
       <div className="px-4 lg:px-0 max-w-7xl mx-auto">
-        <div className="relative w-full flex flex-col md:flex-row items-start justify-between bg-ui-highlight/10 overflow-hidden p-4 md:p-8 rounded-2xl shadow-2xl gap-6">
-          <BackgroundRippleEffect />
-
+        <div className="relative w-full flex flex-col md:flex-row items-start justify-between bg-gradient-to-b from-ui-highlight/10 to-ui-highlight/30  border border-ui-highlight/30 overflow-hidden p-4 md:p-8 rounded-2xl shadow-2xl gap-6">
           <div className="relative z-10 h-auto w-full md:w-96 aspect-[9/16]">
             <ReactPlayer
               src="https://ik.imagekit.io/rebel/reel/reel2.mp4?tr=orig&updatedAt=1761736348210"
@@ -27,9 +24,10 @@ const ReelShowcase = () => {
           </div>
           <div className="relative z-10 flex-1 h-full shrink-0 flex-grow pt-4 md:pt-8">
             <div className="flex flex-col items-start justify-center gap-6">
-              <span className="inline-flex items-center rounded-full bg-ui-primary text-ui-shade text-xs font-bold px-2 py-1 uppercase tracking-wide">
+              <span className=" text-ui-shade bg-ui-primary px-2 py-1 -skew-x-12  uppercase tracking-wide inline-block">
                 Watch a real moment
               </span>
+
               <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-ui-highlight text-balance">
                 Feeling exhausted after using dating apps.
               </h2>
@@ -50,7 +48,7 @@ const ReelShowcase = () => {
               </Button>
             </div>
           </div>
-          <span className="font-dmSans -tracking-[16px] leading-0 font-bold italic absolute bottom-16 right-4 text-[220px] text-ui-light/40">
+          <span className="font-dmSans -tracking-[16px] leading-0 font-bold italic absolute bottom-16 right-4 text-[220px] text-ui-light/60">
             Lumore
           </span>
         </div>
@@ -60,4 +58,3 @@ const ReelShowcase = () => {
 };
 
 export default ReelShowcase;
-

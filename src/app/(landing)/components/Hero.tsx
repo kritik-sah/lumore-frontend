@@ -11,13 +11,13 @@ export default function Hero() {
     <section className="overflow-hidden">
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_20%,rgba(255,212,0,0.25),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(84,19,136,0.20),transparent_40%)]" />
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-20 bg-[url('/assets/noise.webp')] bg-repeat" />
-
+      <h1 className="hidden">Swipeless Dating App for Real Connections</h1>
       <div className="max-w-7xl min-h-[70vh] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-10 lg:py-20 px-5 text-center lg:text-left">
         <div className="flex flex-col items-center lg:items-start gap-4">
           <span className="inline-flex items-center gap-2 rounded-full border-2 border-ui-shade px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ui-shade">
             New way to meet people
           </span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl text-center lg:text-left font-bold uppercase tracking-tight">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl text-center lg:text-left font-bold uppercase tracking-tight">
             Meet <span className="text-ui-highlight">People</span>,
             <br className="hidden md:block" />
             <FlipWords
@@ -35,7 +35,7 @@ export default function Hero() {
                 "Not Algorithm Mistakes.",
               ]}
             />
-          </h1>
+          </h2>
           <h6 className="text-ui-shade text-center lg:text-left max-w-xl text-base md:text-lg">
             Lumore helps you meet new people, not just swipe on them. We&apos;re
             building a more meaningful, less awkward way to socialize.
@@ -104,4 +104,3 @@ export default function Hero() {
     </section>
   );
 }
-
