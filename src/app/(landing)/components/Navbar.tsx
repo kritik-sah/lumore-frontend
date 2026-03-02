@@ -18,20 +18,16 @@ import { useState } from "react";
 export function NavbarUI() {
   const navItems = [
     {
-      name: "Features",
-      link: "#features",
+      name: "Home",
+      link: "/",
+    },
+    {
+      name: "About",
+      link: "/about",
     },
     {
       name: "Blog",
       link: "/blog",
-    },
-    {
-      name: "Instagram",
-      link: "https://www.instagram.com/0xlumore",
-    },
-    {
-      name: "Twitter/X",
-      link: "https://twitter.com/0xlumore",
     },
   ];
 
@@ -117,4 +113,3 @@ export function NavbarUI() {
 }
 
 export default NavbarUI;
-
