@@ -1,10 +1,15 @@
 "use client";
 import Icon from "@/components/icon";
+import { compareAppSlugs, compareData } from "@/lib/compareData";
 import { trackAnalytic } from "@/service/analytics";
 import Link from "next/link";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const compareLinks = compareAppSlugs.map((slug) => ({
+    slug,
+    name: compareData[slug].name,
+  }));
 
   return (
     <footer className="py-5 bg-ui-light text-ui-shade border-t border-ui-shade/10">
@@ -83,9 +88,6 @@ export default function Footer() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-            <div className="hidden md:block"></div>
-
-            <div className="hidden md:block"></div>
             <div>
               <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
                 Lumore
@@ -94,12 +96,62 @@ export default function Footer() {
               <ul className="mt-6 space-y-4 text-sm">
                 <li>
                   <Link
+                    href="/about"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/how-it-works"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/blog"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >
                     Blog
                   </Link>
                 </li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+                Must Read
+              </p>
+
+              <ul className="mt-6 space-y-4 text-sm">
+                <li>
+                  <Link
+                    href="/swipeless-dating"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    What Is Swipeless Dating?
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+                Compare
+              </p>
+
+              <ul className="mt-6 space-y-4 text-sm">
+                {compareLinks.map((link) => (
+                  <li key={link.slug}>
+                    <Link
+                      href={`/compare/${link.slug}`}
+                      className="text-ui-shade transition opacity-95 hover:opacity-100"
+                    >
+                      Lumore vs {link.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -148,4 +200,5 @@ export default function Footer() {
     </footer>
   );
 }
+
 
