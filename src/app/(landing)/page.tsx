@@ -1,8 +1,7 @@
-// import CaseStudy from "./components/CaseStudy";
-import CTA from "./components/CTA";
-import Events from "./components/Events";
-import Features from "./components/Features";
+import AppStats from "./components/AppStats";
+import HowLumoreIsDifferent from "./components/HowLumoreIsDifferent";
 import Hero from "./components/Hero";
+import HowLumoreWorks from "./components/HowLumoreWorks";
 import ProductPortfolio from "./components/ProducyPortfolio";
 import ReelShowcase from "./components/ReelShowcase";
 
@@ -11,12 +10,10 @@ export default function Home() {
     <div className="">
       <Hero />
       <ProductPortfolio />
-      <Features />
-      <CTA />
-      <Events />
+      <AppStats />
+      <HowLumoreWorks />
+      <HowLumoreIsDifferent />
       <ReelShowcase />
-      {/* <CaseStudy /> */}
     </div>
   );
 }
-
