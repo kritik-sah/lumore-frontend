@@ -1,19 +1,18 @@
-import ServiceWorker from "@/components/ServiceWorker";
 import DeferredThirdPartyScripts from "@/components/DeferredThirdPartyScripts";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Work_Sans } from "next/font/google";
-import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const workSans = Work_Sans({
   variable: "--font-work-sans",
-  weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -51,8 +50,6 @@ export default function RootLayout({
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
         {children}
         <DeferredThirdPartyScripts />
-        <Toaster position="top-right" />
-        <ServiceWorker />
       </body>
     </html>
   );

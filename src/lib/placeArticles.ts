@@ -6,6 +6,7 @@ import { client, urlFor } from "@/sanity/client";
 export const PLACE_SITE_URL = "https://www.lumore.xyz";
 
 const options = { next: { revalidate: 60 } };
+const navOptions = { next: { revalidate: 3600 } };
 
 type PlaceCta = {
   label: string;
@@ -474,7 +475,7 @@ export async function getPlaceArticleSlugs(): Promise<string[]> {
 }
 
 export async function getPlaceNavLinks(): Promise<PlaceNavLink[]> {
-  return client.fetch<PlaceNavLink[]>(PLACE_NAV_QUERY, {}, options);
+  return client.fetch<PlaceNavLink[]>(PLACE_NAV_QUERY, {}, navOptions);
 }
 
 export async function getPlaceSitemapEntries(): Promise<PlaceSitemapEntry[]> {

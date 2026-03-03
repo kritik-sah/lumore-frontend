@@ -3,7 +3,7 @@ import { type SanityDocument } from "next-sanity";
 
 import BlogHero from "../components/blog/BlogHero";
 import BlogPost from "../components/blog/BlogPost";
-import LoadMorePosts from "../components/blog/LoadMorePosts";
+import DeferredLoadMorePosts from "../components/blog/DeferredLoadMorePosts";
 import type { Metadata } from "next";
 
 const POSTS_QUERY = `*[
@@ -11,13 +11,13 @@ const POSTS_QUERY = `*[
   && defined(slug.current)
 ]|order(publishedAt desc)[0...12]{_id, title, slug, excerpt, publishedAt, featuredImage , category[]->{
     title,
-    slug,
-    parent->{
-      title
-    }
+    slug
   }}`;
 
-const options = { next: { revalidate: 30 } };
+export const revalidate = 300;
+export const dynamic = "force-static";
+
+const options = { next: { revalidate } };
 
 export const metadata: Metadata = {
   title: "Lumore Blog | Real Connections, Real Stories",
@@ -74,7 +74,7 @@ export default async function IndexPage() {
                 ))}
               </div>
 
-              <LoadMorePosts initialCount={12} />
+              <DeferredLoadMorePosts initialCount={12} />
             </div>
           </section>
         </>

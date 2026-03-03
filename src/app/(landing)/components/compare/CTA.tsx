@@ -15,6 +15,8 @@ export default function CTA({
   note,
   className,
 }: CTAProps) {
+  const isExternal = /^https?:\/\//.test(href);
+
   return (
     <div
       className={cn("flex flex-col items-start gap-3 sm:flex-row", className)}
@@ -24,7 +26,13 @@ export default function CTA({
         size="lg"
         className="h-11 rounded-xl px-6 text-sm font-semibold"
       >
-        <Link href={href}>{label}</Link>
+        {isExternal ? (
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            {label}
+          </a>
+        ) : (
+          <Link href={href}>{label}</Link>
+        )}
       </Button>
       {note ? (
         <p className="text-xs text-ui-shade/75 sm:self-center md:text-sm">

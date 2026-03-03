@@ -1,10 +1,12 @@
 import Provider from "@/app/app/context/index";
 import Providers from "@/app/provider";
+import ServiceWorker from "@/components/ServiceWorker";
 import type { Metadata } from "next";
 import type { Viewport } from "next";
 import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
 import LumoreSplash from "./components/LumoreSplash";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
@@ -29,6 +31,8 @@ export default function RootLayout({
       <Provider>
         <ExploreChatProvider>
           <LumoreSplash />
+          <Toaster position="top-right" />
+          <ServiceWorker />
           <div className="h-[100svh]">
             <AppInteractionGuard>
               <main className="flex flex-col h-full">{children}</main>
