@@ -1,7 +1,5 @@
-"use client";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
-import React, { useState } from "react";
+import React from "react";
 
 export const WobbleCard = ({
   children,
@@ -12,32 +10,10 @@ export const WobbleCard = ({
   containerClassName?: string;
   className?: string;
 }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
-    const { clientX, clientY } = event;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (clientX - (rect.left + rect.width / 2)) / 20;
-    const y = (clientY - (rect.top + rect.height / 2)) / 20;
-    setMousePosition({ x, y });
-  };
   return (
-    <motion.section
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => {
-        setIsHovering(false);
-        setMousePosition({ x: 0, y: 0 });
-      }}
-      style={{
-        transform: isHovering
-          ? `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0) scale3d(1, 1, 1)`
-          : "translate3d(0px, 0px, 0) scale3d(1, 1, 1)",
-        transition: "transform 0.1s ease-out",
-      }}
+    <section
       className={cn(
-        "mx-auto w-full bg-indigo-800  relative rounded-2xl overflow-hidden",
+        "group mx-auto w-full relative rounded-2xl overflow-hidden transition-transform duration-200 ease-out hover:-translate-y-1",
         containerClassName
       )}
     >
@@ -48,20 +24,17 @@ export const WobbleCard = ({
             "0 10px 32px rgba(34, 42, 53, 0.12), 1px rgba(0, 0, 0.05), 4px 6px 0.08), 24px 108px rgba(47, 48, 55, 0.10)",
         }}
       >
-        <motion.div
-          style={{
-            transform: isHovering
-              ? `translate3d(${-mousePosition.x}px, ${-mousePosition.y}px, 0) scale3d(1.03, 1.03, 1)`
-              : "translate3d(0px, 0px, 0) scale3d(1, 1, 1)",
-            transition: "transform 0.1s ease-out",
-          }}
-          className={cn("h-full px-4 py-20 sm:px-10", className)}
+        <div
+          className={cn(
+            "h-full px-4 py-20 sm:px-10 transition-transform duration-200 ease-out group-hover:scale-[1.01]",
+            className,
+          )}
         >
           <Noise />
           {children}
-        </motion.div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -70,8 +43,9 @@ const Noise = () => {
     <div
       className="absolute inset-0 w-full h-full scale-[1.2] transform opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
       style={{
-        backgroundImage: "url(/assets/noise.webp)",
-        backgroundSize: "30%",
+        backgroundImage:
+          "radial-gradient(rgba(10,10,9,0.35) 0.8px, transparent 0.8px)",
+        backgroundSize: "18px 18px",
       }}
     ></div>
   );

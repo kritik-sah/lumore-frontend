@@ -1,10 +1,9 @@
 import ServiceWorker from "@/components/ServiceWorker";
+import DeferredThirdPartyScripts from "@/components/DeferredThirdPartyScripts";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Work_Sans } from "next/font/google";
-import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import Providers from "./provider";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -32,7 +31,7 @@ export const metadata: Metadata = {
     title: "Lumore",
   },
   icons: {
-    apple: "/apple-touch-icon.png",
+    apple: "/ios/180.png",
   },
 };
 
@@ -48,26 +47,10 @@ export default function RootLayout({
           name="google-adsense-account"
           content="ca-pub-7384584510187682"
         ></meta>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-349HPV22MR"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-349HPV22MR');
-          `}
-        </Script>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8794679058209848"
-          crossOrigin="anonymous"
-        ></Script>
       </head>
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
-        <Providers>{children}</Providers>
+        {children}
+        <DeferredThirdPartyScripts />
         <Toaster position="top-right" />
         <ServiceWorker />
       </body>

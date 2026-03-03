@@ -4,20 +4,34 @@ interface TrackAnalyticProps {
   category?: string;
   value?: any;
 }
+
+const ensureGtag = () => {
+  if (typeof window === "undefined") return null;
+
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  if (typeof (window as any).gtag !== "function") {
+    (window as any).gtag = (...args: unknown[]) => {
+      (window as any).dataLayer.push(args);
+    };
+  }
+
+  return (window as any).gtag as (...args: unknown[]) => void;
+};
+
 export const trackAnalytic = ({
   activity,
   category = "engagement",
   label,
   value = 1,
 }: TrackAnalyticProps) => {
-  // Track activity in Google Analytics
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag("event", activity, {
-      event_category: category,
-      event_label: label,
-      value: value,
-    });
-  }
+  const gtag = ensureGtag();
+  if (!gtag) return;
+
+  gtag("event", activity, {
+    event_category: category,
+    event_label: label,
+    value: value,
+  });
 };
 
 export const trackAnalyticOnce = (

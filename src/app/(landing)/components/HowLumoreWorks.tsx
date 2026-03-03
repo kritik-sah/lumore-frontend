@@ -5,8 +5,8 @@ export default function HowLumoreWorks() {
         <span className=" text-ui-shade bg-ui-primary px-2 py-1 -skew-x-12  uppercase tracking-wide inline-block mb-2">
           Dating, Curated
         </span>
-        <h3 className="text-2xl font-semibold">How Lumore Works?</h3>
-        <h3 className="hidden">How Lumore a swipeless dating app Works?</h3>
+        <h2 className="text-2xl font-semibold">How Lumore Works?</h2>
+        <p className="hidden">How Lumore a swipeless dating app works</p>
 
         <p className="max-w-lg">
           A more considered way to meet like minded people, without wasting time
