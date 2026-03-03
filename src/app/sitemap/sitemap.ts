@@ -1,5 +1,6 @@
 import { client } from "@/sanity/client";
 import { compareAppSlugs } from "@/lib/compareData";
+import { getPlaceSitemapEntries } from "@/lib/placeArticles";
 import type { MetadataRoute } from "next";
 import { SanityDocument } from "next-sanity";
 
@@ -12,6 +13,7 @@ const POSTS_QUERY = `*[
 const options = { next: { revalidate: 30 } };
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
+  const placeEntries = await getPlaceSitemapEntries();
 
   const baseUrl = "https://www.lumore.xyz";
   const compareUrls = compareAppSlugs.map((app) => ({
@@ -19,6 +21,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.85,
+  }));
+  const placeUrls = placeEntries.map((place) => ({
+    url: `${baseUrl}/place/${place.slug}`,
+    lastModified: place.updatedAt ? new Date(place.updatedAt) : new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   }));
 
   const blogUrls =
@@ -72,7 +80,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/compare`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/place`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
     ...compareUrls,
+    ...placeUrls,
     ...blogUrls,
   ];
 }

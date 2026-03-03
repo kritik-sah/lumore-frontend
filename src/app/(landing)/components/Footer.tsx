@@ -4,7 +4,16 @@ import { compareAppSlugs, compareData } from "@/lib/compareData";
 import { trackAnalytic } from "@/service/analytics";
 import Link from "next/link";
 
-export default function Footer() {
+type FooterPlaceLink = {
+  slug: string;
+  placeName: string;
+};
+
+type FooterProps = {
+  placeLinks: FooterPlaceLink[];
+};
+
+export default function Footer({ placeLinks }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const compareLinks = compareAppSlugs.map((slug) => ({
     slug,
@@ -12,23 +21,23 @@ export default function Footer() {
   }));
 
   return (
-    <footer className="py-5 bg-ui-light text-ui-shade border-t border-ui-shade/10">
-      <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-4 sm:px-6 lg:space-y-16 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <footer className="bg-ui-light text-ui-shade border-t border-ui-shade/10">
+      <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
           <div>
             <img
               src="/assets/lumore-hr.svg"
               alt="lumore"
-              className="h-16 w-28"
+              className="h-14 w-28"
             />
-            <p className="mt-3 text-sm font-semibold text-ui-shade">
+            <p className="mt-3 text-sm font-semibold tracking-wide text-ui-shade">
               Find Your Match, Your Way
             </p>
-            <p className="mt-2 max-w-xs text-ui-shade/60">
+            <p className="mt-2 max-w-xs text-sm leading-6 text-ui-shade/70">
               A community-first way to meet new people without endless swiping.
             </p>
 
-            <ul className="mt-8 flex gap-6">
+            <ul className="mt-6 flex gap-4">
               <li>
                 <a
                   href="https://www.instagram.com/0xlumore/"
@@ -87,13 +96,13 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
             <div>
-              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+              <p className="text-sm font-semibold text-ui-shade transition opacity-95 hover:opacity-100">
                 Lumore
               </p>
 
-              <ul className="mt-6 space-y-4 text-sm">
+              <ul className="mt-4 space-y-2.5 text-sm leading-6">
                 <li>
                   <Link
                     href="/about"
@@ -112,36 +121,70 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/blog"
-                    className="text-ui-shade transition opacity-95 hover:opacity-100"
-                  >
-                    Blog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
-                Must Read
-              </p>
-
-              <ul className="mt-6 space-y-4 text-sm">
-                <li>
-                  <Link
                     href="/swipeless-dating"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >
                     What Is Swipeless Dating?
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/blog"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/place"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Place Guides
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
-              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+              <p className="text-sm font-semibold text-ui-shade transition opacity-95 hover:opacity-100">
+                Place Guides
+              </p>
+
+              <ul className="mt-4 space-y-2.5 text-sm leading-6">
+                <li>
+                  <Link
+                    href="/place"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    All Place Guides
+                  </Link>
+                </li>
+                {placeLinks.map((place) => (
+                  <li key={place.slug}>
+                    <Link
+                      href={`/place/${place.slug}`}
+                      className="text-ui-shade transition opacity-95 hover:opacity-100"
+                    >
+                      Dating in {place.placeName}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-ui-shade transition opacity-95 hover:opacity-100">
                 Compare
               </p>
 
-              <ul className="mt-6 space-y-4 text-sm">
+              <ul className="mt-4 space-y-2.5 text-sm leading-6">
+                <li>
+                  <Link
+                    href="/compare"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    All Comparisons
+                  </Link>
+                </li>
                 {compareLinks.map((link) => (
                   <li key={link.slug}>
                     <Link
@@ -155,11 +198,11 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <p className="font-medium text-ui-shade transition opacity-95 hover:opacity-100">
+              <p className="text-sm font-semibold text-ui-shade transition opacity-95 hover:opacity-100">
                 Legal
               </p>
 
-              <ul className="mt-6 space-y-4 text-sm">
+              <ul className="mt-4 space-y-2.5 text-sm leading-6">
                 <li>
                   <a
                     href="/terms-of-use"
@@ -167,7 +210,7 @@ export default function Footer() {
                     target="_blank"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >
-                    Terms of use
+                    Terms of Use
                   </a>
                 </li>
                 <li>
@@ -177,7 +220,7 @@ export default function Footer() {
                     target="_blank"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >
-                    Privacy policy
+                    Privacy Policy
                   </a>
                 </li>
               </ul>
@@ -186,10 +229,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="text-center border-t border-ui-shade/10 pt-4 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4 mt-8">
-        <p>&copy; {currentYear} Lumore.xyz All rights reserved.</p>
-        <p>
-          Made In India{" "}
+      <div className="mx-auto mt-8 flex max-w-screen-xl flex-col items-center justify-between gap-2 border-t border-ui-shade/10 px-4 py-5 text-center text-sm text-ui-shade/80 sm:px-6 md:flex-row md:text-left lg:px-8">
+        <p>&copy; {currentYear} Lumore.xyz. All rights reserved.</p>
+        <p className="inline-flex items-center gap-1">
+          Made in India
           <img
             src="/assets/india-flag.svg"
             alt="India"
@@ -200,5 +243,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-
