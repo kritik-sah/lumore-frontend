@@ -11,7 +11,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import Icon from "../icon";
+import { FaBars } from "react-icons/fa6";
+import { MdOutlineClose } from "react-icons/md";
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -234,13 +235,9 @@ export const MobileNavToggle = ({
       className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ui-shade focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-highlight/60"
     >
       {isOpen ? (
-        <Icon
-          name="MdOutlineClose"
-          className="h-6 w-6 text-ui-shade"
-          aria-hidden="true"
-        />
+        <MdOutlineClose className="h-6 w-6 text-ui-shade" aria-hidden="true" />
       ) : (
-        <Icon name="FaBars" className="h-6 w-6 text-ui-shade" aria-hidden="true" />
+        <FaBars className="h-6 w-6 text-ui-shade" aria-hidden="true" />
       )}
     </button>
   );

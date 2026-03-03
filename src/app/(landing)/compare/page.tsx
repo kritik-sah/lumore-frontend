@@ -4,13 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const COMPARE_URL = "https://www.lumore.xyz/compare";
-
-const dummyImages = [
-  "/assets/1.png",
-  "/assets/2.png",
-  "/assets/3.png",
-  "/assets/tired-of-endless-swiping.png",
-];
+export const revalidate = 86400;
+export const dynamic = "force-static";
 
 const compareList = compareAppSlugs.map((slug, index) => {
   const app = compareData[slug];
@@ -19,7 +14,7 @@ const compareList = compareAppSlugs.map((slug, index) => {
     name: app.name,
     description: app.description,
     audience: app.targetAudience,
-    image: dummyImages[index % dummyImages.length],
+    image: app.image,
   };
 });
 
@@ -85,10 +80,11 @@ export default function CompareListingPage() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {compareList.map((item) => (
+            {compareList.map((item, index) => (
               <Link
                 key={item.slug}
                 href={`/compare/${item.slug}`}
+                prefetch={false}
                 className="group rounded-xl border border-ui-shade/10 bg-ui-light p-4 transition hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)]"
               >
                 <div className="relative overflow-hidden rounded-xl border border-ui-shade/10 bg-ui-background/45">
@@ -98,7 +94,10 @@ export default function CompareListingPage() {
                       alt={`Lumore vs ${item.name}`}
                       fill
                       className="object-cover transition duration-300 group-hover:scale-[1.03]"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 640px) calc(100vw - 3.5rem), (max-width: 1024px) 45vw, 22vw"
+                      loading={index === 0 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "auto"}
+                      quality={70}
                     />
                   </div>
                 </div>

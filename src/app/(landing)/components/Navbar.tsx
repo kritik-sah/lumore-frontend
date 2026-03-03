@@ -1,6 +1,5 @@
 "use client";
 
-import Icon from "@/components/icon";
 import {
   MobileNav,
   MobileNavHeader,
@@ -15,12 +14,68 @@ import { trackAnalytic } from "@/service/analytics";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type SVGProps, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { IconType } from "react-icons";
+import { AiFillAndroid } from "react-icons/ai";
+import { FaChevronDown, FaLocationDot, FaRegFaceSmile } from "react-icons/fa6";
+import {
+  HiMiniClock,
+  HiOutlineBookOpen,
+  HiOutlineCheckBadge,
+  HiOutlineDocumentText,
+  HiOutlineInformationCircle,
+  HiOutlineSparkles,
+} from "react-icons/hi2";
+import { IoCompassOutline, IoMagnet } from "react-icons/io5";
+import { TbLibraryPlus } from "react-icons/tb";
+
+type NavIconName =
+  | "FaLocationDot"
+  | "IoCompassOutline"
+  | "HiOutlineInformationCircle"
+  | "HiOutlineCheckBadge"
+  | "IoMagnet"
+  | "FaRegFaceSmile"
+  | "HiOutlineSparkles"
+  | "HiMiniClock"
+  | "HiOutlineDocumentText"
+  | "HiOutlineBookOpen"
+  | "TbLibraryPlus"
+  | "FaChevronDown"
+  | "AiFillAndroid";
+
+const navIcons: Record<NavIconName, IconType> = {
+  FaLocationDot,
+  IoCompassOutline,
+  HiOutlineInformationCircle,
+  HiOutlineCheckBadge,
+  IoMagnet,
+  FaRegFaceSmile,
+  HiOutlineSparkles,
+  HiMiniClock,
+  HiOutlineDocumentText,
+  HiOutlineBookOpen,
+  TbLibraryPlus,
+  FaChevronDown,
+  AiFillAndroid,
+};
+
+function NavIcon({
+  name,
+  className,
+  ...rest
+}: {
+  name: NavIconName;
+  className?: string;
+} & SVGProps<SVGSVGElement>) {
+  const IconComponent = navIcons[name];
+  return <IconComponent className={className} {...rest} />;
+}
 
 type MegaItem = {
   title: string;
   description: string;
-  icon: string;
+  icon: NavIconName;
   href?: string;
   disabled?: boolean;
 };
@@ -73,13 +128,13 @@ function getPlaceGuideItems(placeLinks: NavbarPlaceLink[]): MegaItem[] {
     {
       title: "All Place Guides",
       description: "Browse all city and neighborhood landing pages.",
-      icon: "IoCompassOutline",
+      icon: "IoCompassOutline" as const,
       href: "/place",
     },
     ...placeLinks.map((place) => ({
       title: `Dating in ${place.placeName}`,
       description: `${place.placeName}, ${place.region}`,
-      icon: "FaLocationDot",
+      icon: "FaLocationDot" as const,
       href: `/place/${place.slug}`,
     })),
   ];
@@ -438,7 +493,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                 })
               }
             >
-              <Icon
+              <NavIcon
                 name="AiFillAndroid"
                 className="text-3xl flex-shrink-0 mr-2"
               />
@@ -516,7 +571,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                                       )}
                                     >
                                       <span className={iconClassName}>
-                                        <Icon
+                                        <NavIcon
                                           name={menuItem.icon}
                                           className="h-4 w-4 text-ui-shade/60"
                                         />
@@ -544,7 +599,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                                     )}
                                   >
                                     <span className={iconClassName}>
-                                      <Icon
+                                      <NavIcon
                                         name={menuItem.icon}
                                         className="h-4 w-4 text-ui-shade/70 transition group-hover:text-ui-highlight"
                                       />
@@ -636,7 +691,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                   <span className="text-base font-semibold text-ui-shade">
                     {item.name}
                   </span>
-                  <Icon
+                  <NavIcon
                     name="FaChevronDown"
                     className={cn(
                       "h-4 w-4 text-ui-shade/70 transition-transform",
@@ -671,7 +726,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                                       className="flex items-start gap-3 rounded-xl border border-ui-shade/10 bg-ui-light/40 p-3 opacity-60"
                                     >
                                       <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg border border-ui-shade/10 bg-ui-light">
-                                        <Icon
+                                        <NavIcon
                                           name={menuItem.icon}
                                           className="h-3.5 w-3.5 text-ui-shade/60"
                                         />
@@ -696,7 +751,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                                     className="flex items-start gap-3 rounded-xl border border-ui-shade/10 bg-ui-light p-3"
                                   >
                                     <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg border border-ui-shade/10 bg-ui-background/45">
-                                      <Icon
+                                      <NavIcon
                                         name={menuItem.icon}
                                         className="h-3.5 w-3.5 text-ui-shade/75"
                                       />
@@ -743,7 +798,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                 })
               }
             >
-              <Icon
+              <NavIcon
                 name="AiFillAndroid"
                 className="text-3xl flex-shrink-0 mr-2"
               />

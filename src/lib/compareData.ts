@@ -31,6 +31,7 @@ export interface CompareAppBenchmark {
 
 export interface CompareAppConfig {
   name: string;
+  image: string;
   description: string;
   strengths: string[];
   weaknesses: string[];
@@ -91,6 +92,7 @@ export const coreBenchmarkFeatures: CoreBenchmarkFeature[] = [
 export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
   tinder: {
     name: "Tinder",
+    image: "/assets/tinder.png",
     description:
       "Tinder is a global dating app built around fast swipe decisions and high-volume profile discovery.",
     strengths: [
@@ -122,6 +124,7 @@ export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
   },
   bumble: {
     name: "Bumble",
+    image: "/assets/bumble.png",
     description:
       "Bumble is a swipe-based dating app where matching happens first and conversation starts after a mutual like.",
     strengths: [
@@ -135,7 +138,8 @@ export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
       "Volume-first behavior can still lead to burnout",
     ],
     swipeModel: true,
-    targetAudience: "Users who prefer swipe browsing with a structured chat flow",
+    targetAudience:
+      "Users who prefer swipe browsing with a structured chat flow",
     brandTone: "Confident, modern, and socially structured",
     benchmark: {
       core: {
@@ -153,6 +157,7 @@ export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
   },
   hinge: {
     name: "Hinge",
+    image: "/assets/hinge.png",
     description:
       "Hinge is a swipe and prompt-led dating app focused on profile details and comment-based likes.",
     strengths: [
@@ -185,6 +190,7 @@ export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
   },
   trulymadly: {
     name: "TrulyMadly",
+    image: "/assets/trulymadly.png",
     description:
       "TrulyMadly is an India-focused dating app that uses swipe-style discovery with trust and profile verification layers.",
     strengths: [

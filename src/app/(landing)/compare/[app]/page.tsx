@@ -5,6 +5,7 @@ import {
   type CompareAppConfig,
 } from "@/lib/compareData";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ComparisonTable from "../../components/compare/ComparisonTable";
@@ -12,6 +13,9 @@ import CTA from "../../components/compare/CTA";
 import Section from "../../components/compare/Section";
 
 const SITE_URL = "https://www.lumore.xyz";
+export const revalidate = 86400;
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 type ComparePageProps = {
   params: Promise<{ app: string }>;
@@ -122,6 +126,8 @@ export async function generateMetadata({
   const canonicalUrl = getCanonicalUrl(app.toLowerCase());
   const title = `Lumore vs ${appData.name} - A Better Alternative to Swiping?`;
   const description = `Comparing Lumore and ${appData.name}. Discover why swipeless dating may be a better alternative to swipe-based apps.`;
+  const ogImageUrl = `${SITE_URL}${appData.image}`;
+  const ogImageAlt = `Lumore vs ${appData.name}`;
 
   return {
     title,
@@ -134,12 +140,21 @@ export async function generateMetadata({
       description,
       url: canonicalUrl,
       type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          alt: ogImageAlt,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: "@0xlumore",
+      images: [ogImageUrl],
     },
   };
 }
@@ -202,6 +217,7 @@ export default async function CompareAppPage({ params }: ComparePageProps) {
             Read the full flow on{" "}
             <Link
               href="/how-it-works"
+              prefetch={false}
               className="font-semibold text-ui-highlight hover:underline"
             >
               how it works
@@ -209,6 +225,7 @@ export default async function CompareAppPage({ params }: ComparePageProps) {
             , learn our mission on{" "}
             <Link
               href="/about"
+              prefetch={false}
               className="font-semibold text-ui-highlight hover:underline"
             >
               about
@@ -216,12 +233,26 @@ export default async function CompareAppPage({ params }: ComparePageProps) {
             , and explore practical guides on the{" "}
             <Link
               href="/blog"
+              prefetch={false}
               className="font-semibold text-ui-highlight hover:underline"
             >
               blog
             </Link>
             .
           </p>
+          <div className="relative mt-8 max-w-xl overflow-hidden rounded-2xl bg-ui-light/75 shadow-[0_16px_40px_rgba(0,0,0,0.12)] ring-1 ring-ui-shade/10">
+            <div className="relative aspect-[16/9]">
+              <Image
+                src={appData.image}
+                alt={`Lumore vs ${appName}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 640px"
+                priority
+                quality={80}
+              />
+            </div>
+          </div>
 
           <CTA
             className="relative mt-8"
