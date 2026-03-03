@@ -6,12 +6,29 @@ export const client = createClient({
   projectId: "rbpc2sfo",
   dataset: "production",
   apiVersion: "2025-10-21",
-  useCdn: false,
+  useCdn: true,
 });
 
 export const urlFor = (source: SanityImageSource) =>
   imageUrlBuilder(client).image(source);
 
-export const imageUrl = (image: any) => {
-  return urlFor(image)?.width(550).height(310).url();
+type ImageUrlOptions = {
+  width?: number;
+  height?: number;
+  quality?: number;
+};
+
+export const imageUrl = (
+  image: SanityImageSource,
+  options: ImageUrlOptions = {},
+) => {
+  const { width = 550, height = 310, quality = 70 } = options;
+
+  return urlFor(image)
+    ?.width(width)
+    .height(height)
+    .quality(quality)
+    .fit("max")
+    .auto("format")
+    .url();
 };

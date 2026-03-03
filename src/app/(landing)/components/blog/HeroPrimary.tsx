@@ -1,19 +1,34 @@
 import { imageUrl } from "@/sanity/client";
 import { SanityDocument } from "next-sanity";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const HeroPrimary = ({ post }: { post: SanityDocument }) => {
-  const postImageUrl = imageUrl(post.featuredImage);
+  const postImageUrl = imageUrl(post.featuredImage, {
+    width: 1280,
+    height: 720,
+    quality: 64,
+  });
+
   return (
     <article className="max-w-[1170px] w-full flex flex-col lg:flex-row lg:items-center gap-7.5 lg:gap-11 bg-ui-light shadow-[10px_10px_0px_rgba(0,0,0,0.08)] rounded-2xl p-4 lg:p-3 border border-ui-shade/10">
       <div className="lg:max-w-[536px] w-full">
-        <Link href={`/blog/${post.slug.current}`}>
-          <img
-            className="w-full rounded-2xl aspect-[16/9] object-cover"
-            src={postImageUrl}
-            alt={post.title}
-          />
+        <Link href={`/blog/${post.slug.current}`} prefetch={false}>
+          <div className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] bg-ui-background/40">
+            {postImageUrl ? (
+              <Image
+                className="object-cover"
+                src={postImageUrl}
+                alt={post.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 536px"
+                priority
+                fetchPriority="high"
+                quality={70}
+              />
+            ) : null}
+          </div>
         </Link>
       </div>
 
@@ -28,7 +43,9 @@ const HeroPrimary = ({ post }: { post: SanityDocument }) => {
         ))}
 
         <h2 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-ui-shade mb-4 leading-tight">
-          <Link href={`/blog/${post.slug.current}`}>{post.title}</Link>
+          <Link href={`/blog/${post.slug.current}`} prefetch={false}>
+            {post.title}
+          </Link>
         </h2>
         <p className="max-w-[524px] line-clamp-2 text-ui-shade/70">
           {post.excerpt}

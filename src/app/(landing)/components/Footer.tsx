@@ -1,5 +1,6 @@
 import Icon from "@/components/icon";
 import { compareAppSlugs, compareData } from "@/lib/compareData";
+import Image from "next/image";
 import Link from "next/link";
 
 type FooterPlaceLink = {
@@ -23,9 +24,11 @@ export default function Footer({ placeLinks }: FooterProps) {
       <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
           <div>
-            <img
+            <Image
               src="/assets/lumore-hr.svg"
               alt="lumore"
+              width={112}
+              height={56}
               className="h-14 w-28"
             />
             <p className="mt-3 text-sm font-semibold tracking-wide text-ui-shade">
@@ -213,9 +216,11 @@ export default function Footer({ placeLinks }: FooterProps) {
         <p>&copy; {currentYear} Lumore.xyz. All rights reserved.</p>
         <p className="inline-flex items-center gap-1">
           Made in India
-          <img
+          <Image
             src="/assets/india-flag.svg"
             alt="India"
+            width={16}
+            height={16}
             className="h-4 w-4 inline-flex"
           />
         </p>

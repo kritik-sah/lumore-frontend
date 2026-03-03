@@ -1,4 +1,5 @@
 import { SanityDocument } from "next-sanity";
+import Image from "next/image";
 import React from "react";
 import HeroPrimary from "./HeroPrimary";
 import HeroSecondary from "./HeroSecondary";
@@ -13,7 +14,13 @@ const BlogHero = ({ posts }: { posts: SanityDocument[] }) => {
       <div className="absolute inset-0">
         <div className="absolute bottom-0 left-0 rounded-3xl w-full h-full bg-ui-light/40"></div>
         <div className="hidden lg:block absolute bottom-0 left-0 rounded-3xl w-full h-full opacity-70">
-          <img src="/assets/hero-bg.svg" alt="" aria-hidden="true" />
+          <Image
+            src="/assets/hero-bg.svg"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+          />
         </div>
       </div>
 
@@ -29,4 +36,3 @@ const BlogHero = ({ posts }: { posts: SanityDocument[] }) => {
 };
 
 export default BlogHero;
-
