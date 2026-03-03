@@ -124,7 +124,7 @@ function getLandingNavItems(placeLinks: NavbarPlaceLink[]): LandingNavItem[] {
                 title: "What Is Swipeless Dating?",
                 description: "A simpler way to meet people with intent.",
                 icon: "IoMagnet",
-                href: "/what-is-swipeless-dating",
+                href: "/swipeless-dating",
               },
               {
                 title: "Compare Options",
