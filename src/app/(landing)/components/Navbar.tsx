@@ -10,7 +10,6 @@ import {
   NavbarLogo,
   NavBody,
 } from "@/components/ui/resizable-navbar";
-import SketchButton from "@/components/ui/SketchButton";
 import { cn } from "@/lib/utils";
 import { trackAnalytic } from "@/service/analytics";
 import { AnimatePresence, motion } from "motion/react";
@@ -428,6 +427,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
 
           <div className="flex items-center gap-6">
             <a
+              className="z-10 inline-flex items-center justify-center gap-0 rounded-xl border border-ui-shade bg-ui-light px-4 py-2 text-base text-ui-shade transition duration-200 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)]"
               href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
               target="_blank"
               rel="noopener noreferrer"
@@ -438,13 +438,11 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                 })
               }
             >
-              <SketchButton className="z-10">
-                <Icon
-                  name="AiFillAndroid"
-                  className="text-3xl flex-shrink-0 mr-2"
-                />
-                Install Lumore
-              </SketchButton>
+              <Icon
+                name="AiFillAndroid"
+                className="text-3xl flex-shrink-0 mr-2"
+              />
+              Install Lumore
             </a>
           </div>
         </NavBody>
@@ -734,7 +732,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
           })}
           <div className="flex w-full flex-col gap-4">
             <a
-              className="flex w-full flex-col gap-4"
+              className="z-10 inline-flex items-center justify-center gap-0 rounded-xl border border-ui-shade bg-ui-light px-4 py-2 text-base text-ui-shade transition duration-200 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)]"
               href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
               target="_blank"
               rel="noopener noreferrer"
@@ -745,13 +743,11 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
                 })
               }
             >
-              <SketchButton className="z-10">
-                <Icon
-                  name="AiFillAndroid"
-                  className="text-3xl flex-shrink-0 mr-2"
-                />
-                Install Lumore
-              </SketchButton>
+              <Icon
+                name="AiFillAndroid"
+                className="text-3xl flex-shrink-0 mr-2"
+              />
+              Install Lumore
             </a>
           </div>
         </MobileNavMenu>

@@ -226,14 +226,23 @@ export const MobileNavToggle = ({
   isOpen: boolean;
   onClick: () => void;
 }) => {
-  return isOpen ? (
-    <Icon
+  return (
+    <button
+      type="button"
       onClick={onClick}
-      name="MdOutlineClose"
-      className="h-6 w-6 text-ui-shade"
-    />
-  ) : (
-    <Icon onClick={onClick} name="FaBars" className="h-6 w-6 text-ui-shade " />
+      aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ui-shade focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-highlight/60"
+    >
+      {isOpen ? (
+        <Icon
+          name="MdOutlineClose"
+          className="h-6 w-6 text-ui-shade"
+          aria-hidden="true"
+        />
+      ) : (
+        <Icon name="FaBars" className="h-6 w-6 text-ui-shade" aria-hidden="true" />
+      )}
+    </button>
   );
 };
 

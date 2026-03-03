@@ -57,9 +57,9 @@ const transitionCards = [
 function StoryCard({ title, body }: { title: string; body: string }) {
   return (
     <article className="w-[320px] md:w-[360px] rounded-xl border border-ui-highlight/30 bg-gradient-to-br from-ui-highlight/5 to-ui-highlight/20 p-5 shadow-xs">
-      <h4 className="text-lg font-semibold leading-snug text-ui-shade">
+      <h3 className="text-lg font-semibold leading-snug text-ui-shade">
         {title}
-      </h4>
+      </h3>
       <p className="mt-3 text-sm md:text-base leading-relaxed text-ui-shade/80">
         {body}
       </p>

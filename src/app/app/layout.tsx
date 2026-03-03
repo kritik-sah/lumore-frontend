@@ -1,4 +1,5 @@
 import Provider from "@/app/app/context/index";
+import Providers from "@/app/provider";
 import type { Metadata } from "next";
 import type { Viewport } from "next";
 import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
@@ -24,16 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Provider>
-      <ExploreChatProvider>
-        <LumoreSplash />
-        <div className="h-[100svh]">
-          <AppInteractionGuard>
-            <main className="flex flex-col h-full">{children}</main>
-          </AppInteractionGuard>
-        </div>
-      </ExploreChatProvider>
-    </Provider>
+    <Providers>
+      <Provider>
+        <ExploreChatProvider>
+          <LumoreSplash />
+          <div className="h-[100svh]">
+            <AppInteractionGuard>
+              <main className="flex flex-col h-full">{children}</main>
+            </AppInteractionGuard>
+          </div>
+        </ExploreChatProvider>
+      </Provider>
+    </Providers>
   );
 }
 
