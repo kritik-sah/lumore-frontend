@@ -1,26 +1,23 @@
-"use client";
-import Icon from "@/components/icon";
-import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
-import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
-import ReactPlayer from "react-player";
 const ReelShowcase = () => {
-  const [muted, setMuted] = useState(true);
   return (
     <section id="reel-showcase" className="my-6">
       <div className="px-4 lg:px-0 max-w-7xl mx-auto">
         <div className="relative w-full flex flex-col md:flex-row items-start justify-between bg-gradient-to-b from-ui-highlight/10 to-ui-highlight/30  border border-ui-highlight/30 overflow-hidden p-4 md:p-8 rounded-2xl shadow-2xl gap-6">
           <div className="relative z-10 h-auto w-full md:w-96 aspect-[9/16]">
-            <ReactPlayer
-              src="https://ik.imagekit.io/rebel/reel/reel2.mp4?tr=orig&updatedAt=1761736348210"
-              className="rounded-2xl shadow-2xl overflow-hidden "
-              playing
-              width="100%"
-              height="100%"
-              controls={false}
+            <video
+              className="h-full w-full rounded-2xl object-cover shadow-2xl"
+              autoPlay
               loop
-              muted={muted}
-            />
+              muted
+              playsInline
+              preload="none"
+              poster="/assets/login-screen.webp"
+            >
+              <source
+                src="https://ik.imagekit.io/rebel/reel/reel2.mp4?tr=q-55,vc-auto,w-540&updatedAt=1761736348210"
+                type="video/mp4"
+              />
+            </video>
           </div>
           <div className="relative z-10 flex-1 h-full shrink-0 flex-grow pt-4 md:pt-8">
             <div className="flex flex-col items-start justify-center gap-6">
@@ -36,16 +33,6 @@ const ReelShowcase = () => {
                 reel. See how our platform brings people together in real-time,
                 creating unforgettable moments and genuine interactions.
               </p>
-
-              <Button
-                onClick={() => setMuted(!muted)}
-                className="rounded-full gap-2 px-5"
-              >
-                <Icon name={muted ? "GoUnmute" : "GoMute"} />
-                <span className="hidden md:inline">
-                  Sound {muted ? "on" : "off"}
-                </span>
-              </Button>
             </div>
           </div>
           <span className="font-dmSans -tracking-[16px] leading-0 font-bold italic absolute bottom-16 right-4 text-[220px] text-ui-light/60">

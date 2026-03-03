@@ -1,7 +1,5 @@
-"use client";
-
 import { WobbleCard } from "@/components/ui/wobble-card";
-import React from "react";
+import Image from "next/image";
 
 function ProductPortfolio() {
   return (
@@ -28,11 +26,12 @@ function ProductPortfolio() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <Image
                   src="/assets/play.png"
                   width={150}
                   height={50}
                   alt="Lumore: Android App on Google Play"
+                  loading="lazy"
                   className="object-contain"
                 />
               </a>
@@ -46,22 +45,25 @@ function ProductPortfolio() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <Image
                   src="/assets/tma.png"
                   width={150}
                   height={50}
                   alt="Lumore: Mini App on Telegram"
+                  loading="lazy"
                   className="object-contain"
                 />
               </a>
             </div>
           </div>
         </div>
-        <img
+        <Image
           src="/assets/tired-of-endless-swiping.png"
           width={500}
           height={500}
           alt="Lumore app preview"
+          loading="lazy"
+          sizes="(max-width: 768px) 320px, 420px"
           className="absolute right-0 -bottom-52 translate-x-6 object-contain rounded-2xl w-[320px] md:w-[420px]"
         />
       </WobbleCard>
@@ -97,11 +99,13 @@ function ProductPortfolio() {
             mystery meetups, and more.
           </p>
         </div>
-        <img
-          src="assets/be-part-of-something.png"
+        <Image
+          src="/assets/be-part-of-something.png"
           width={500}
           height={500}
           alt="Lumore community events"
+          loading="lazy"
+          sizes="(max-width: 768px) 320px, 420px"
           className="absolute right-0 -bottom-6 md:-bottom-10 translate-x-6 object-contain rounded-2xl w-[320px] md:w-[420px]"
         />
       </WobbleCard>

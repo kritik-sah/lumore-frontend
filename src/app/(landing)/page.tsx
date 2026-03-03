@@ -1,9 +1,9 @@
-import AppStats from "./components/AppStats";
 import HowLumoreIsDifferent from "./components/HowLumoreIsDifferent";
 import Hero from "./components/Hero";
 import HowLumoreWorks from "./components/HowLumoreWorks";
 import ProductPortfolio from "./components/ProducyPortfolio";
 import ReelShowcase from "./components/ReelShowcase";
+import AppStats from "./components/AppStats";
 
 export default function Home() {
   return (

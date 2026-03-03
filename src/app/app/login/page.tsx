@@ -8,7 +8,7 @@ export default function Page() {
       <div className="absolute inset-0 [background:radial-gradient(ellipse_at_center,transparent_60%,rgba(0,0,0,0.4)_100%)]" />
 
       {/* Optional subtle grain effect */}
-      <div className="absolute inset-0 opacity-[0.1] bg-[url('/assets/noise-texture.png')] bg-repeat mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.1] [background-image:radial-gradient(rgba(10,10,9,0.35)_1px,transparent_1px)] [background-size:20px_20px] mix-blend-overlay pointer-events-none" />
 
       {/* Content */}
       <div className="relative w-full max-w-sm">

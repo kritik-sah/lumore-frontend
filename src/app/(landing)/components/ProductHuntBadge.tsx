@@ -13,6 +13,8 @@ const ProductHuntBadge: React.FC = () => {
         alt="Lumore - Helps you socialize your way! | Product Hunt"
         width="250"
         height="50"
+        loading="lazy"
+        decoding="async"
         className="w-full md:w-auto h-auto"
       />
     </a>
