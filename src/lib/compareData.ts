@@ -92,7 +92,7 @@ export const coreBenchmarkFeatures: CoreBenchmarkFeature[] = [
 export const compareData: Record<CompareAppSlug, CompareAppConfig> = {
   tinder: {
     name: "Tinder",
-    image: "/assets/tinder.png",
+    image: "/assets/tinder-lumore.png",
     description:
       "Tinder is a global dating app built around fast swipe decisions and high-volume profile discovery.",
     strengths: [
