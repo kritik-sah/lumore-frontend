@@ -1,4 +1,5 @@
 import Icon from "@/components/icon";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -114,6 +115,13 @@ export const metadata: Metadata = {
   title: "About Us | Lumore",
   description:
     "Learn why Lumore exists: to solve urban loneliness through swipeless, intent-led introductions, founder-led trust, and offline community vision.",
+  keywords: withLandingKeywords([
+    "about Lumore",
+    "founder story",
+    "urban loneliness",
+    "trust-first dating",
+    "Swipeless dating",
+  ]),
   alternates: {
     canonical: ABOUT_URL,
   },
@@ -129,7 +137,7 @@ export const metadata: Metadata = {
     title: "About Us | Lumore",
     description:
       "Why Lumore is building a swipeless, trust-first way to meet: mission, founder story, and offline community vision.",
-    creator: "@0xlumore",
+    creator: TWITTER_CREATOR,
   },
 };
 

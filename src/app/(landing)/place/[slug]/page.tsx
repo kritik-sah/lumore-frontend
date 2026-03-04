@@ -3,6 +3,7 @@ import {
   getPlaceArticleSlugs,
   toAbsolutePlaceUrl,
 } from "@/lib/placeArticles";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -145,6 +146,22 @@ export async function generateMetadata({
     return {
       title: "Place Article Not Found | Lumore",
       description: "This place guide could not be found.",
+      keywords: withLandingKeywords(["dating by city", "place guide"]),
+      alternates: {
+        canonical: toAbsolutePlaceUrl("/place"),
+      },
+      openGraph: {
+        title: "Place Article Not Found | Lumore",
+        description: "This place guide could not be found.",
+        url: toAbsolutePlaceUrl("/place"),
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Place Article Not Found | Lumore",
+        description: "This place guide could not be found.",
+        creator: TWITTER_CREATOR,
+      },
     };
   }
 
@@ -156,6 +173,13 @@ export async function generateMetadata({
   return {
     title: article.seo.title,
     description: article.seo.description,
+    keywords: withLandingKeywords([
+      article.placeName,
+      `${article.placeName} dating`,
+      `dating in ${article.placeName}`,
+      `${article.region} dating`,
+      `${article.country} dating app`,
+    ]),
     alternates: {
       canonical: canonicalUrl,
     },
@@ -180,7 +204,7 @@ export async function generateMetadata({
       title: article.seo.title,
       description: article.seo.description,
       images: ogImage ? [ogImage] : undefined,
-      creator: "@0xlumore",
+      creator: TWITTER_CREATOR,
     },
   };
 }

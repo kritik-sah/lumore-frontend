@@ -1,10 +1,11 @@
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import { client } from "@/sanity/client";
 import { type SanityDocument } from "next-sanity";
 
+import type { Metadata } from "next";
 import BlogHero from "../components/blog/BlogHero";
 import BlogPost from "../components/blog/BlogPost";
 import DeferredLoadMorePosts from "../components/blog/DeferredLoadMorePosts";
-import type { Metadata } from "next";
 
 const POSTS_QUERY = `*[
   _type == "blog"
@@ -21,6 +22,14 @@ const options = { next: { revalidate } };
 
 export const metadata: Metadata = {
   title: "Lumore Blog | Real Connections, Real Stories",
+  keywords: withLandingKeywords([
+    "Lumore blog",
+    "dating advice",
+    "relationship insights",
+    "community stories",
+    "swipeless dating",
+    "dating app blog",
+  ]),
   description:
     "Explore Lumore’s blog for thoughtful pieces on meaningful connection, community events, and social discovery—no endless swiping.",
   alternates: {
@@ -36,6 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Lumore Blog | Real Connections, Real Stories",
+    creator: TWITTER_CREATOR,
     description:
       "Explore Lumore’s blog for thoughtful pieces on meaningful connection, community events, and social discovery—no endless swiping.",
   },
@@ -109,4 +119,3 @@ export default async function IndexPage() {
 //             </li>
 //           );
 //         })}
-

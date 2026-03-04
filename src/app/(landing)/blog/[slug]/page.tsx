@@ -1,6 +1,7 @@
 import Newsletter from "@/components/NewsLetter";
 import { LinkPreview } from "@/components/ui/link-preview";
 import { Separator } from "@/components/ui/separator";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import { client, imageUrl } from "@/sanity/client";
 import type { Metadata, ResolvingMetadata } from "next";
 import { PortableText, type SanityDocument } from "next-sanity";
@@ -40,6 +41,22 @@ export async function generateMetadata(
     return {
       title: "Post not found | Lumore Blog",
       description: "This post could not be found.",
+      keywords: withLandingKeywords(["blog", "post not found"]),
+      alternates: {
+        canonical: "https://www.lumore.xyz/blog",
+      },
+      openGraph: {
+        title: "Post not found | Lumore Blog",
+        description: "This post could not be found.",
+        url: "https://www.lumore.xyz/blog",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Post not found | Lumore Blog",
+        description: "This post could not be found.",
+        creator: TWITTER_CREATOR,
+      },
     };
   }
 
@@ -50,10 +67,25 @@ export async function generateMetadata(
 
   const description =
     post.summary || post.excerpt || "Read this insightful article on Lumore.";
+  const categoryKeywords = Array.isArray(post.category)
+    ? post.category
+        .map((category: { title?: string }) => category.title)
+        .filter((title): title is string => Boolean(title))
+    : [];
 
   return {
     title: `${post.title} | Lumore Blog`,
     description,
+    keywords: withLandingKeywords([
+      "Lumore blog",
+      "swipeless dating",
+      "dating advice",
+      "relationship insights",
+      "community stories",
+      post.title,
+      post.slug.current,
+      ...categoryKeywords,
+    ]),
     openGraph: {
       title: post.title,
       description,
@@ -74,7 +106,7 @@ export async function generateMetadata(
       title: post.title,
       description,
       images: [postImageUrl],
-      creator: "@lumoreapp",
+      creator: TWITTER_CREATOR,
     },
     alternates: {
       canonical: postUrl,
@@ -223,4 +255,3 @@ export default async function PostPage({
     </main>
   );
 }
-

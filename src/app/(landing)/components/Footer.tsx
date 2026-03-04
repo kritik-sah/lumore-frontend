@@ -120,6 +120,14 @@ export default function Footer({ placeLinks }: FooterProps) {
                 </li>
                 <li>
                   <Link
+                    href="/brand-kit"
+                    className="text-ui-shade transition opacity-95 hover:opacity-100"
+                  >
+                    Brand Kit
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/place"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >

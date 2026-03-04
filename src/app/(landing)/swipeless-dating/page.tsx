@@ -1,4 +1,5 @@
 import Icon from "@/components/icon";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -101,6 +102,13 @@ export const metadata: Metadata = {
     "What Is Swipeless Dating? A Better Way to Date Without Swiping | Lumore",
   description:
     "Swipeless dating is a better way to date without swiping. Learn how no swipe dating apps reduce burnout, improve conversations, and help you find aligned matches.",
+  keywords: withLandingKeywords([
+    "what is swipeless dating",
+    "no swipe dating app",
+    "dating without swiping",
+    "swipe fatigue",
+    "conversation-first dating",
+  ]),
   alternates: {
     canonical: PAGE_URL,
   },
@@ -116,7 +124,7 @@ export const metadata: Metadata = {
     title: "What Is Swipeless Dating? A Better Way to Date Without Swiping",
     description:
       "A practical guide to swipeless dating, swipe fatigue, and a healthier no-swipe dating app model.",
-    creator: "@0xlumore",
+    creator: TWITTER_CREATOR,
   },
 };
 
