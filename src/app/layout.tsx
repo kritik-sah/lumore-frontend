@@ -44,7 +44,7 @@ export default function RootLayout({
       <head className="overflow-x-hidden">
         <meta
           name="google-adsense-account"
-          content="ca-pub-7384584510187682"
+          content="ca-pub-5845343690682759"
         ></meta>
       </head>
       <body className={`${dmSans.variable} ${workSans.variable} font-workSans`}>
