@@ -1,5 +1,6 @@
 import Icon from "@/components/icon";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 
 const HOW_IT_WORKS_URL = "https://www.lumore.xyz/how-it-works";
@@ -165,6 +166,13 @@ export const metadata: Metadata = {
   title: "How Swipeless Dating Works | Lumore",
   description:
     "Learn how swipeless dating works on Lumore: dating without swiping, anonymous first chat, unlock later flow, matching principles, and safety controls.",
+  keywords: withLandingKeywords([
+    "how swipeless dating works",
+    "dating without swiping",
+    "anonymous chat dating",
+    "intent-based matching",
+    "dating app safety",
+  ]),
   alternates: {
     canonical: HOW_IT_WORKS_URL,
   },
@@ -180,7 +188,7 @@ export const metadata: Metadata = {
     title: "How Swipeless Dating Works | Lumore",
     description:
       "A clear guide to how swipeless dating works, from anonymous-first chat to consent-based profile unlock.",
-    creator: "@0xlumore",
+    creator: TWITTER_CREATOR,
   },
 };
 

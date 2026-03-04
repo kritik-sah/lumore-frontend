@@ -1,4 +1,5 @@
 import { getAllPlaceArticles, toAbsolutePlaceUrl } from "@/lib/placeArticles";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -8,6 +9,13 @@ export const metadata: Metadata = {
   title: "Dating by City | Lumore Place Guides",
   description:
     "Explore local dating guides by city and neighborhood with swipeless matching, community events, and practical dating insights.",
+  keywords: withLandingKeywords([
+    "dating by city",
+    "city dating guide",
+    "local dating tips",
+    "dating neighborhoods",
+    "place guides",
+  ]),
   alternates: {
     canonical: PLACE_INDEX_URL,
   },
@@ -23,7 +31,7 @@ export const metadata: Metadata = {
     title: "Dating by City | Lumore Place Guides",
     description:
       "City-based dating guides for swipeless matching, local insights, and better real-world connections.",
-    creator: "@0xlumore",
+    creator: TWITTER_CREATOR,
   },
 };
 

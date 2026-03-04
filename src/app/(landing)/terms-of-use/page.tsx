@@ -1,4 +1,38 @@
 import React from "react";
+import type { Metadata } from "next";
+import { TWITTER_CREATOR, toAbsoluteUrl, withLandingKeywords } from "@/lib/landingSeo";
+
+const TERMS_OF_USE_URL = toAbsoluteUrl("/terms-of-use");
+
+export const metadata: Metadata = {
+  title: "Terms of Use | Lumore",
+  description:
+    "Review Lumore's Terms of Use for account eligibility, user responsibilities, subscriptions, and legal terms for using the platform.",
+  keywords: withLandingKeywords([
+    "Lumore terms of use",
+    "terms and conditions",
+    "user agreement",
+    "subscription terms",
+    "dating app terms",
+  ]),
+  alternates: {
+    canonical: TERMS_OF_USE_URL,
+  },
+  openGraph: {
+    title: "Terms of Use | Lumore",
+    description:
+      "Review Lumore's Terms of Use for account eligibility, user responsibilities, subscriptions, and legal terms for using the platform.",
+    url: TERMS_OF_USE_URL,
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Use | Lumore",
+    description:
+      "Review Lumore's Terms of Use for eligibility, account conduct, billing, and dispute terms.",
+    creator: TWITTER_CREATOR,
+  },
+};
 
 const TermsOfUse = () => {
   return (

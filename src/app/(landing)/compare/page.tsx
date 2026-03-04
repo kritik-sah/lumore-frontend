@@ -1,4 +1,5 @@
 import { compareAppSlugs, compareData } from "@/lib/compareData";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +23,14 @@ export const metadata: Metadata = {
   title: "Compare Dating Apps | Lumore",
   description:
     "Explore Lumore comparisons with Tinder, Bumble, Hinge, and TrulyMadly. Find a better way to date without swiping.",
+  keywords: withLandingKeywords([
+    "compare dating apps",
+    "Swipeless vs swipe-first dating apps",
+    "Lumore vs Tinder",
+    "Lumore vs Bumble",
+    "Lumore vs Hinge",
+    "Lumore vs TrulyMadly",
+  ]),
   alternates: {
     canonical: COMPARE_URL,
   },
@@ -37,7 +46,7 @@ export const metadata: Metadata = {
     title: "Compare Dating Apps | Lumore",
     description:
       "Browse Lumore comparison pages for Tinder, Bumble, Hinge, and TrulyMadly.",
-    creator: "@0xlumore",
+    creator: TWITTER_CREATOR,
   },
 };
 
