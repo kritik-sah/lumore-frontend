@@ -128,10 +128,10 @@ export default function Footer({ placeLinks }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    href="/place"
+                    href="/careers"
                     className="text-ui-shade transition opacity-95 hover:opacity-100"
                   >
-                    Place Guides
+                    Careers
                   </Link>
                 </li>
               </ul>
