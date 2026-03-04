@@ -4,6 +4,7 @@ import {
   getCompareApp,
   type CompareAppConfig,
 } from "@/lib/compareData";
+import { TWITTER_CREATOR, withLandingKeywords } from "@/lib/landingSeo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -120,6 +121,24 @@ export async function generateMetadata({
       title: "Lumore Compare Pages",
       description:
         "Compare Lumore with leading dating apps and explore a swipeless alternative.",
+      keywords: withLandingKeywords(["compare dating apps", "Lumore comparisons"]),
+      alternates: {
+        canonical: `${SITE_URL}/compare`,
+      },
+      openGraph: {
+        title: "Lumore Compare Pages",
+        description:
+          "Compare Lumore with leading dating apps and explore a swipeless alternative.",
+        url: `${SITE_URL}/compare`,
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Lumore Compare Pages",
+        description:
+          "Compare Lumore with leading dating apps and explore a swipeless alternative.",
+        creator: TWITTER_CREATOR,
+      },
     };
   }
 
@@ -132,6 +151,12 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: withLandingKeywords([
+      "compare dating apps",
+      `Lumore vs ${appData.name}`,
+      `${appData.name} alternative`,
+      "swipeless dating alternative",
+    ]),
     alternates: {
       canonical: canonicalUrl,
     },
@@ -153,7 +178,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      creator: "@0xlumore",
+      creator: TWITTER_CREATOR,
       images: [ogImageUrl],
     },
   };

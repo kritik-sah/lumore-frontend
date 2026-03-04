@@ -1,4 +1,38 @@
 import React from "react";
+import type { Metadata } from "next";
+import { TWITTER_CREATOR, toAbsoluteUrl, withLandingKeywords } from "@/lib/landingSeo";
+
+const PRIVACY_POLICY_URL = toAbsoluteUrl("/privacy-policy");
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Lumore",
+  description:
+    "Read Lumore's Privacy Policy to understand how we collect, use, share, and protect personal information across our app and website.",
+  keywords: withLandingKeywords([
+    "Lumore privacy policy",
+    "data privacy",
+    "GDPR",
+    "CCPA",
+    "DPDP Act",
+  ]),
+  alternates: {
+    canonical: PRIVACY_POLICY_URL,
+  },
+  openGraph: {
+    title: "Privacy Policy | Lumore",
+    description:
+      "Read Lumore's Privacy Policy to understand how we collect, use, share, and protect personal information across our app and website.",
+    url: PRIVACY_POLICY_URL,
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Lumore",
+    description:
+      "Read Lumore's Privacy Policy and data handling practices for app and website users.",
+    creator: TWITTER_CREATOR,
+  },
+};
 
 const PrivacyPolicy = () => {
   return (
