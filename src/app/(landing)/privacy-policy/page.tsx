@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { TWITTER_CREATOR, toAbsoluteUrl, withLandingKeywords } from "@/lib/landingSeo";
 
 const PRIVACY_POLICY_URL = toAbsoluteUrl("/privacy-policy");
+const CHILD_SAFETY_URL = toAbsoluteUrl("/child-safety");
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Lumore",
@@ -46,6 +47,17 @@ const PrivacyPolicy = () => {
         </p>
         <p>
           <strong>Last Updated:</strong> March 3, 2026
+        </p>
+        <p className="mt-3">
+          <strong>Child Safety Standards:</strong>{" "}
+          <a
+            href={CHILD_SAFETY_URL}
+            className="underline text-blue-600"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://www.lumore.xyz/child-safety
+          </a>
         </p>
       </section>
 
