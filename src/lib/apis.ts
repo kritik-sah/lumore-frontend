@@ -15,6 +15,12 @@ export const getFormattedAddress = async (lat: number, lng: number) => {
   return response.data.display_name || null;
 };
 
+export interface LocationWritePayload {
+  latitude: number;
+  longitude: number;
+  formattedAddress?: string | null;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                               Auth & Profile                               */
 /* -------------------------------------------------------------------------- */
@@ -47,11 +53,15 @@ export const updateUserData = async (data: any) => {
   const response = await apiClient.patch(`/profile/${userId}`, data);
   return response.data;
 };
-export const updateUserLocation = async (data: any) => {
+export const updateUserLocation = async (data: LocationWritePayload) => {
   const { _id: userId } = getUser();
   const response = await apiClient.post(
     `/profile/${userId}/update-location`,
-    data,
+    {
+      latitude: data.latitude,
+      longitude: data.longitude,
+      formattedAddress: data.formattedAddress || undefined,
+    },
   );
   return response.data;
 };
