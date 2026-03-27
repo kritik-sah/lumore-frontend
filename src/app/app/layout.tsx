@@ -4,6 +4,7 @@ import ServiceWorker from "@/components/ServiceWorker";
 import type { Metadata } from "next";
 import type { Viewport } from "next";
 import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
+import SessionBootstrap from "./components/layout/SessionBootstrap";
 import LumoreSplash from "./components/LumoreSplash";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
 import { Toaster } from "react-hot-toast";
@@ -31,6 +32,7 @@ export default function RootLayout({
       <Provider>
         <ExploreChatProvider>
           <LumoreSplash />
+          <SessionBootstrap />
           <Toaster position="top-right" />
           <ServiceWorker />
           <div className="h-[100svh]">

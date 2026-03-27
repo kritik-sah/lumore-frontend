@@ -1,17 +1,11 @@
 "use client";
-import axios from "axios";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { apiClient, BASE_URL } from "../api-client";
+import { refreshAccessToken } from "../auth-session";
+import { apiClient } from "../api-client";
 import {
-  getRefreshToken,
-  removeAccessToken,
-  removeRefreshToken,
-  removeUser,
-  setAccessToken,
-  setRefreshToken,
-  setUser,
+  clearSession,
+  setSession,
 } from "../storage";
 
 export type User = {
@@ -34,23 +28,11 @@ export default function useAuth() {
       const { data } = await apiClient.post("/auth/google-signin-web", {
         code: code,
       });
-
-      if (data?.accessToken) {
-        setAccessToken(data.accessToken);
-        Cookies.set("accessToken", JSON.stringify(data.accessToken), {
-          expires: 1,
-        });
-      }
-      if (data?.refreshToken) {
-        setRefreshToken(data.refreshToken);
-        Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
-          expires: 10,
-        });
-      }
-      if (data?.user) {
-        setUser(data.user);
-        Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
-      }
+      setSession({
+        accessToken: data?.accessToken,
+        refreshToken: data?.refreshToken,
+        user: data?.user,
+      });
 
       return data?.user;
     } catch (error) {
@@ -66,23 +48,11 @@ export default function useAuth() {
       const { data } = await apiClient.post("/auth/tma-login", {
         initData: initData,
       });
-
-      if (data?.accessToken) {
-        setAccessToken(data.accessToken);
-        Cookies.set("accessToken", JSON.stringify(data.accessToken), {
-          expires: 1,
-        });
-      }
-      if (data?.refreshToken) {
-        setRefreshToken(data.refreshToken);
-        Cookies.set("refreshToken", JSON.stringify(data.refreshToken), {
-          expires: 10,
-        });
-      }
-      if (data?.user) {
-        setUser(data.user);
-        Cookies.set("user", JSON.stringify(data?.user), { expires: 30 });
-      }
+      setSession({
+        accessToken: data?.accessToken,
+        refreshToken: data?.refreshToken,
+        user: data?.user,
+      });
       return data?.user;
     } catch (error) {
       console.error(error);
@@ -98,23 +68,11 @@ export default function useAuth() {
     try {
       setisLoading(true);
       const { data: res } = await apiClient.post("/auth/login", data);
-
-      if (res?.accessToken) {
-        setAccessToken(res.accessToken);
-        Cookies.set("accessToken", JSON.stringify(res.accessToken), {
-          expires: 1,
-        });
-      }
-      if (res?.refreshToken) {
-        setRefreshToken(res.refreshToken);
-        Cookies.set("refreshToken", JSON.stringify(res.refreshToken), {
-          expires: 10,
-        });
-      }
-      if (res?.user) {
-        setUser(res.user);
-        Cookies.set("user", JSON.stringify(res?.user), { expires: 30 });
-      }
+      setSession({
+        accessToken: res?.accessToken,
+        refreshToken: res?.refreshToken,
+        user: res?.user,
+      });
 
       return res?.user;
     } catch (error: any) {
@@ -136,12 +94,7 @@ export default function useAuth() {
    * 🔹 Logout handler
    */
   const logout = useCallback(() => {
-    removeAccessToken();
-    removeRefreshToken();
-    removeUser();
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    Cookies.remove("user");
+    clearSession();
 
     router.push("/app/login"); // Navigate to login page
   }, [router]);
@@ -152,27 +105,17 @@ export default function useAuth() {
   const refreshTokens = useCallback(async (): Promise<boolean> => {
     try {
       setisLoading(true);
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) throw new Error("No refresh token found");
-
-      const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
-        refreshToken,
-      });
-
-      if (data?.accessToken) {
-        setAccessToken(data.accessToken);
+      const nextAccessToken = await refreshAccessToken();
+      if (nextAccessToken) {
         return true;
-      } else {
-        throw new Error("Invalid refresh response");
       }
-    } catch (error) {
-      console.error("Token refresh failed", error);
-      logout();
+
+      router.push("/app/login");
       return false;
     } finally {
       setisLoading(false);
     }
-  }, [logout]);
+  }, [router]);
 
   return {
     loginWithGoogle,
