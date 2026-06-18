@@ -10,7 +10,7 @@ interface CTAProps {
 }
 
 export default function CTA({
-  href = "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa",
+  href = "https://play.google.com/store/apps/details?id=xyz.lumore.rebel",
   label = "Try Lumore",
   note,
   className,

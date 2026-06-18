@@ -151,7 +151,7 @@ type PlaceDocument = {
 
 const STATIC_PRIMARY_CTA_TEMPLATE: PlaceCta = {
   label: "Start Matching in {placeName}",
-  href: "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa",
+  href: "https://play.google.com/store/apps/details?id=xyz.lumore.rebel",
 };
 
 const STATIC_WHY_TEMPLATE = {
@@ -274,7 +274,7 @@ const STATIC_CLOSING_TEMPLATE = {
   subtext: "One match. One conversation. Real connection in {placeName}.",
   cta: {
     label: "Start Matching in {placeName}",
-    href: "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa",
+    href: "https://play.google.com/store/apps/details?id=xyz.lumore.rebel",
   },
 };
 
@@ -355,7 +355,10 @@ function applyPlaceNameTemplate<T>(template: T, placeName: string): T {
   return applyTemplateDeep(template, { placeName });
 }
 
-function mapHeroImages(images: SanityImageField[] | undefined, placeName: string): HeroImage[] {
+function mapHeroImages(
+  images: SanityImageField[] | undefined,
+  placeName: string,
+): HeroImage[] {
   if (!Array.isArray(images)) {
     return [];
   }
@@ -379,7 +382,8 @@ function mapPlaceDocument(place: PlaceDocument): PlaceArticle {
   const seoCanonical = place.seo?.canonical || `/place/${place.slug}`;
   const heroImages = mapHeroImages(place.hero?.heroImages, place.placeName);
   const legacyHeroImageUrl = buildImageUrl(place.hero?.heroImage);
-  const legacyHeroImageAlt = place.hero?.heroImage?.alt || `Dating in ${place.placeName}`;
+  const legacyHeroImageAlt =
+    place.hero?.heroImage?.alt || `Dating in ${place.placeName}`;
   const resolvedHeroImages =
     heroImages.length > 0
       ? heroImages
@@ -398,11 +402,20 @@ function mapPlaceDocument(place: PlaceDocument): PlaceArticle {
     place.placeName,
   );
   const why = applyPlaceNameTemplate(STATIC_WHY_TEMPLATE, place.placeName);
-  const matching = applyPlaceNameTemplate(STATIC_MATCHING_TEMPLATE, place.placeName);
-  const community = applyPlaceNameTemplate(STATIC_COMMUNITY_TEMPLATE, place.placeName);
+  const matching = applyPlaceNameTemplate(
+    STATIC_MATCHING_TEMPLATE,
+    place.placeName,
+  );
+  const community = applyPlaceNameTemplate(
+    STATIC_COMMUNITY_TEMPLATE,
+    place.placeName,
+  );
   const comparison = applyPlaceNameTemplate(STATIC_COMPARISON, place.placeName);
   const faqs = applyPlaceNameTemplate(STATIC_FAQS_TEMPLATE, place.placeName);
-  const closing = applyPlaceNameTemplate(STATIC_CLOSING_TEMPLATE, place.placeName);
+  const closing = applyPlaceNameTemplate(
+    STATIC_CLOSING_TEMPLATE,
+    place.placeName,
+  );
 
   return {
     _updatedAt: place._updatedAt,
@@ -421,17 +434,22 @@ function mapPlaceDocument(place: PlaceDocument): PlaceArticle {
       headline: place.hero.headline,
       subheadline: place.hero.subheadline,
       primaryCta,
-      secondaryCta: place.hero.secondaryCta ?? { label: "Explore Events", href: "/events" },
+      secondaryCta: place.hero.secondaryCta ?? {
+        label: "Explore Events",
+        href: "/events",
+      },
       heroImages: resolvedHeroImages,
     },
     why,
     matching,
     areas: {
-      title: place.areas?.title ?? `Meet Singles Near You in ${place.placeName}`,
+      title:
+        place.areas?.title ?? `Meet Singles Near You in ${place.placeName}`,
       items: place.areas?.items ?? [],
     },
     events: {
-      title: place.events?.title ?? `Offline Dating Events in ${place.placeName}`,
+      title:
+        place.events?.title ?? `Offline Dating Events in ${place.placeName}`,
       intro:
         place.events?.intro ??
         `Not just online. Build real-world connections in ${place.placeName} through curated social circles.`,
@@ -449,7 +467,11 @@ function mapPlaceDocument(place: PlaceDocument): PlaceArticle {
 }
 
 export async function getAllPlaceArticles(): Promise<PlaceArticle[]> {
-  const places = await client.fetch<PlaceDocument[]>(ALL_PLACES_QUERY, {}, options);
+  const places = await client.fetch<PlaceDocument[]>(
+    ALL_PLACES_QUERY,
+    {},
+    options,
+  );
   return places.map(mapPlaceDocument);
 }
 
@@ -470,7 +492,11 @@ export async function getPlaceArticleBySlug(
 }
 
 export async function getPlaceArticleSlugs(): Promise<string[]> {
-  const slugs = await client.fetch<{ slug: string }[]>(PLACE_SLUGS_QUERY, {}, options);
+  const slugs = await client.fetch<{ slug: string }[]>(
+    PLACE_SLUGS_QUERY,
+    {},
+    options,
+  );
   return slugs.map((item) => item.slug).filter(Boolean);
 }
 

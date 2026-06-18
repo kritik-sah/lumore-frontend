@@ -1,7 +1,7 @@
 "use client";
 
-import { useUser } from "@/app/app/hooks/useUser";
-import { useUserPrefrence } from "@/app/app/hooks/useUserPrefrence";
+import { useUser } from "@/app/app_disabled/hooks/useUser";
+import { useUserPrefrence } from "@/app/app_disabled/hooks/useUserPrefrence";
 import { Button } from "@/components/ui/button";
 import { updateUserData, updateUserPreferences } from "@/lib/apis";
 import { isUiSimplificationEnabled } from "@/lib/feature-flags";
@@ -194,5 +194,3 @@ const Onboarding = ({
 };
 
 export default Onboarding;
-
-

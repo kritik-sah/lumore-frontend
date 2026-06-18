@@ -14,7 +14,14 @@ import { trackAnalytic } from "@/service/analytics";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { type SVGProps, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type SVGProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { IconType } from "react-icons";
 import { AiFillAndroid } from "react-icons/ai";
 import { FaChevronDown, FaLocationDot, FaRegFaceSmile } from "react-icons/fa6";
@@ -483,7 +490,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
           <div className="flex items-center gap-6">
             <a
               className="z-10 inline-flex items-center justify-center gap-0 rounded-xl border border-ui-shade bg-ui-light px-4 py-2 text-base text-ui-shade transition duration-200 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)]"
-              href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+              href="https://play.google.com/store/apps/details?id=xyz.lumore.rebel"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
@@ -788,7 +795,7 @@ export function NavbarUI({ placeLinks }: NavbarUIProps) {
           <div className="flex w-full flex-col gap-4">
             <a
               className="z-10 inline-flex items-center justify-center gap-0 rounded-xl border border-ui-shade bg-ui-light px-4 py-2 text-base text-ui-shade transition duration-200 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)]"
-              href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+              href="https://play.google.com/store/apps/details?id=xyz.lumore.rebel"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>

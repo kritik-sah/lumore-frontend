@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 const HOW_IT_WORKS_URL = "https://www.lumore.xyz/how-it-works";
 const PLAYSTORE_URL =
-  "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa";
+  "https://play.google.com/store/apps/details?id=xyz.lumore.rebel";
 
 const heroHighlights = [
   { label: "One thoughtful intro", value: "01" },

@@ -7,7 +7,7 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow access to login page without authentication
-  if (pathname.startsWith("/app/login")) {
+  if (pathname.startsWith("/app")) {
     return NextResponse.next();
   }
   if (pathname.startsWith("/app/referral")) {

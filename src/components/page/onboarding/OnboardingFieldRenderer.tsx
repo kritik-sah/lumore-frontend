@@ -1,12 +1,12 @@
 "use client";
 
-import DateField from "@/app/app/components/DateField";
-import MultiSelectChipField from "@/app/app/components/MultiSelectChipField";
+import DateField from "@/app/app_disabled/components/DateField";
 import {
   MultisliderField,
   SliderField,
   TextField,
-} from "@/app/app/components/InputField";
+} from "@/app/app_disabled/components/InputField";
+import MultiSelectChipField from "@/app/app_disabled/components/MultiSelectChipField";
 import type { Field } from "./types";
 
 interface OnboardingFieldRendererProps {
