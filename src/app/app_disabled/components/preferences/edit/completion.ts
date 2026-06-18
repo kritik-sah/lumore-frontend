@@ -1,6 +1,6 @@
 "use client";
 
-import type { UserPreferences } from "@/app/app/hooks/useUserPrefrence";
+import type { UserPreferences } from "@/app/app_disabled/hooks/useUserPrefrence";
 
 export function calculatePreferencesCompletion(preferences?: UserPreferences) {
   if (!preferences) return { completionPercent: 0, missingCount: 0 };
@@ -19,9 +19,15 @@ export function calculatePreferencesCompletion(preferences?: UserPreferences) {
       ? preferences.personalityTypePreference
       : null,
     preferences?.dietPreference?.length ? preferences.dietPreference : null,
-    preferences?.religionPreference?.length ? preferences.religionPreference : null,
-    preferences?.drinkingPreference?.length ? preferences.drinkingPreference : null,
-    preferences?.smokingPreference?.length ? preferences.smokingPreference : null,
+    preferences?.religionPreference?.length
+      ? preferences.religionPreference
+      : null,
+    preferences?.drinkingPreference?.length
+      ? preferences.drinkingPreference
+      : null,
+    preferences?.smokingPreference?.length
+      ? preferences.smokingPreference
+      : null,
     preferences?.petPreference?.length ? preferences.petPreference : null,
   ];
 
@@ -35,4 +41,3 @@ export function calculatePreferencesCompletion(preferences?: UserPreferences) {
 
   return { completionPercent, missingCount: total - filledCount };
 }
-

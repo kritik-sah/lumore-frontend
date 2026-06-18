@@ -53,10 +53,14 @@ export default function ReferralPage() {
 
       const playstoreUrl =
         process.env.NEXT_PUBLIC_PLAYSTORE_URL ||
-        "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa";
+        "https://play.google.com/store/apps/details?id=xyz.lumore.rebel";
       const appstoreUrl = process.env.NEXT_PUBLIC_APPSTORE_URL || playstoreUrl;
 
-      const redirectUrl = isIOS ? appstoreUrl : isAndroid ? playstoreUrl : playstoreUrl;
+      const redirectUrl = isIOS
+        ? appstoreUrl
+        : isAndroid
+          ? playstoreUrl
+          : playstoreUrl;
       window.location.replace(redirectUrl);
       return;
     }
@@ -106,7 +110,9 @@ export default function ReferralPage() {
       await applyMutation.mutateAsync(parsed.data);
       removePendingReferralCode();
     } catch (error: any) {
-      setCodeError(error?.response?.data?.message || "Could not apply referral code");
+      setCodeError(
+        error?.response?.data?.message || "Could not apply referral code",
+      );
     }
   };
 
@@ -127,8 +133,8 @@ export default function ReferralPage() {
               <Icon name="FaCoins" className="text-2xl text-ui-highlight" />
             </div>
             <p className="mt-2 text-sm text-ui-shade/70">
-              Earn +{summary?.referralRewardCredits ?? 10} credits when a referred
-              user completes profile verification.
+              Earn +{summary?.referralRewardCredits ?? 10} credits when a
+              referred user completes profile verification.
             </p>
 
             {!canAccess ? (
@@ -178,7 +184,9 @@ export default function ReferralPage() {
                   Already applied: {referredBy}
                 </p>
               ) : null}
-              {codeError ? <p className="text-sm text-red-500">{codeError}</p> : null}
+              {codeError ? (
+                <p className="text-sm text-red-500">{codeError}</p>
+              ) : null}
               <Button className="w-full" onClick={handleApply}>
                 {applyMutation.isPending ? "Applying..." : "Apply code"}
               </Button>
@@ -213,4 +221,3 @@ export default function ReferralPage() {
     </NavLayout>
   );
 }
-

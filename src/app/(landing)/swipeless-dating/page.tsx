@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const PAGE_URL = "https://www.lumore.xyz/swipeless-dating";
 const PLAYSTORE_URL =
-  "https://play.google.com/store/apps/details?id=xyz.lumore.www.twa";
+  "https://play.google.com/store/apps/details?id=xyz.lumore.rebel";
 
 const heroBenefits = [
   "No swipe dating app experience",
