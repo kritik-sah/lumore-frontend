@@ -11,7 +11,7 @@ type HeroInstallCtaProps = {
 export default function HeroInstallCta({ className }: HeroInstallCtaProps) {
   return (
     <a
-      href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+      href="https://play.google.com/store/apps/details?id=xyz.lumore.rebel"
       target="_blank"
       rel="noopener noreferrer"
       onClick={() =>

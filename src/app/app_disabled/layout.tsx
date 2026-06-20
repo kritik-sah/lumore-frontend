@@ -1,12 +1,12 @@
-import Provider from "@/app/app/context/index";
+import Provider from "@/app/app_disabled/context/index";
 import Providers from "@/app/provider";
 import ServiceWorker from "@/components/ServiceWorker";
-import type { Metadata } from "next";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
+import { Toaster } from "react-hot-toast";
 import { AppInteractionGuard } from "./components/layout/AppInteractionGuard";
+import SessionBootstrap from "./components/layout/SessionBootstrap";
 import LumoreSplash from "./components/LumoreSplash";
 import { ExploreChatProvider } from "./context/ExploreChatContext";
-import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Lumore - Help's you socialize your way!",
@@ -31,6 +31,7 @@ export default function RootLayout({
       <Provider>
         <ExploreChatProvider>
           <LumoreSplash />
+          <SessionBootstrap />
           <Toaster position="top-right" />
           <ServiceWorker />
           <div className="h-[100svh]">
@@ -43,4 +44,3 @@ export default function RootLayout({
     </Providers>
   );
 }
-

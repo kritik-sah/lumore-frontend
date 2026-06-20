@@ -1,9 +1,8 @@
 import { apiClient } from "@/service/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
-import { getUser, removeAccessToken, removeRefreshToken, removeUser } from "@/service/storage";
+import { clearSession, getUser } from "@/service/storage";
 
 interface User {
   _id: string;
@@ -133,12 +132,7 @@ export const useUser = (userId: string) => {
     if (!shouldForceLogout) return;
 
     hasForcedLogoutRef.current = true;
-    removeAccessToken();
-    removeRefreshToken();
-    removeUser();
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    Cookies.remove("user");
+    clearSession();
     router.replace("/app/login");
   }, [currentUserId, error, router, userId]);
 

@@ -1,19 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(req: NextRequest) {
-  const token = req.cookies.get("accessToken")?.value; // Get token from cookies
+  const accessToken = req.cookies.get("accessToken")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
+  const user = req.cookies.get("user")?.value;
   const { pathname } = req.nextUrl;
 
   // Allow access to login page without authentication
-  if (pathname.startsWith("/app/login")) {
+  if (pathname.startsWith("/app")) {
     return NextResponse.next();
   }
   if (pathname.startsWith("/app/referral")) {
     return NextResponse.next();
   }
 
-  // If no token and not on a public page, redirect to login
-  if (!token) {
+  const hasRecoverableSession = Boolean(user && (accessToken || refreshToken));
+
+  // If no recoverable session and not on a public page, redirect to login
+  if (!hasRecoverableSession) {
     return NextResponse.redirect(new URL("/app/login", req.url));
   }
 

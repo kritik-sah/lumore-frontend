@@ -1,5 +1,9 @@
 "use client";
-import { getAccessToken, getUser } from "@/service/storage";
+import {
+  AUTH_ACCESS_TOKEN_EVENT,
+  getAccessToken,
+  getUser,
+} from "@/service/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 
@@ -23,45 +27,63 @@ export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
   const revalidateSocket = () => {
-    if (userId) return;
     const _user = getUser();
     setUserId(_user?._id || null);
+    setAuthToken(getAccessToken());
   };
 
   useEffect(() => {
-    if (!userId) {
-      if (socket) {
-        socket.close();
-        setSocket(null);
-      }
+    if (typeof window === "undefined") return;
+
+    const handleAccessTokenChange = (event: Event) => {
+      const nextToken =
+        event instanceof CustomEvent
+          ? (event.detail?.token ?? null)
+          : getAccessToken();
+
+      setAuthToken(nextToken);
+    };
+
+    window.addEventListener(
+      AUTH_ACCESS_TOKEN_EVENT,
+      handleAccessTokenChange as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        AUTH_ACCESS_TOKEN_EVENT,
+        handleAccessTokenChange as EventListener,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!userId || !authToken) {
       setIsConnected(false);
       setIsActive(false);
+      setSocket(null);
       return;
     }
 
-    // Get the token from cookies
-    const token = getAccessToken();
-    if (!token) {
-      return;
-    }
-
-    // If we already have a socket, don't create a new one
-    if (socket?.connected) {
-      console.log(
-        "SocketContext: Socket already connected, skipping initialization"
-      );
-      return;
-    }
+    const applyLatestToken = () => {
+      const nextToken = getAccessToken();
+      if (!nextToken) return;
+      newSocket.auth = { token: nextToken };
+    };
+    const handleReconnectAttempt = () => {
+      applyLatestToken();
+    };
 
     const newSocket = io(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/chat`,
       {
-        auth: { token: token },
+        auth: { token: authToken },
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
@@ -77,16 +99,17 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     newSocket.on("connect_error", (error: Error) => {
+      applyLatestToken();
       setIsConnected(false);
       setIsActive(false);
     });
 
-    newSocket.on("reconnect", (attemptNumber: number) => {
+    newSocket.io.on("reconnect_attempt", handleReconnectAttempt);
+
+    newSocket.on("reconnect", () => {
       setIsConnected(true);
       setIsActive(true);
     });
-
-    newSocket.on("reconnect_attempt", (attemptNumber: number) => {});
 
     newSocket.on("reconnect_error", (error: Error) => {
       console.error("SocketContext: Reconnection error:", error);
@@ -103,6 +126,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setIsActive(false);
 
       if (reason === "io server disconnect") {
+        applyLatestToken();
         newSocket.connect();
       }
     });
@@ -117,9 +141,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       clearInterval(pingInterval);
+      newSocket.io.off("reconnect_attempt", handleReconnectAttempt);
       newSocket.close();
     };
-  }, [userId]);
+  }, [authToken, userId]);
 
   return (
     <SocketContext.Provider

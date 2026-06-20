@@ -2,9 +2,11 @@
 
 import {
   getFormattedAddress,
-  updateUserData,
+  type LocationWritePayload,
   updateUserLocation,
 } from "@/lib/apis";
+import { hasSignificantLocationChange } from "@/lib/locationSync";
+import { getUser } from "@/service/storage";
 import { useMutation } from "@tanstack/react-query";
 import {
   createContext,
@@ -77,74 +79,88 @@ const LocationContext = createContext<LocationContextType | undefined>(
 );
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
+  const userId = getUser()?._id || null;
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-  const [formattedAddress, setFormattedAddress] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const lastSentLocation = useRef<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [currentFix, setCurrentFix] = useState<LocationWritePayload | null>(null);
+  const lastSentLocation = useRef<LocationWritePayload | null>(null);
 
-  const mutation = useMutation({
-    mutationFn: (locationData: { latitude: number; longitude: number }) =>
-      updateUserLocation({
-        latitude: locationData.longitude,
-        longitude: locationData.latitude,
-        formattedAddress: formattedAddress,
-      }),
+  const locationMutation = useMutation({
+    mutationFn: (locationData: LocationWritePayload) =>
+      updateUserLocation(locationData),
   });
 
   useEffect(() => {
+    if (!userId) {
+      lastSentLocation.current = null;
+      setLatitude(null);
+      setLongitude(null);
+      setCurrentFix(null);
+      setError(null);
+      return;
+    }
+
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
       return;
     }
 
-    const handleSuccess = async (position: GeolocationPosition) => {
-      try {
-        const formatted = await getFormattedAddress(
-          position.coords.latitude,
-          position.coords.longitude
-        );
+    let isUnmounted = false;
+    setError(null);
 
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
-        setFormattedAddress(formatted);
-      } catch (error) {
-        console.error("Error fetching address:", error);
+    const syncLocation = async (nextLatitude: number, nextLongitude: number) => {
+      let nextFormattedAddress: string | null = null;
+
+      try {
+        nextFormattedAddress = await getFormattedAddress(nextLatitude, nextLongitude);
+      } catch (locationError) {
+        console.error("Error fetching address:", locationError);
       }
+
+      if (isUnmounted) return;
+
+      setLatitude(nextLatitude);
+      setLongitude(nextLongitude);
+      setCurrentFix({
+        latitude: nextLatitude,
+        longitude: nextLongitude,
+        formattedAddress: nextFormattedAddress,
+      });
     };
 
-    const handleError = (error: GeolocationPositionError) => {
-      setError(error.message);
+    const handleSuccess = (position: GeolocationPosition) => {
+      void syncLocation(position.coords.latitude, position.coords.longitude);
+    };
+
+    const handleError = (geoError: GeolocationPositionError) => {
+      if (isUnmounted) return;
+      setError(geoError.message);
     };
 
     const watchId = navigator.geolocation.watchPosition(
       handleSuccess,
       handleError,
-      { enableHighAccuracy: true, maximumAge: 1000000000 } // Reduce frequency
+      {
+        enableHighAccuracy: true,
+        maximumAge: 300000,
+        timeout: 15000,
+      }
     );
 
     return () => {
+      isUnmounted = true;
       navigator.geolocation.clearWatch(watchId);
     };
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
-    if (latitude !== null && longitude !== null) {
-      // Avoid unnecessary API calls if location hasn't changed significantly
-      const hasSignificantChange =
-        !lastSentLocation.current ||
-        Math.abs(lastSentLocation.current.latitude - latitude) > 1 ||
-        Math.abs(lastSentLocation.current.longitude - longitude) > 1;
+    if (!userId || !currentFix) return;
+    if (!hasSignificantLocationChange(lastSentLocation.current, currentFix)) return;
 
-      if (hasSignificantChange) {
-        lastSentLocation.current = { latitude, longitude };
-        mutation.mutate({ latitude, longitude });
-      }
-    }
-  }, [latitude, longitude]);
+    lastSentLocation.current = currentFix;
+    locationMutation.mutate(currentFix);
+  }, [currentFix, locationMutation, userId]);
 
   return (
     <LocationContext.Provider value={{ latitude, longitude, error }}>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Socket as SocketType } from "socket.io-client";
 import io from "socket.io-client";
+import { getAccessToken } from "@/service/storage";
 
 interface ProfileLockState {
   isLocked: boolean;
@@ -32,11 +32,14 @@ export function useProfileLock(profileId: string, currentUserId: string) {
 
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io(`${process.env.NEXT_PUBLIC_API_URL}/api/chat`, {
-      auth: {
-        token: localStorage.getItem("token"),
+    const newSocket = io(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/chat`,
+      {
+        auth: {
+          token: getAccessToken(),
+        },
       },
-    });
+    );
 
     newSocket.on("connect", () => {
       console.log("Socket connected for profile lock");

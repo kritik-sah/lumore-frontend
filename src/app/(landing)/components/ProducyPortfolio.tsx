@@ -22,7 +22,7 @@ function ProductPortfolio() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-start gap-3">
               <a
-                href="https://play.google.com/store/apps/details?id=xyz.lumore.www.twa"
+                href="https://play.google.com/store/apps/details?id=xyz.lumore.rebel"
                 target="_blank"
                 rel="noopener noreferrer"
               >

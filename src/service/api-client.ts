@@ -1,11 +1,18 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { getAccessToken, getRefreshToken, setAccessToken } from "./storage";
+import { refreshAccessToken } from "./auth-session";
+import { clearSession, getAccessToken, getRefreshToken } from "./storage";
 
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 // Create an axios instance
 export const apiClient = axios.create({
   baseURL: BASE_URL,
 });
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+const isRefreshRequest = (url?: string) => Boolean(url?.includes("/auth/refresh-token"));
 
 // 🔹 Request interceptor – attach access token
 apiClient.interceptors.request.use(
@@ -25,31 +32,30 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
 
-    // Check if the error is due to an expired token
     if (
-      error.response?.status === 403 &&
+      error.response?.status === 401 &&
       originalRequest &&
-      typeof window !== "undefined"
+      typeof window !== "undefined" &&
+      !originalRequest._retry &&
+      !isRefreshRequest(originalRequest.url)
     ) {
       const refreshToken = getRefreshToken();
       if (!refreshToken) {
+        clearSession();
         return Promise.reject(error);
       }
 
-      try {
-        const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
-          refreshToken,
-        });
+      originalRequest._retry = true;
 
-        // Save new token and retry the original request
-        setAccessToken(data.accessToken);
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
+      const nextAccessToken = await refreshAccessToken();
+      if (!nextAccessToken) {
+        return Promise.reject(error);
       }
+
+      originalRequest.headers.Authorization = `Bearer ${nextAccessToken}`;
+      return apiClient(originalRequest);
     }
 
     return Promise.reject(error);

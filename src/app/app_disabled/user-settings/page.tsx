@@ -7,8 +7,7 @@ import {
   updateUserData,
 } from "@/lib/apis";
 import useAuth from "@/service/requests/auth";
-import { getUser } from "@/service/storage";
-import Cookies from "js-cookie";
+import { clearSession, getUser } from "@/service/storage";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SettingFieldCard from "../components/settings/SettingFieldCard";
@@ -78,8 +77,7 @@ const UserSettingsPage = () => {
 
     try {
       await deleteAccount();
-      Cookies.remove("user");
-      Cookies.remove("token");
+      clearSession();
       router.push("/app/login");
     } catch (error) {
       console.error("Error deleting account:", error);

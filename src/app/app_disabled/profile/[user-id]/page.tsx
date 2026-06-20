@@ -13,12 +13,13 @@ const UserProfile = async ({
 }) => {
   const { "user-id": userId } = await params;
   const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
   const user = cookieStore.get("user")?.value
     ? JSON.parse(cookieStore.get("user")!.value)
     : null;
 
-  if (!token || !user) {
+  if (!user || (!accessToken && !refreshToken)) {
     redirect("/app/login");
   }
 
